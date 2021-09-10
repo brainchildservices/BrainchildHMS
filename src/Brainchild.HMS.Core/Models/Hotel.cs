@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class Hotel
 {
+    [Key]
     public int HotelID { get; set; }
 
     public int TenantID { get; set; }

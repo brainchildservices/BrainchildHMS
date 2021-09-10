@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 public class Billing
 {
+    [Key]
     public int BillingId { get; set; }
 
+    [Required]
     public DateTime BillingDate { get; set; }
-
+    
     public int BookingId { get; set; }
 
     public int PaymentId { get; set; }

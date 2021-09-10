@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class Payment
 {
+    [Key]
     public int PaymentId { get; set; }
 
     public int PaymentTypeID { get; set; }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class Tax
 {
+    [Key]
     public int TaxId { get; set; }
 
     [Required]
