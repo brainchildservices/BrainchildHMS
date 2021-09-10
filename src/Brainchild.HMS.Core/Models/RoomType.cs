@@ -5,8 +5,8 @@ public class RoomType
 {
     public int RoomTypeId { get; set; }
 
-    [Column(TypeName = "varchar(50)")]
-    public string RoomType { get; set; }
+    [Column(TypeName = "varchar(1000)")]
+    public string RoomTypeDesctiption { get; set; }
 
     public float Rate { get; set; }
    

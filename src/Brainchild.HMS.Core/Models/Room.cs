@@ -10,6 +10,7 @@ public class Room
     [Column(TypeName = "varchar(50)")]
     public string RoomNo { get; set; }
 
-    public int RoomStatus { get; set; }
+    [Column(TypeName = "varchar(50)")]
+    public string RoomStatus { get; set; }
     
 }

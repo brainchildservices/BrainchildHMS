@@ -8,8 +8,8 @@ public class Payment
 
     public int PaymentTypeID { get; set; }
 
-    public float RoomCharges { get; set; }
+    public float PaymentAmount { get; set; }
 
-    public float AdvancePayment { get; set; }    
+    public float PaymentAdvance { get; set; }    
     
 }

@@ -8,7 +8,7 @@ public class Tax
     [Required]
     public int TaxPercentage { get; set; }
 
-    [Column(TypeName = "varchar(100)")]
+    [Column(TypeName = "varchar(1000)")]
     public string TaxDecription { get; set; }
     
     public int Status { get; set; }

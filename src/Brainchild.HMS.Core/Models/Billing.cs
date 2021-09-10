@@ -6,10 +6,14 @@ public class Billing
 {
     public int BillingId { get; set; }
 
-    public DateTime InvoiceDate { get; set; }
+    public DateTime BillingDate { get; set; }
 
     public int BookingId { get; set; }
 
     public int PaymentId { get; set; }
+
+    public int IsCancelled { get; set; }
+
+    public DateTime CancelDate { get; set; }
     
 }

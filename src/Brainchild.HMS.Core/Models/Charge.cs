@@ -6,6 +6,8 @@ public class Charge
 {
     public int ChargeId { get; set; }
 
-    public int ChargeTypeId { get; set; }       
+    public int ChargeTypeId { get; set; }    
+
+    public float Amount { get; set; }   
     
 }
