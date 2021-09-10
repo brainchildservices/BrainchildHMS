@@ -12,8 +12,6 @@ public class Billing
 
     public int PaymentId { get; set; }
 
-    public int IsCancelled { get; set; }
-
-    public DateTime CancelDate { get; set; }
+    
     
 }

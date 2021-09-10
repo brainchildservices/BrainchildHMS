@@ -8,6 +8,6 @@ public class Charge
 
     public int ChargeTypeId { get; set; }    
 
-    public float Amount { get; set; }   
+    public float ChargeAmount { get; set; }   
     
 }
