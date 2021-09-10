@@ -8,7 +8,7 @@ public class Hotel
     public int TenantID { get; set; }
 
     [Required]
-    [Column(TypeName = "varchar(100)")]
+    [Column(TypeName = "varchar(1000)")]
     public string OwnerName { get; set; }
 
     [Column(TypeName = "varchar(50)")]

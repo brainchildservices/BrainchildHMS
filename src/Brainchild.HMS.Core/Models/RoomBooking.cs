@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-public class Tax
+public class RoomBooking
 {
     public int BookingDetailsId { get; set; }
     public int BookingId { get; set; }
