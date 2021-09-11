@@ -27,7 +27,7 @@ public class Booking
 
     public int IsCancelled { get; set; }
 
-    public DateTime CanceledDate { get; set; }
+    public DateTime CancelleddDate { get; set; }
 
 
    public List<Billing> Billings { get; set; }

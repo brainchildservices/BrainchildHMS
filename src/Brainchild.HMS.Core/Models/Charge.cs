@@ -12,5 +12,7 @@ public class Charge
 
     [Required]
     public float ChargeAmount { get; set; }   
+
+    public string  ChargeCurrency { get; set;}
     
 }

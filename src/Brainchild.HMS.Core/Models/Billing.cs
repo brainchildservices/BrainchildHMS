@@ -13,8 +13,6 @@ public class Billing
     public int BookingId { get; set; }
     public Booking Booking { get; set ;}
 
-    public int PaymentId { get; set; }
-    public Payment Payment { get; set ;}
-    
+       
     public List<Payment> Payments { get; set; }
 }

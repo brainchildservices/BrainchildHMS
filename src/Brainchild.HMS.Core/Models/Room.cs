@@ -13,8 +13,8 @@ public class Room
     [Column(TypeName = "varchar(50)")]
     public string RoomNo { get; set; }
 
-    [Column(TypeName = "varchar(50)")]
-    public string RoomStatus { get; set; }
+    [Column(TypeName = "int")]
+    public RoomStatus RoomStatus { get; set; }
     
     public List<RoomBooking> RoomBookings { get; set; }
 }
