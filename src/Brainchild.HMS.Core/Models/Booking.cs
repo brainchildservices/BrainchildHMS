@@ -22,7 +22,8 @@ public class Booking
     [Required]
     public DateTime CheckoutDate { get; set; }
     
-    public int Status { get; set; }
+    [Column(TypeName = "int")]
+    public BookingStatus Status { get; set; }
 
     public int IsCancelled { get; set; }
 
