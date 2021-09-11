@@ -16,5 +16,5 @@ public class Billing
     public int PaymentId { get; set; }
     public Payment Payment { get; set ;}
     
-    
+    public List<Payment> Payments { get; set; }
 }

@@ -22,11 +22,11 @@ public class Booking
     [Required]
     public DateTime CheckoutDate { get; set; }
     
-    public int status { get; set; }
+    public int Status { get; set; }
 
     public int IsCancelled { get; set; }
 
-    public DateTime CancelDate { get; set; }
+    public DateTime CanceledDate { get; set; }
 
 
    public List<Billing> Billings { get; set; }

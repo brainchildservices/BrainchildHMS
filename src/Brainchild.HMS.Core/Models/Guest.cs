@@ -8,16 +8,16 @@ public class Guest
 
     [Required]
     [Column(TypeName = "varchar(1000)")]
-    public string Name { get; set; }
+    public string GuestName { get; set; }
 
     [Column(TypeName = "varchar(100)")]
-    public string Address { get; set; }
+    public string GuestAddress { get; set; }
 
-    public string Email { get; set; }
+    public string GuestEmail { get; set; }
 
     [Required]
     [Column(TypeName = "varchar(100)")]
-    public string PhoneNo { get; set; }
+    public string GuestPhoneNo { get; set; }
     
      public List<Booking> Bookings { get; set; }
     
