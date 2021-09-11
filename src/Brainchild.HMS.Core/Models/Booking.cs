@@ -7,6 +7,7 @@ public class Booking
     public int BookingId { get; set; }
 
     public int GuestId { get; set; }
+    public Guest Guest { get; set ;}
 
     [Required]
     public DateTime BookingDate { get; set; }
@@ -26,4 +27,8 @@ public class Booking
     public int IsCancelled { get; set; }
 
     public DateTime CancelDate { get; set; }
+
+
+   public List<Billing> Billings { get; set; }
+   public List<RoomBooking> RoomBookings { get; set; }
 }

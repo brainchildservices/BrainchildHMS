@@ -19,5 +19,6 @@ public class Guest
     [Column(TypeName = "varchar(100)")]
     public string PhoneNo { get; set; }
     
+     public List<Booking> Bookings { get; set; }
     
 }

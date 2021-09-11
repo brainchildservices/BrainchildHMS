@@ -11,5 +11,7 @@ public class RoomType
     public string RoomTypeDesctiption { get; set; }
 
     public float RoomRate { get; set; }
+
+    public List<Room> Rooms { get; set; }
    
 }

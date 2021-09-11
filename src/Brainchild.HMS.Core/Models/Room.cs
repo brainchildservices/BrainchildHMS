@@ -7,6 +7,7 @@ public class Room
     public int RoomId { get; set; }
 
     public int RoomTypeID { get; set; }
+    public RoomType RoomType { get; set; }
 
     [Required]
     [Column(TypeName = "varchar(50)")]
@@ -15,4 +16,5 @@ public class Room
     [Column(TypeName = "varchar(50)")]
     public string RoomStatus { get; set; }
     
+    public List<RoomBooking> RoomBookings { get; set; }
 }
