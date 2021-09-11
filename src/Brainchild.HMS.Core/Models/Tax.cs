@@ -1,6 +1,10 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
-
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+namespace Brainchild.HMS.Core.Models
+{
 public class Tax
 {
     [Key]
@@ -14,4 +18,5 @@ public class Tax
     
     public int Status { get; set; }
     
+}
 }

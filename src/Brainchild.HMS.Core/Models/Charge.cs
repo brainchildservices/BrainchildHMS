@@ -1,7 +1,10 @@
-
+using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
-
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+namespace Brainchild.HMS.Core.Models
+{
 public class Charge
 {
     [Key]
@@ -15,4 +18,5 @@ public class Charge
 
     public string  ChargeCurrency { get; set;}
     
+}
 }

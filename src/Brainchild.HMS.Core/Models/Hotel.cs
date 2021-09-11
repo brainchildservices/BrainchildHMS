@@ -1,6 +1,10 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
-
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+namespace Brainchild.HMS.Core.Models
+{
 public class Hotel
 {
     [Key]
@@ -27,4 +31,5 @@ public class Hotel
 
     [Column(TypeName = "varchar(50)")]
     public string GSTNo { get; set; }
+}
 }

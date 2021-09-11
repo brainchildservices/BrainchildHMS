@@ -1,6 +1,10 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
-
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+namespace Brainchild.HMS.Core.Models
+{
 public class Room
 {
     [Key]
@@ -17,4 +21,5 @@ public class Room
     public RoomStatus RoomStatus { get; set; }
     
     public List<RoomBooking> RoomBookings { get; set; }
+}
 }
