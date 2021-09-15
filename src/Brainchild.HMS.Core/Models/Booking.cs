@@ -11,7 +11,7 @@ public class Booking
     [Key]
     public int BookingId { get; set; }
 
-    public int GuestId { get; set; }
+    [ForeignKey("GuestId")]   
     public Guest Guest { get; set ;}
 
     [Required]
@@ -34,10 +34,10 @@ public class Booking
 
     public DateTime CancelleddDate { get; set; }
 
-    public int? HotelID { get; set; }
+    [ForeignKey("HotelId")]   
     public Hotel Hotel { get; set ;}
 
-   public List<Billing> Bills { get; set; }
+
    public List<RoomBooking> RoomBookings { get; set; }
 }
 }

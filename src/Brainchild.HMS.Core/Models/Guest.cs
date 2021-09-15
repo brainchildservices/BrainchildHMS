@@ -25,10 +25,7 @@ public class Guest
 
     public string GuestCountry { get; set; }
     
-    public int HotelID { get; set; }
-    public Hotel Hotel { get; set ;}
 
-    public List<Booking> Bookings { get; set; }
     
 }
 }

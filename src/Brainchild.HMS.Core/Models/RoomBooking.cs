@@ -10,10 +10,10 @@ public class RoomBooking
     [Key]
     public int RoomBookingId { get; set; }
 
-    public int BookingId { get; set; }
+   [ForeignKey("BookingId")]
     public Booking  Booking { get; set;}
     
-    public int? RoomId { get; set; }
+  [ForeignKey("RoomId")]
     public Room Room { get; set;}
         
 }

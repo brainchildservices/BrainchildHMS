@@ -15,10 +15,11 @@ public class RoomType
     public string RoomTypeDesctiption { get; set; }
 
     public float RoomRate { get; set; }
-
-    public List<Room> Rooms { get; set; }
+    
    
-    public int HotelID { get; set; }
+    [ForeignKey("HotelId")]
     public Hotel Hotel { get; set ;}
+
+
 }
 }

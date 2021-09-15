@@ -14,7 +14,7 @@ public class ChargeType
     [Column(TypeName = "varchar(1000)")]
     public string ChargeTypeDescription { get; set; }   
 
-    public int HotelID { get; set; }
+   [ForeignKey("HotelId")]
     public Hotel Hotel { get; set ;}    
     
 }  

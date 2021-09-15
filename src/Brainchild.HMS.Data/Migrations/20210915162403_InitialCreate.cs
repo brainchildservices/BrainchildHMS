@@ -8,6 +8,39 @@ namespace Brainchild.HMS.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Currency",
+                columns: table => new
+                {
+                    CurrencyCodeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CurrencyCountry = table.Column<string>(type: "varchar(1000)", nullable: false),
+                    CurrencyCode = table.Column<string>(type: "varchar(1000)", nullable: false),
+                    CurrencyNumber = table.Column<int>(type: "int", nullable: false),
+                    CurrencySymbol = table.Column<string>(type: "varchar(1000)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Currency", x => x.CurrencyCodeId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Guests",
+                columns: table => new
+                {
+                    GuestId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GuestName = table.Column<string>(type: "varchar(1000)", nullable: false),
+                    GuestAddress = table.Column<string>(type: "varchar(100)", nullable: true),
+                    GuestEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GuestPhoneNo = table.Column<string>(type: "varchar(100)", nullable: false),
+                    GuestCountry = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Guests", x => x.GuestId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Hotels",
                 columns: table => new
                 {
@@ -27,70 +60,57 @@ namespace Brainchild.HMS.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bookings",
+                columns: table => new
+                {
+                    BookingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GuestId = table.Column<int>(type: "int", nullable: true),
+                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NoOfAdults = table.Column<int>(type: "int", nullable: false),
+                    NoOfAChildren = table.Column<int>(type: "int", nullable: false),
+                    CheckInDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CheckOutDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    IsCancelled = table.Column<int>(type: "int", nullable: false),
+                    CancelleddDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    HotelId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.BookingId);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Guests_GuestId",
+                        column: x => x.GuestId,
+                        principalTable: "Guests",
+                        principalColumn: "GuestId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "HotelID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChargeTypes",
                 columns: table => new
                 {
                     ChargeTypeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ChargeTypeDescription = table.Column<string>(type: "varchar(1000)", nullable: false),
-                    HotelID = table.Column<int>(type: "int", nullable: false)
+                    HotelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ChargeTypes", x => x.ChargeTypeId);
                     table.ForeignKey(
-                        name: "FK_ChargeTypes_Hotels_HotelID",
-                        column: x => x.HotelID,
+                        name: "FK_ChargeTypes_Hotels_HotelId",
+                        column: x => x.HotelId,
                         principalTable: "Hotels",
                         principalColumn: "HotelID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CurrencyCode",
-                columns: table => new
-                {
-                    CurrencyCodeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CurrencyCountry = table.Column<string>(type: "varchar(1000)", nullable: false),
-                    CurrencyCodes = table.Column<string>(type: "varchar(1000)", nullable: false),
-                    CurrencyNumber = table.Column<int>(type: "int", nullable: false),
-                    CurrencySymbol = table.Column<string>(type: "varchar(1000)", nullable: true),
-                    HotelID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CurrencyCode", x => x.CurrencyCodeId);
-                    table.ForeignKey(
-                        name: "FK_CurrencyCode_Hotels_HotelID",
-                        column: x => x.HotelID,
-                        principalTable: "Hotels",
-                        principalColumn: "HotelID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Guests",
-                columns: table => new
-                {
-                    GuestId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    GuestName = table.Column<string>(type: "varchar(1000)", nullable: false),
-                    GuestAddress = table.Column<string>(type: "varchar(100)", nullable: true),
-                    GuestEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GuestPhoneNo = table.Column<string>(type: "varchar(100)", nullable: false),
-                    GuestCountry = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HotelID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Guests", x => x.GuestId);
-                    table.ForeignKey(
-                        name: "FK_Guests_Hotels_HotelID",
-                        column: x => x.HotelID,
-                        principalTable: "Hotels",
-                        principalColumn: "HotelID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -100,17 +120,17 @@ namespace Brainchild.HMS.Data.Migrations
                     PaymentTypeID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PaymentTypeDescription = table.Column<string>(type: "varchar(1000)", nullable: false),
-                    HotelID = table.Column<int>(type: "int", nullable: false)
+                    HotelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PaymentTypes", x => x.PaymentTypeID);
                     table.ForeignKey(
-                        name: "FK_PaymentTypes_Hotels_HotelID",
-                        column: x => x.HotelID,
+                        name: "FK_PaymentTypes_Hotels_HotelId",
+                        column: x => x.HotelId,
                         principalTable: "Hotels",
                         principalColumn: "HotelID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,17 +141,17 @@ namespace Brainchild.HMS.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoomTypeDesctiption = table.Column<string>(type: "varchar(1000)", nullable: false),
                     RoomRate = table.Column<float>(type: "real", nullable: false),
-                    HotelID = table.Column<int>(type: "int", nullable: false)
+                    HotelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RoomTypes", x => x.RoomTypeId);
                     table.ForeignKey(
-                        name: "FK_RoomTypes_Hotels_HotelID",
-                        column: x => x.HotelID,
+                        name: "FK_RoomTypes_Hotels_HotelId",
+                        column: x => x.HotelId,
                         principalTable: "Hotels",
                         principalColumn: "HotelID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -143,17 +163,37 @@ namespace Brainchild.HMS.Data.Migrations
                     TaxPercentage = table.Column<int>(type: "int", nullable: false),
                     TaxDecription = table.Column<string>(type: "varchar(1000)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    HotelID = table.Column<int>(type: "int", nullable: false)
+                    HotelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Taxes", x => x.TaxId);
                     table.ForeignKey(
-                        name: "FK_Taxes_Hotels_HotelID",
-                        column: x => x.HotelID,
+                        name: "FK_Taxes_Hotels_HotelId",
+                        column: x => x.HotelId,
                         principalTable: "Hotels",
                         principalColumn: "HotelID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Billings",
+                columns: table => new
+                {
+                    BillingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BillingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Billings", x => x.BillingId);
+                    table.ForeignKey(
+                        name: "FK_Billings_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "BookingId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -162,7 +202,7 @@ namespace Brainchild.HMS.Data.Migrations
                 {
                     ChargeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ChargeTypeId = table.Column<int>(type: "int", nullable: false),
+                    ChargeTypeId = table.Column<int>(type: "int", nullable: true),
                     CurrencyCodeId = table.Column<int>(type: "int", nullable: true),
                     ChargeAmount = table.Column<float>(type: "real", nullable: false)
                 },
@@ -174,46 +214,12 @@ namespace Brainchild.HMS.Data.Migrations
                         column: x => x.ChargeTypeId,
                         principalTable: "ChargeTypes",
                         principalColumn: "ChargeTypeId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Charges_CurrencyCode_CurrencyCodeId",
-                        column: x => x.CurrencyCodeId,
-                        principalTable: "CurrencyCode",
-                        principalColumn: "CurrencyCodeId",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Bookings",
-                columns: table => new
-                {
-                    BookingId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    GuestId = table.Column<int>(type: "int", nullable: false),
-                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    NoOfAdults = table.Column<int>(type: "int", nullable: false),
-                    NoOfAChildren = table.Column<int>(type: "int", nullable: false),
-                    CheckInDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CheckOutDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    IsCancelled = table.Column<int>(type: "int", nullable: false),
-                    CancelleddDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    HotelID = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Bookings", x => x.BookingId);
                     table.ForeignKey(
-                        name: "FK_Bookings_Guests_GuestId",
-                        column: x => x.GuestId,
-                        principalTable: "Guests",
-                        principalColumn: "GuestId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Bookings_Hotels_HotelID",
-                        column: x => x.HotelID,
-                        principalTable: "Hotels",
-                        principalColumn: "HotelID",
+                        name: "FK_Charges_Currency_CurrencyCodeId",
+                        column: x => x.CurrencyCodeId,
+                        principalTable: "Currency",
+                        principalColumn: "CurrencyCodeId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -223,7 +229,7 @@ namespace Brainchild.HMS.Data.Migrations
                 {
                     RoomId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoomTypeID = table.Column<int>(type: "int", nullable: false),
+                    RoomTypeId = table.Column<int>(type: "int", nullable: true),
                     RoomNo = table.Column<string>(type: "varchar(50)", nullable: false),
                     RoomStatus = table.Column<int>(type: "int", nullable: false)
                 },
@@ -231,63 +237,10 @@ namespace Brainchild.HMS.Data.Migrations
                 {
                     table.PrimaryKey("PK_Rooms", x => x.RoomId);
                     table.ForeignKey(
-                        name: "FK_Rooms_RoomTypes_RoomTypeID",
-                        column: x => x.RoomTypeID,
+                        name: "FK_Rooms_RoomTypes_RoomTypeId",
+                        column: x => x.RoomTypeId,
                         principalTable: "RoomTypes",
                         principalColumn: "RoomTypeId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Billings",
-                columns: table => new
-                {
-                    BillingId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BillingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BookingId = table.Column<int>(type: "int", nullable: false),
-                    HotelID = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Billings", x => x.BillingId);
-                    table.ForeignKey(
-                        name: "FK_Billings_Bookings_BookingId",
-                        column: x => x.BookingId,
-                        principalTable: "Bookings",
-                        principalColumn: "BookingId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Billings_Hotels_HotelID",
-                        column: x => x.HotelID,
-                        principalTable: "Hotels",
-                        principalColumn: "HotelID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RoomBookings",
-                columns: table => new
-                {
-                    RoomBookingId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BookingId = table.Column<int>(type: "int", nullable: false),
-                    RoomId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RoomBookings", x => x.RoomBookingId);
-                    table.ForeignKey(
-                        name: "FK_RoomBookings_Bookings_BookingId",
-                        column: x => x.BookingId,
-                        principalTable: "Bookings",
-                        principalColumn: "BookingId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RoomBookings_Rooms_RoomId",
-                        column: x => x.RoomId,
-                        principalTable: "Rooms",
-                        principalColumn: "RoomId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -297,7 +250,7 @@ namespace Brainchild.HMS.Data.Migrations
                 {
                     PaymentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PaymentTypeID = table.Column<int>(type: "int", nullable: false),
+                    PaymentTypeId = table.Column<int>(type: "int", nullable: true),
                     PaymentAmount = table.Column<float>(type: "real", nullable: false),
                     PaymentAdvance = table.Column<float>(type: "real", nullable: false),
                     BillingId = table.Column<int>(type: "int", nullable: true)
@@ -312,11 +265,37 @@ namespace Brainchild.HMS.Data.Migrations
                         principalColumn: "BillingId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Payments_PaymentTypes_PaymentTypeID",
-                        column: x => x.PaymentTypeID,
+                        name: "FK_Payments_PaymentTypes_PaymentTypeId",
+                        column: x => x.PaymentTypeId,
                         principalTable: "PaymentTypes",
                         principalColumn: "PaymentTypeID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RoomBookings",
+                columns: table => new
+                {
+                    RoomBookingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookingId = table.Column<int>(type: "int", nullable: true),
+                    RoomId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoomBookings", x => x.RoomBookingId);
+                    table.ForeignKey(
+                        name: "FK_RoomBookings_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "BookingId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RoomBookings_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "RoomId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -325,19 +304,14 @@ namespace Brainchild.HMS.Data.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Billings_HotelID",
-                table: "Billings",
-                column: "HotelID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Bookings_GuestId",
                 table: "Bookings",
                 column: "GuestId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bookings_HotelID",
+                name: "IX_Bookings_HotelId",
                 table: "Bookings",
-                column: "HotelID");
+                column: "HotelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Charges_ChargeTypeId",
@@ -350,19 +324,9 @@ namespace Brainchild.HMS.Data.Migrations
                 column: "CurrencyCodeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChargeTypes_HotelID",
+                name: "IX_ChargeTypes_HotelId",
                 table: "ChargeTypes",
-                column: "HotelID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CurrencyCode_HotelID",
-                table: "CurrencyCode",
-                column: "HotelID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Guests_HotelID",
-                table: "Guests",
-                column: "HotelID");
+                column: "HotelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_BillingId",
@@ -370,14 +334,14 @@ namespace Brainchild.HMS.Data.Migrations
                 column: "BillingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_PaymentTypeID",
+                name: "IX_Payments_PaymentTypeId",
                 table: "Payments",
-                column: "PaymentTypeID");
+                column: "PaymentTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PaymentTypes_HotelID",
+                name: "IX_PaymentTypes_HotelId",
                 table: "PaymentTypes",
-                column: "HotelID");
+                column: "HotelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoomBookings_BookingId",
@@ -395,19 +359,19 @@ namespace Brainchild.HMS.Data.Migrations
                 column: "RoomNo");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rooms_RoomTypeID",
+                name: "IX_Rooms_RoomTypeId",
                 table: "Rooms",
-                column: "RoomTypeID");
+                column: "RoomTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomTypes_HotelID",
+                name: "IX_RoomTypes_HotelId",
                 table: "RoomTypes",
-                column: "HotelID");
+                column: "HotelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Taxes_HotelID",
+                name: "IX_Taxes_HotelId",
                 table: "Taxes",
-                column: "HotelID");
+                column: "HotelId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -428,7 +392,7 @@ namespace Brainchild.HMS.Data.Migrations
                 name: "ChargeTypes");
 
             migrationBuilder.DropTable(
-                name: "CurrencyCode");
+                name: "Currency");
 
             migrationBuilder.DropTable(
                 name: "Billings");

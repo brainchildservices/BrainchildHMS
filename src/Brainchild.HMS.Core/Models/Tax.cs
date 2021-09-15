@@ -18,7 +18,7 @@ public class Tax
     
     public int Status { get; set; }
     
-    public int HotelID { get; set; }
+   [ForeignKey("HotelId")]
     public Hotel Hotel { get; set ;}
 }
 }

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Brainchild.HMS.Core.Models
 {
-    public class CurrencyCode
+    public class Currency
     {
         [Key]
         public int CurrencyCodeId { get; set; }
@@ -17,17 +17,14 @@ namespace Brainchild.HMS.Core.Models
 
         [Required]
         [Column(TypeName = "varchar(1000)")]
-        public string CurrencyCodes { get; set; }
+        public string CurrencyCode { get; set; }
 
         public int CurrencyNumber { get; set; } 
 
         [Column(TypeName = "varchar(1000)")]
         public string CurrencySymbol { get; set; }           
 
-        public int HotelID { get; set; }
-        public Hotel Hotel { get; set ;}    
-
-        public List<Charge> Charges { get; set; }
+       
            
     }
 }

@@ -13,11 +13,8 @@ public class Billing
     [Required]
     public DateTime BillingDate { get; set; }
     
-    public int BookingId { get; set; }
+    [ForeignKey("BookingId")]
     public Booking Booking { get; set ;}
-
-    public int? HotelID { get; set; }
-    public Hotel Hotel { get; set ;}
        
     public List<Payment> Payments { get; set; }
 }

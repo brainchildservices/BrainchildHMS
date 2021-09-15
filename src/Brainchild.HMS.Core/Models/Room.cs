@@ -11,7 +11,7 @@ public class Room
     [Key]
     public int RoomId { get; set; }
 
-    public int RoomTypeID { get; set; }
+   [ForeignKey("RoomTypeId")]
     public RoomType RoomType { get; set; }
 
     [Required]
@@ -21,6 +21,6 @@ public class Room
     [Column(TypeName = "int")]
     public RoomStatus RoomStatus { get; set; }
     
-    public List<RoomBooking> RoomBookings { get; set; }
+    
 }
 }

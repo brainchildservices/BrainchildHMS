@@ -10,15 +10,14 @@ public class Payment
     [Key]
     public int PaymentId { get; set; }
 
-    public int PaymentTypeID { get; set; }
+    [ForeignKey("PaymentTypeId")]
     public PaymentType PaymentType { get; set; }
 
     public float PaymentAmount { get; set; }
 
     public float PaymentAdvance { get; set; }    
 
-
-    public int? BillingId { get; set; }
+    [ForeignKey("BillingId")]
     public Billing Billing { get; set; }
 }
 }

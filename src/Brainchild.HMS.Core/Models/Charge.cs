@@ -10,11 +10,11 @@ public class Charge
     [Key]
     public int ChargeId { get; set; }
 
-    public int ChargeTypeId { get; set; }
+    [ForeignKey("ChargeTypeId")]   
     public ChargeType ChargeType { get; set; }    
 
-    public int? CurrencyCodeId { get; set; }
-    public CurrencyCode CurrencyCode { get; set;}
+    [ForeignKey("CurrencyCodeId")]
+    public Currency Currency { get; set;}
 
     [Required]
     public float ChargeAmount { get; set; }   
