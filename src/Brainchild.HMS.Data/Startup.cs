@@ -8,30 +8,19 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OrchardCore.Logging;
 using Brainchild.HMS.Data.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
 
-namespace Brainchild.HMS.Web
+
+namespace Brainchild.HMS.Data
 {
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOrchardCms();         
-                      
-        }
-        
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            => services.AddDbContext<BrainchildHMSDbContext>(options => options.UseSqlServer("Data Source=SNEHA"));
 
-            app.UseStaticFiles();
-            app.UseOrchardCore(c => c.UseSerilogTenantNameLogging());
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
         }
     }
 }
