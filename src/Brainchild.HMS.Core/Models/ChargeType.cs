@@ -12,7 +12,10 @@ public class ChargeType
 
     [Required]
     [Column(TypeName = "varchar(1000)")]
-    public string ChargeTypeDescription { get; set; }       
+    public string ChargeTypeDescription { get; set; }   
+
+    public int HotelID { get; set; }
+    public Hotel Hotel { get; set ;}    
     
 }  
 }

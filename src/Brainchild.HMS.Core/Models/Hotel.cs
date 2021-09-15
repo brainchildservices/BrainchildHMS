@@ -31,5 +31,14 @@ public class Hotel
 
     [Column(TypeName = "varchar(50)")]
     public string GSTNo { get; set; }
+
+    public List<Billing> Billing { get; set; }
+    public List<Booking> Bookings { get; set; }
+    public List<ChargeType> ChargeTypes { get; set; }
+    public List<Guest> Guests { get; set; }
+    public List<PaymentType> PaymentTypes { get; set; }
+    public List<RoomType> RoomTypes { get; set; }
+    public List<Tax> Taxes { get; set; }
+    public List<CurrencyCode> CurrencyCodes { get; set; }
 }
 }

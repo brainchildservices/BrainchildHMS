@@ -19,9 +19,7 @@ namespace Brainchild.HMS.Web
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCms();
-            services.AddDbContext<BrainchildHMSDbContext>(options =>
-           options.UseSqlServer("Data Source=SNEHA;Initial Catalog=BrainChildHMS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
+            services.AddOrchardCms();         
                       
         }
         

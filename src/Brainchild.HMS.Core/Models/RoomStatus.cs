@@ -9,7 +9,7 @@ namespace Brainchild.HMS.Core.Models
     public enum RoomStatus
 {
     Occupied, 
-    vacant, 
+    Vacant, 
     OutOfOrder     
 }
 }

@@ -15,6 +15,9 @@ public class Billing
     
     public int BookingId { get; set; }
     public Booking Booking { get; set ;}
+
+    public int? HotelID { get; set; }
+    public Hotel Hotel { get; set ;}
        
     public List<Payment> Payments { get; set; }
 }

@@ -18,5 +18,7 @@ public class RoomType
 
     public List<Room> Rooms { get; set; }
    
+    public int HotelID { get; set; }
+    public Hotel Hotel { get; set ;}
 }
 }

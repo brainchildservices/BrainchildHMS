@@ -22,10 +22,10 @@ public class Booking
     public int NoOfAChildren { get; set; }
 
     [Required]
-    public DateTime CheckinDate { get; set; }
+    public DateTime CheckInDate { get; set; }
 
     [Required]
-    public DateTime CheckoutDate { get; set; }
+    public DateTime CheckOutDate { get; set; }
     
     [Column(TypeName = "int")]
     public BookingStatus Status { get; set; }
@@ -34,8 +34,10 @@ public class Booking
 
     public DateTime CancelleddDate { get; set; }
 
+    public int? HotelID { get; set; }
+    public Hotel Hotel { get; set ;}
 
-   public List<Billing> Billings { get; set; }
+   public List<Billing> Bills { get; set; }
    public List<RoomBooking> RoomBookings { get; set; }
 }
 }

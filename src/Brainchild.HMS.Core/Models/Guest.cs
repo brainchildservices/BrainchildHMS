@@ -22,8 +22,13 @@ public class Guest
     [Required]
     [Column(TypeName = "varchar(100)")]
     public string GuestPhoneNo { get; set; }
+
+    public string GuestCountry { get; set; }
     
-     public List<Booking> Bookings { get; set; }
+    public int HotelID { get; set; }
+    public Hotel Hotel { get; set ;}
+
+    public List<Booking> Bookings { get; set; }
     
 }
 }

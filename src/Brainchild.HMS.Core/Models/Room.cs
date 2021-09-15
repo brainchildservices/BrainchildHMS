@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace Brainchild.HMS.Core.Models
 {
+    [Index(nameof(RoomNo))]
 public class Room
 {
     [Key]

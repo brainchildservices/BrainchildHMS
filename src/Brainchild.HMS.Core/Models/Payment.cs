@@ -18,7 +18,7 @@ public class Payment
     public float PaymentAdvance { get; set; }    
 
 
-    public int BillingId { get; set; }
+    public int? BillingId { get; set; }
     public Billing Billing { get; set; }
 }
 }

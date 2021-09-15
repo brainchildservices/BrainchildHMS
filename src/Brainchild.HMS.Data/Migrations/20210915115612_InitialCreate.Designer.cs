@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Brainchild.HMS.Data.Migrations
 {
     [DbContext(typeof(BrainchildHMSDbContext))]
-    [Migration("20210915060242_InitialCreate")]
+    [Migration("20210915115612_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,9 +34,14 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<int>("BookingId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("HotelID")
+                        .HasColumnType("int");
+
                     b.HasKey("BillingId");
 
                     b.HasIndex("BookingId");
+
+                    b.HasIndex("HotelID");
 
                     b.ToTable("Billings");
                 });
@@ -54,13 +59,16 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<DateTime>("CancelleddDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CheckinDate")
+                    b.Property<DateTime>("CheckInDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CheckoutDate")
+                    b.Property<DateTime>("CheckOutDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("GuestId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HotelID")
                         .HasColumnType("int");
 
                     b.Property<int>("IsCancelled")
@@ -79,6 +87,8 @@ namespace Brainchild.HMS.Data.Migrations
 
                     b.HasIndex("GuestId");
 
+                    b.HasIndex("HotelID");
+
                     b.ToTable("Bookings");
                 });
 
@@ -92,15 +102,17 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<float>("ChargeAmount")
                         .HasColumnType("real");
 
-                    b.Property<string>("ChargeCurrency")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ChargeTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CurrencyCodeId")
                         .HasColumnType("int");
 
                     b.HasKey("ChargeId");
 
                     b.HasIndex("ChargeTypeId");
+
+                    b.HasIndex("CurrencyCodeId");
 
                     b.ToTable("Charges");
                 });
@@ -116,9 +128,45 @@ namespace Brainchild.HMS.Data.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(1000)");
 
+                    b.Property<int>("HotelID")
+                        .HasColumnType("int");
+
                     b.HasKey("ChargeTypeId");
 
+                    b.HasIndex("HotelID");
+
                     b.ToTable("ChargeTypes");
+                });
+
+            modelBuilder.Entity("Brainchild.HMS.Core.Models.CurrencyCode", b =>
+                {
+                    b.Property<int>("CurrencyCodeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CurrencyCodes")
+                        .IsRequired()
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("CurrencyCountry")
+                        .IsRequired()
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<int>("CurrencyNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CurrencySymbol")
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<int>("HotelID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CurrencyCodeId");
+
+                    b.HasIndex("HotelID");
+
+                    b.ToTable("CurrencyCode");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Guest", b =>
@@ -131,6 +179,9 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<string>("GuestAddress")
                         .HasColumnType("varchar(100)");
 
+                    b.Property<string>("GuestCountry")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("GuestEmail")
                         .HasColumnType("nvarchar(max)");
 
@@ -142,7 +193,12 @@ namespace Brainchild.HMS.Data.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
+                    b.Property<int>("HotelID")
+                        .HasColumnType("int");
+
                     b.HasKey("GuestId");
+
+                    b.HasIndex("HotelID");
 
                     b.ToTable("Guests");
                 });
@@ -189,7 +245,7 @@ namespace Brainchild.HMS.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("BillingId")
+                    b.Property<int?>("BillingId")
                         .HasColumnType("int");
 
                     b.Property<float>("PaymentAdvance")
@@ -217,11 +273,16 @@ namespace Brainchild.HMS.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("HotelID")
+                        .HasColumnType("int");
+
                     b.Property<string>("PaymentTypeDescription")
                         .IsRequired()
                         .HasColumnType("varchar(1000)");
 
                     b.HasKey("PaymentTypeID");
+
+                    b.HasIndex("HotelID");
 
                     b.ToTable("PaymentTypes");
                 });
@@ -245,6 +306,8 @@ namespace Brainchild.HMS.Data.Migrations
 
                     b.HasKey("RoomId");
 
+                    b.HasIndex("RoomNo");
+
                     b.HasIndex("RoomTypeID");
 
                     b.ToTable("Rooms");
@@ -260,7 +323,7 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<int>("BookingId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoomId")
+                    b.Property<int?>("RoomId")
                         .HasColumnType("int");
 
                     b.HasKey("RoomBookingId");
@@ -279,6 +342,9 @@ namespace Brainchild.HMS.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("HotelID")
+                        .HasColumnType("int");
+
                     b.Property<float>("RoomRate")
                         .HasColumnType("real");
 
@@ -287,6 +353,8 @@ namespace Brainchild.HMS.Data.Migrations
                         .HasColumnType("varchar(1000)");
 
                     b.HasKey("RoomTypeId");
+
+                    b.HasIndex("HotelID");
 
                     b.ToTable("RoomTypes");
                 });
@@ -297,6 +365,9 @@ namespace Brainchild.HMS.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("HotelID")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -309,18 +380,26 @@ namespace Brainchild.HMS.Data.Migrations
 
                     b.HasKey("TaxId");
 
+                    b.HasIndex("HotelID");
+
                     b.ToTable("Taxes");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Billing", b =>
                 {
                     b.HasOne("Brainchild.HMS.Core.Models.Booking", "Booking")
-                        .WithMany("Billings")
+                        .WithMany("Bills")
                         .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Brainchild.HMS.Core.Models.Hotel", "Hotel")
+                        .WithMany("Billing")
+                        .HasForeignKey("HotelID");
+
                     b.Navigation("Booking");
+
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Booking", b =>
@@ -331,7 +410,13 @@ namespace Brainchild.HMS.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Brainchild.HMS.Core.Models.Hotel", "Hotel")
+                        .WithMany("Bookings")
+                        .HasForeignKey("HotelID");
+
                     b.Navigation("Guest");
+
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Charge", b =>
@@ -342,16 +427,53 @@ namespace Brainchild.HMS.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Brainchild.HMS.Core.Models.CurrencyCode", "CurrencyCode")
+                        .WithMany("Charges")
+                        .HasForeignKey("CurrencyCodeId");
+
                     b.Navigation("ChargeType");
+
+                    b.Navigation("CurrencyCode");
+                });
+
+            modelBuilder.Entity("Brainchild.HMS.Core.Models.ChargeType", b =>
+                {
+                    b.HasOne("Brainchild.HMS.Core.Models.Hotel", "Hotel")
+                        .WithMany("ChargeTypes")
+                        .HasForeignKey("HotelID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("Brainchild.HMS.Core.Models.CurrencyCode", b =>
+                {
+                    b.HasOne("Brainchild.HMS.Core.Models.Hotel", "Hotel")
+                        .WithMany("CurrencyCodes")
+                        .HasForeignKey("HotelID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("Brainchild.HMS.Core.Models.Guest", b =>
+                {
+                    b.HasOne("Brainchild.HMS.Core.Models.Hotel", "Hotel")
+                        .WithMany("Guests")
+                        .HasForeignKey("HotelID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Payment", b =>
                 {
                     b.HasOne("Brainchild.HMS.Core.Models.Billing", "Billing")
                         .WithMany("Payments")
-                        .HasForeignKey("BillingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BillingId");
 
                     b.HasOne("Brainchild.HMS.Core.Models.PaymentType", "PaymentType")
                         .WithMany()
@@ -362,6 +484,17 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Navigation("Billing");
 
                     b.Navigation("PaymentType");
+                });
+
+            modelBuilder.Entity("Brainchild.HMS.Core.Models.PaymentType", b =>
+                {
+                    b.HasOne("Brainchild.HMS.Core.Models.Hotel", "Hotel")
+                        .WithMany("PaymentTypes")
+                        .HasForeignKey("HotelID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Room", b =>
@@ -385,13 +518,33 @@ namespace Brainchild.HMS.Data.Migrations
 
                     b.HasOne("Brainchild.HMS.Core.Models.Room", "Room")
                         .WithMany("RoomBookings")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoomId");
 
                     b.Navigation("Booking");
 
                     b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("Brainchild.HMS.Core.Models.RoomType", b =>
+                {
+                    b.HasOne("Brainchild.HMS.Core.Models.Hotel", "Hotel")
+                        .WithMany("RoomTypes")
+                        .HasForeignKey("HotelID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("Brainchild.HMS.Core.Models.Tax", b =>
+                {
+                    b.HasOne("Brainchild.HMS.Core.Models.Hotel", "Hotel")
+                        .WithMany("Taxes")
+                        .HasForeignKey("HotelID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Billing", b =>
@@ -401,14 +554,38 @@ namespace Brainchild.HMS.Data.Migrations
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Booking", b =>
                 {
-                    b.Navigation("Billings");
+                    b.Navigation("Bills");
 
                     b.Navigation("RoomBookings");
+                });
+
+            modelBuilder.Entity("Brainchild.HMS.Core.Models.CurrencyCode", b =>
+                {
+                    b.Navigation("Charges");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Guest", b =>
                 {
                     b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("Brainchild.HMS.Core.Models.Hotel", b =>
+                {
+                    b.Navigation("Billing");
+
+                    b.Navigation("Bookings");
+
+                    b.Navigation("ChargeTypes");
+
+                    b.Navigation("CurrencyCodes");
+
+                    b.Navigation("Guests");
+
+                    b.Navigation("PaymentTypes");
+
+                    b.Navigation("RoomTypes");
+
+                    b.Navigation("Taxes");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Room", b =>

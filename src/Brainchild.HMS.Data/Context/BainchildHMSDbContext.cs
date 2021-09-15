@@ -8,17 +8,6 @@ namespace Brainchild.HMS.Data.Context
 {
     public class BrainchildHMSDbContext : DbContext
     {
-        // protected override void OnModelCreating(ModelBuilder modelBuilder)
-        // {
-        //     modelBuilder.Entity<Brainchild>()
-        //         .Property(b => b.CreatedAt)
-        //         .HasDefaultValueSql("getdate()");
-        //     base.OnModelCreating(modelBuilder);
-        // }
-        // public BrainchildHMSDbContext(DbContextOptions<BrainchildHMSDbContext> options) : base(options)
-        // {
-
-        // }
 
          public BrainchildHMSDbContext(DbContextOptions<BrainchildHMSDbContext> options)
         : base(options)

@@ -13,10 +13,13 @@ public class Charge
     public int ChargeTypeId { get; set; }
     public ChargeType ChargeType { get; set; }    
 
+    public int? CurrencyCodeId { get; set; }
+    public CurrencyCode CurrencyCode { get; set;}
+
     [Required]
     public float ChargeAmount { get; set; }   
 
-    public string  ChargeCurrency { get; set;}
+   
     
 }
 }

@@ -18,5 +18,7 @@ public class Tax
     
     public int Status { get; set; }
     
+    public int HotelID { get; set; }
+    public Hotel Hotel { get; set ;}
 }
 }
