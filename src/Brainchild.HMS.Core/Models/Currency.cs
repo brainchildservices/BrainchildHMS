@@ -9,7 +9,7 @@ namespace Brainchild.HMS.Core.Models
     public class Currency
     {
         [Key]
-        public int CurrencyCodeId { get; set; }
+        public int CurrencyId { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(1000)")]

@@ -21,6 +21,7 @@ public class Room
     [Column(TypeName = "int")]
     public RoomStatus RoomStatus { get; set; }
     
-    
+    [ForeignKey("HotelId")]   
+    public Hotel Hotel { get; set ;}
 }
 }

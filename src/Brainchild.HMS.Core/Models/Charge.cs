@@ -13,7 +13,7 @@ public class Charge
     [ForeignKey("ChargeTypeId")]   
     public ChargeType ChargeType { get; set; }    
 
-    [ForeignKey("CurrencyCodeId")]
+    [ForeignKey("CurrencyId")]
     public Currency Currency { get; set;}
 
     [Required]

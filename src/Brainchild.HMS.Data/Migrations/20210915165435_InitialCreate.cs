@@ -11,7 +11,7 @@ namespace Brainchild.HMS.Data.Migrations
                 name: "Currency",
                 columns: table => new
                 {
-                    CurrencyCodeId = table.Column<int>(type: "int", nullable: false)
+                    CurrencyId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CurrencyCountry = table.Column<string>(type: "varchar(1000)", nullable: false),
                     CurrencyCode = table.Column<string>(type: "varchar(1000)", nullable: false),
@@ -20,7 +20,7 @@ namespace Brainchild.HMS.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Currency", x => x.CurrencyCodeId);
+                    table.PrimaryKey("PK_Currency", x => x.CurrencyId);
                 });
 
             migrationBuilder.CreateTable(
@@ -203,7 +203,7 @@ namespace Brainchild.HMS.Data.Migrations
                     ChargeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ChargeTypeId = table.Column<int>(type: "int", nullable: true),
-                    CurrencyCodeId = table.Column<int>(type: "int", nullable: true),
+                    CurrencyId = table.Column<int>(type: "int", nullable: true),
                     ChargeAmount = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
@@ -216,10 +216,10 @@ namespace Brainchild.HMS.Data.Migrations
                         principalColumn: "ChargeTypeId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Charges_Currency_CurrencyCodeId",
-                        column: x => x.CurrencyCodeId,
+                        name: "FK_Charges_Currency_CurrencyId",
+                        column: x => x.CurrencyId,
                         principalTable: "Currency",
-                        principalColumn: "CurrencyCodeId",
+                        principalColumn: "CurrencyId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -231,11 +231,18 @@ namespace Brainchild.HMS.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoomTypeId = table.Column<int>(type: "int", nullable: true),
                     RoomNo = table.Column<string>(type: "varchar(50)", nullable: false),
-                    RoomStatus = table.Column<int>(type: "int", nullable: false)
+                    RoomStatus = table.Column<int>(type: "int", nullable: false),
+                    HotelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rooms", x => x.RoomId);
+                    table.ForeignKey(
+                        name: "FK_Rooms_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "HotelID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Rooms_RoomTypes_RoomTypeId",
                         column: x => x.RoomTypeId,
@@ -319,9 +326,9 @@ namespace Brainchild.HMS.Data.Migrations
                 column: "ChargeTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Charges_CurrencyCodeId",
+                name: "IX_Charges_CurrencyId",
                 table: "Charges",
-                column: "CurrencyCodeId");
+                column: "CurrencyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChargeTypes_HotelId",
@@ -352,6 +359,11 @@ namespace Brainchild.HMS.Data.Migrations
                 name: "IX_RoomBookings_RoomId",
                 table: "RoomBookings",
                 column: "RoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rooms_HotelId",
+                table: "Rooms",
+                column: "HotelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_RoomNo",
