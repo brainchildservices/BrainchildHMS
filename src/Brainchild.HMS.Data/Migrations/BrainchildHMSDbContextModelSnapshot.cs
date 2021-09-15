@@ -144,7 +144,7 @@ namespace Brainchild.HMS.Data.Migrations
 
                     b.Property<string>("CurrencyCountry")
                         .IsRequired()
-                        .HasColumnType("varchar(1000)");
+                        .HasColumnType("varchar(200)");
 
                     b.Property<int>("CurrencyNumber")
                         .HasColumnType("int");

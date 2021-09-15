@@ -12,7 +12,7 @@ namespace Brainchild.HMS.Core.Models
         public int CurrencyId { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(1000)")]
+        [Column(TypeName = "varchar(200)")]
         public string CurrencyCountry { get; set; }
 
         [Required]
