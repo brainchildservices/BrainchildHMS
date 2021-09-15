@@ -13,10 +13,10 @@ namespace Brainchild.HMS.Data.Migrations
                 {
                     CurrencyId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CurrencyCountry = table.Column<string>(type: "varchar(200)", nullable: false),
+                    CurrencyCountry = table.Column<string>(type: "varchar(50)", nullable: false),
                     CurrencyCode = table.Column<string>(type: "varchar(1000)", nullable: false),
                     CurrencyNumber = table.Column<int>(type: "int", nullable: false),
-                    CurrencySymbol = table.Column<string>(type: "varchar(1000)", nullable: true)
+                    CurrencySymbol = table.Column<string>(type: "varchar(100)", nullable: true)
                 },
                 constraints: table =>
                 {

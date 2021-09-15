@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Brainchild.HMS.Data.Migrations
 {
     [DbContext(typeof(BrainchildHMSDbContext))]
-    [Migration("20210915170428_InitialCreate")]
+    [Migration("20210915170944_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,13 +146,13 @@ namespace Brainchild.HMS.Data.Migrations
 
                     b.Property<string>("CurrencyCountry")
                         .IsRequired()
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("CurrencyNumber")
                         .HasColumnType("int");
 
                     b.Property<string>("CurrencySymbol")
-                        .HasColumnType("varchar(1000)");
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("CurrencyId");
 
