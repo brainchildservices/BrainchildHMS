@@ -11,12 +11,13 @@ using Microsoft.Extensions.Hosting;
 using Brainchild.HMS.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Brainchild.HMS.Data
 {
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
-            => services.AddDbContext<BrainchildHMSDbContext>();
+            => services.AddDbContext<BrainchildHMSDbContext>(options => options.UseSqlServer("Data Source=SNEHA"));
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

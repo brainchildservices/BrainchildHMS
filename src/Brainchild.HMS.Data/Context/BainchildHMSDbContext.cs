@@ -15,10 +15,15 @@ namespace Brainchild.HMS.Data.Context
         //         .HasDefaultValueSql("getdate()");
         //     base.OnModelCreating(modelBuilder);
         // }
-        public BrainchildHMSDbContext(DbContextOptions<BrainchildHMSDbContext> options) : base(options)
-        {
+        // public BrainchildHMSDbContext(DbContextOptions<BrainchildHMSDbContext> options) : base(options)
+        // {
 
-        }
+        // }
+
+         public BrainchildHMSDbContext(DbContextOptions<BrainchildHMSDbContext> options)
+        : base(options)
+    {
+    }
 
         public DbSet<Billing> Billings { get; set; } 
         public DbSet<Booking> Bookings { get; set; }
