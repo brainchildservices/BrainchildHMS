@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Brainchild.HMS.Core\Brainchild.HMS.Core.csproj" />
     <ProjectReference Include="..\Brainchild.HMS.Data\Brainchild.HMS.Data.csproj" />
+    <ProjectReference Include="..\HMS.API\HMS.API.csproj" />
 
     
   </ItemGroup>
