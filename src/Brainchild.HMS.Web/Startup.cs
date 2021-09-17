@@ -19,8 +19,10 @@ namespace Brainchild.HMS.Web
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCms();         
-                      
+            services
+                .AddOrchardCore()
+                .AddMvc()
+                ;
         }
         
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
