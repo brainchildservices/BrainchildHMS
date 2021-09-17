@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Brainchild.HMS.Core\Brainchild.HMS.Core.csproj" />
+
   </ItemGroup>
 
   <ItemGroup>
