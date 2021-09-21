@@ -26,6 +26,7 @@ namespace Brainchild.HMS.Data.Context
         public DbSet<RoomBooking> RoomBookings { get; set; }
         public DbSet<RoomType> RoomTypes { get; set; }
         public DbSet<Tax> Taxes { get; set; }
+        public DbSet<Currency> Currencies { get; set; }
 
     }   
     }
