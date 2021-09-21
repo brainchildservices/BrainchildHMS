@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HMS.API.Controllers
+namespace Brainchild.HMS.API.Controllers
 {
     public class HomeController : Controller
     {

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 
-namespace HMS.API
+namespace Brainchild.HMS.API
 {
     public class Startup : StartupBase
     {
@@ -17,7 +17,7 @@ namespace HMS.API
         {
             routes.MapAreaControllerRoute(
                 name: "Home",
-                areaName: "HMS.API",
+                areaName: "Brainchild.HMS.API",
                 pattern: "Home/Index",
                 defaults: new { controller = "Home", action = "Index" }
             );

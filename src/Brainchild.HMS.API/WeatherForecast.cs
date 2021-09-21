@@ -1,6 +1,6 @@
 using System;
 
-namespace HMS.API
+namespace Brainchild.HMS.API
 {
     public class WeatherForecast
     {
