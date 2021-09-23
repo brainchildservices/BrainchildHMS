@@ -14,52 +14,49 @@ namespace Brainchild.HMS.API.Controllers
     [Route("hms/api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class HotelsController : ControllerBase
+    public class RoomTypesController : ControllerBase
     {
         private readonly BrainchildHMSDbContext _context;
-        private readonly ILogger<HotelsController> _logger;
+        private readonly ILogger<RoomTypesController> _logger;
 
-        public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger)
+        public RoomTypesController(BrainchildHMSDbContext context,ILogger<RoomTypesController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        
-
-        // GET: api/Hotels
+        // GET: api/RoomTypes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Hotel>>> GetHotels()
+        public async Task<ActionResult<IEnumerable<RoomType>>> GetRoomTypes()
         {
-            _logger.LogInformation("Hello From HotelsController");
-            return await _context.Hotels.ToListAsync();
+            return await _context.RoomTypes.ToListAsync();
         }
 
-        // GET: api/Hotels/5
+        // GET: api/RoomTypes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Hotel>> GetHotel(int id)
+        public async Task<ActionResult<RoomType>> GetRoomType(int id)
         {
-            var hotel = await _context.Hotels.FindAsync(id);
+            var roomType = await _context.RoomTypes.FindAsync(id);
 
-            if (hotel == null)
+            if (roomType == null)
             {
                 return NotFound();
             }
 
-            return hotel;
+            return roomType;
         }
 
-        // PUT: api/Hotels/5
+        // PUT: api/RoomTypes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutHotel(int id, Hotel hotel)
+        public async Task<IActionResult> PutRoomType(int id, RoomType roomType)
         {
-            if (id != hotel.HotelID)
+            if (id != roomType.RoomTypeId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(hotel).State = EntityState.Modified;
+            _context.Entry(roomType).State = EntityState.Modified;
 
             try
             {
@@ -67,7 +64,7 @@ namespace Brainchild.HMS.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!HotelExists(id))
+                if (!RoomTypeExists(id))
                 {
                     return NotFound();
                 }
@@ -80,38 +77,36 @@ namespace Brainchild.HMS.API.Controllers
             return NoContent();
         }
 
-        // POST: api/Hotels
+        // POST: api/RoomTypes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        
         [HttpPost]
-      
-        public async Task<ActionResult<Hotel>> PostHotel(Hotel hotel)
+        public async Task<ActionResult<RoomType>> PostRoomType(RoomType roomType)
         {
-            _context.Hotels.Add(hotel);
+            _context.RoomTypes.Add(roomType);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetHotel", new { id = hotel.HotelID }, hotel);
+            return CreatedAtAction("GetRoomType", new { id = roomType.RoomTypeId }, roomType);
         }
 
-        // DELETE: api/Hotels/5
+        // DELETE: api/RoomTypes/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteHotel(int id)
+        public async Task<IActionResult> DeleteRoomType(int id)
         {
-            var hotel = await _context.Hotels.FindAsync(id);
-            if (hotel == null)
+            var roomType = await _context.RoomTypes.FindAsync(id);
+            if (roomType == null)
             {
                 return NotFound();
             }
 
-            _context.Hotels.Remove(hotel);
+            _context.RoomTypes.Remove(roomType);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool HotelExists(int id)
+        private bool RoomTypeExists(int id)
         {
-            return _context.Hotels.Any(e => e.HotelID == id);
+            return _context.RoomTypes.Any(e => e.RoomTypeId == id);
         }
     }
 }

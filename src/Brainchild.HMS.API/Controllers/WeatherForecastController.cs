@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Brainchild.HMS.API.Controllers
 {
     [ApiController]
-    [Route("api[controller]")]
+    [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
