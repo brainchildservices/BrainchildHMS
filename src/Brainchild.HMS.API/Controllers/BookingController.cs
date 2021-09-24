@@ -77,11 +77,23 @@ namespace Brainchild.HMS.API.Controllers
             return NoContent();
         }
 
+        [HttpGet("search/{guestphone}")]
+        public async Task<ActionResult<Guest>> GetGuest(string guestphone,Guest guest)
+        {
+            var IsGuest = _context.Guests.Where(g => g.GuestPhoneNo==guestphone);
+            if(IsGuest==null)
+            {
+                return NotFound();
+            }
+            return guest;
+        }
+
         // POST: api/Booking
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(Booking booking)
         {
+
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
