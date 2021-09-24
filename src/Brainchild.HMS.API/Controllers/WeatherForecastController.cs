@@ -26,6 +26,7 @@ namespace Brainchild.HMS.API.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+             _logger.LogInformation("Hello from WeatherForecastController");
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
@@ -34,6 +35,7 @@ namespace Brainchild.HMS.API.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
+           
         }
     }
 }

@@ -12,14 +12,16 @@ using OrchardCore.Logging;
 using Brainchild.HMS.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
-
+using Brainchild.HMS.Data;
 namespace Brainchild.HMS.Web
 {
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCms();         
+            services.AddOrchardCms();    
+            services.AddDbContext<BrainchildHMSDbContext>(options =>
+           options.UseSqlServer("Data Source=SNEHA;Initial Catalog=BrainChildHMS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));  
                       
         }
         
