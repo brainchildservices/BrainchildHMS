@@ -12,7 +12,7 @@ public class BookingDTO
     
     public int BookingId { get; set; }
    
-    public Guest Guest { get; set ;}
+    public GuestDTO Guest { get; set ;}
 
     public int NoOfAdults { get; set; }
 
@@ -26,7 +26,17 @@ public class BookingDTO
 
     public int[] RoomId { get; set;  }
 
-    
+    public Booking Build()
+    {
+        Booking booking =new Booking();
+        booking.NoOfAdults=this.NoOfAdults;
+        booking.NoOfAChildren=this.NoOfAChildren;
+        booking.CheckInDate=this.CheckInDate;
+        booking.CheckOutDate=this.CheckOutDate;
+        booking.Guest=this.Guest.Build();
+
+        return booking;
+    }
 
 }
 }

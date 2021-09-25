@@ -24,11 +24,11 @@ public class GuestDTO
     public Guest Build()
     {
         Guest guest=new Guest();
-        guest.GuestName=this.Guest.GuestName;
-        guest.GuestAddress=this.Guest.GuestAddress;
-        guest.GuestEmail=this.Guest.GuestEmail;
-        guest.GuestPhoneNo=this.Guest.GuestPhoneNo;
-        guest.GuestCountry=this.Guest.GuestCountry;
+        guest.GuestName=this.GuestName;
+        guest.GuestAddress=this.GuestAddress;
+        guest.GuestEmail=this.GuestEmail;
+        guest.GuestPhoneNo=this.GuestPhoneNo;
+        guest.GuestCountry=this.GuestCountry;
 
         return guest;
     }

@@ -9,6 +9,7 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using Brainchild.HMS.API.DTOs;
 namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -77,28 +78,19 @@ namespace Brainchild.HMS.API.Controllers
             return NoContent();
         }
 
-        [HttpGet("search/{guestphone}")]
-        public async Task<ActionResult<Guest>> GetGuest(string guestphone,Guest guest)
-        {
-            var IsGuest = _context.Guests.Where(g => g.GuestPhoneNo==guestphone);
-            if(IsGuest==null)
-            {
-                return NotFound();
-            }
-            return guest;
-        }
-
+       
         // POST: api/Booking
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {            
-            var guest=_context.Guests.Single(g=>g.GuestPhoneNo=booking.Guest.GuestPhoneNo); 
-            if(guest!=null)
+            var guest=_context.Guests.Single(g=>g.GuestPhoneNo==booking.Guest.GuestPhoneNo); 
+            if(guest==null)
             {
-                
+               var guestId= _context.Guests.Add(booking.Guest.Build());
+               guest= _context.Guests.Single(g=>g.GuestId.Equals(guestId));
             }
-            _context.Bookings.Add(booking);
+            _context.Bookings.Add(booking.Build());
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
