@@ -91,9 +91,13 @@ namespace Brainchild.HMS.API.Controllers
         // POST: api/Booking
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Booking>> PostBooking(Booking booking)
-        {
-
+        public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
+        {            
+            var guest=_context.Guests.Single(g=>g.GuestPhoneNo=booking.Guest.GuestPhoneNo); 
+            if(guest!=null)
+            {
+                
+            }
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
