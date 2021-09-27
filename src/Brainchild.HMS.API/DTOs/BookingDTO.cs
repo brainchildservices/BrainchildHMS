@@ -26,17 +26,18 @@ public class BookingDTO
 
     public int[] RoomId { get; set;  }
 
-    public Booking Build()
+    public Booking Build(Guest gust)
     {
-        Booking booking =new Booking();
-        booking.NoOfAdults=this.NoOfAdults;
-        booking.NoOfAChildren=this.NoOfAChildren;
-        booking.CheckInDate=this.CheckInDate;
-        booking.CheckOutDate=this.CheckOutDate;
-        booking.Guest=this.Guest.Build();
+            Booking booking = new Booking();
+            booking.NoOfAdults = this.NoOfAdults;
+            booking.NoOfAChildren = this.NoOfAChildren;
+            booking.CheckInDate = this.CheckInDate;
+            booking.CheckOutDate = this.CheckOutDate;
+            booking.Guest = this.Guest.Build(gust);
+            return booking;
 
-        return booking;
-    }
+
+        }
 
 }
 }

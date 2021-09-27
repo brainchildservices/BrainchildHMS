@@ -84,13 +84,13 @@ namespace Brainchild.HMS.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {            
-            var guest=_context.Guests.Single(g=>g.GuestPhoneNo==booking.Guest.GuestPhoneNo); 
+            var guest=_context.Guests.FirstOrDefault(g =>g.GuestPhoneNo==booking.Guest.GuestPhoneNo); 
             if(guest==null)
             {
                var guestId= _context.Guests.Add(booking.Guest.Build());
-               guest= _context.Guests.Single(g=>g.GuestId.Equals(guestId));
+               guest= _context.Guests.FirstOrDefault(g=>g.GuestId.Equals(guestId));
             }
-            _context.Bookings.Add(booking.Build());
+            _context.Bookings.Add(booking.Build(guest));
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
