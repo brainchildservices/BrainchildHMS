@@ -20,7 +20,7 @@ namespace Brainchild.HMS.API.Controllers
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<BookingController> _logger;
 
-        public BookingController(BrainchildHMSDbContext context,ILogger<BookingController> logger)
+        public BookingController(BrainchildHMSDbContext context, ILogger<BookingController> logger)
         {
             _context = context;
             _logger = logger;
@@ -78,20 +78,24 @@ namespace Brainchild.HMS.API.Controllers
             return NoContent();
         }
 
-       
+
         // POST: api/Booking
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
-        {            
-            var guest=_context.Guests.FirstOrDefault(g =>g.GuestPhoneNo==booking.Guest.GuestPhoneNo); 
-            if(guest==null)
-            {
-               var guestId= _context.Guests.Add(booking.Guest.Build());
-               guest= _context.Guests.FirstOrDefault(g=>g.GuestId.Equals(guestId));
+        {
+            var guest = _context.Guests.FirstOrDefault(g => g.GuestPhoneNo == booking.Guest.GuestPhoneNo);
+            if (guest != null)
+            { 
+                //var guestId = _context.Guests.Add(booking.Guest.Build());
+                ////await _context.SaveChangesAsync();
+                //int gst = guestId.Entity.GuestId;
+                //guest = _context.Guests.FirstOrDefault(g => g.GuestId == gst);
             }
             _context.Bookings.Add(booking.Build(guest));
             await _context.SaveChangesAsync();
+
+
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }

@@ -32,17 +32,6 @@ public class GuestDTO
 
         return guest;
     }
-        public Guest Build(Guest guests)
-        {
-            Guest guest = new Guest();
-            guest.GuestName = guests.GuestName;
-            guest.GuestAddress = guests.GuestAddress;
-            guest.GuestEmail = guests.GuestEmail;
-            guest.GuestPhoneNo = guests.GuestPhoneNo;
-            guest.GuestCountry = guests.GuestCountry;
-
-            return guest;
-        }
 
     }
 }
