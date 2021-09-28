@@ -127,8 +127,47 @@ namespace Brainchild.HMS.API.Controllers
             cmd.Parameters.AddWithValue("@GuestCountry", guest.GuestCountry);
             cmd.ExecuteNonQuery();
         }
-        // POST: api/Booking
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        public int checkRoom(BookingDTO booking)
+        {
+            SqlConnection con = new SqlConnection(cs);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select * from (select RoomId, RoomNo from Rooms where HotelId='"+booking.HotelId+"') as T1 except select Rooms.RoomId, Rooms.RoomNo from Bookings  inner join RoomBookings on RoomBookings.bookingid = Bookings.BookingId  inner join Rooms on Rooms.RoomId = RoomBookings.RoomId where CheckInDate = '" + booking.CheckInDate.ToString("dd/MMMM/yyyy")+"' and CheckOutDate = '"+booking.CheckOutDate.ToString("dd/MMMM/yyyy")+"'and Bookings.HotelId = '"+booking.HotelId+"'", con);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    int id = Convert.ToInt32(dr["RoomId"]);
+                    return id;
+                }
+            }
+
+            return 0;
+        }
+        public int get_bookingId()
+        {
+            SqlConnection con = new SqlConnection(cs);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select max(BookingId) from Bookings", con);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    int id = Convert.ToInt32(dr[0]);
+                    return id;
+                }
+            }
+
+            return 0;
+        }
+        public void insert_RoomBooking(int bookingid,int roomid)
+        {
+            SqlConnection con = new SqlConnection(cs);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("insert into RoomBookings values('"+bookingid+"','"+roomid+"')", con);            
+            cmd.ExecuteNonQuery();
+        }
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {
@@ -138,11 +177,32 @@ namespace Brainchild.HMS.API.Controllers
             {
                 insert_guest(booking.Guest);
                 guestid = chechGuest(booking.Guest.GuestPhoneNo);
-                newbooking(guestid, booking);
+                int roomid = checkRoom(booking);
+                if (roomid == 0)
+                {
+                    //message there is no room available
+                }
+                else
+                {
+                    newbooking(guestid, booking);
+                    int bid = get_bookingId();
+                    insert_RoomBooking(bid, roomid);
+                }
+               
             }
             else
             {
-                newbooking(guestid, booking);
+                int roomid = checkRoom(booking);
+                if (roomid == 0)
+                {
+                    //message there is no room available
+                }
+                else
+                {
+                    newbooking(guestid, booking);
+                    int bid = get_bookingId();
+                    insert_RoomBooking(bid, roomid);
+                }
             }
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
