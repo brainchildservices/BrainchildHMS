@@ -28,27 +28,19 @@ namespace Brainchild.HMS.API.DTOs
 
         public int[] RoomId { get; set; }
 
-        public Booking Build(Guest gust)
+          
+      
+        public Booking Build(Guest guest, Guest gst)
         {
-            Booking booking = new Booking();
-            booking.NoOfAdults = this.NoOfAdults;
-            booking.NoOfAChildren = this.NoOfAChildren;
-            booking.CheckInDate = this.CheckInDate;
-            booking.CheckOutDate = this.CheckOutDate;
-            booking.Guest = this.Guest.Build();
-            return booking;
-
-        }
-        public Booking Build(int id)
-        {
-            Booking booking = new Booking();
-            booking.NoOfAdults = this.NoOfAdults;
-            booking.NoOfAChildren = this.NoOfAChildren;
-            booking.CheckInDate = this.CheckInDate;
-            booking.CheckOutDate = this.CheckOutDate;
-            booking.Guest = this.Guest.Build(id);
-            return booking;
-
+            Booking book = new Booking
+            {
+                Guest = guest == null ? gst : guest,
+                NoOfAChildren = this.NoOfAChildren,
+                NoOfAdults = this.NoOfAdults,
+                CheckInDate = this.CheckInDate,
+                CheckOutDate = this.CheckOutDate,
+            };
+            return book;
         }
 
     }
