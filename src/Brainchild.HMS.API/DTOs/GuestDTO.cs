@@ -32,6 +32,17 @@ public class GuestDTO
 
         return guest;
     }
+        public Guest Build(int id)
+        {
+            Guest guest = new Guest();
+            //guest.GuestName = this.GuestName;
+            //guest.GuestAddress = this.GuestAddress;
+            //guest.GuestEmail = this.GuestEmail;
+            //guest.GuestPhoneNo = this.GuestPhoneNo;
+            //guest.GuestCountry = this.GuestCountry;
+            guest.GuestId = id;
 
+            return guest;
+        }
     }
 }

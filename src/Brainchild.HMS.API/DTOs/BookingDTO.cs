@@ -39,6 +39,17 @@ namespace Brainchild.HMS.API.DTOs
             return booking;
 
         }
+        public Booking Build(int id)
+        {
+            Booking booking = new Booking();
+            booking.NoOfAdults = this.NoOfAdults;
+            booking.NoOfAChildren = this.NoOfAChildren;
+            booking.CheckInDate = this.CheckInDate;
+            booking.CheckOutDate = this.CheckOutDate;
+            booking.Guest = this.Guest.Build(id);
+            return booking;
+
+        }
 
     }
 }

@@ -86,14 +86,23 @@ namespace Brainchild.HMS.API.Controllers
         {
             var guest = _context.Guests.FirstOrDefault(g => g.GuestPhoneNo == booking.Guest.GuestPhoneNo);
             if (guest != null)
-            { 
+            {
+
+                int id = guest.GuestId;
+                _context.Bookings.Add(booking.Build(id));
+                await _context.SaveChangesAsync();
+
                 //var guestId = _context.Guests.Add(booking.Guest.Build());
                 ////await _context.SaveChangesAsync();
                 //int gst = guestId.Entity.GuestId;
                 //guest = _context.Guests.FirstOrDefault(g => g.GuestId == gst);
             }
-            _context.Bookings.Add(booking.Build(guest));
-            await _context.SaveChangesAsync();
+            else
+            {
+                _context.Bookings.Add(booking.Build(guest));
+                await _context.SaveChangesAsync();
+            }
+           
 
 
 
