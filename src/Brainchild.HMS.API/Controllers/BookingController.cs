@@ -10,6 +10,9 @@ using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Brainchild.HMS.API.DTOs;
+using System.Data;
+using System.Data.SqlClient;
+
 namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -78,38 +81,69 @@ namespace Brainchild.HMS.API.Controllers
             return NoContent();
         }
 
+        string cs = "Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;";
 
+        public void newbooking(int guestid, BookingDTO booking)
+        {
+            SqlConnection con = new SqlConnection(cs);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("insert into Bookings(GuestId,BookingDate,NoOfAdults,NoOfAChildren,CheckInDate,CheckOutDate,Status,HotelId) values(@gustid,@bookingDate,@NoOdAdult,@NoOfChildren,@checkin,@checkout,1,@hotelid)", con);
+            cmd.Parameters.AddWithValue("@gustid", guestid);
+            cmd.Parameters.AddWithValue("@bookingDate", DateTime.Now.ToString("dd/MMMM/yyyy"));
+            cmd.Parameters.AddWithValue("@NoOdAdult", booking.NoOfAdults);
+            cmd.Parameters.AddWithValue("@NoOfChildren", booking.NoOfAChildren);
+            cmd.Parameters.AddWithValue("@checkin", booking.CheckInDate.ToString("dd/MMMM/yyyy"));
+            cmd.Parameters.AddWithValue("@checkout", booking.CheckOutDate.ToString("dd/MMMM/yyyy"));
+            cmd.Parameters.AddWithValue("@hotelid", booking.HotelId);
+            cmd.ExecuteNonQuery();
+
+        }
+        public int chechGuest(string phone)
+        {
+            SqlConnection con = new SqlConnection(cs);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select * from Guests where GuestPhoneNo='" + phone + "'", con);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    int id = Convert.ToInt32(dr["GuestId"]);
+                    return id;
+                }
+            }
+
+            return 0;
+        }
+        public void insert_guest(GuestDTO guest)
+        {
+            SqlConnection con = new SqlConnection(cs);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("insert into Guests values(@GuestName,@GuestAddress,@GuestEmail,@GuestPhoneNo,@GuestCountry)", con);
+            cmd.Parameters.AddWithValue("@GuestName", guest.GuestName);
+            cmd.Parameters.AddWithValue("@GuestAddress", guest.GuestAddress);
+            cmd.Parameters.AddWithValue("@GuestEmail", guest.GuestEmail);
+            cmd.Parameters.AddWithValue("@GuestPhoneNo", guest.GuestPhoneNo);
+            cmd.Parameters.AddWithValue("@GuestCountry", guest.GuestCountry);
+            cmd.ExecuteNonQuery();
+        }
         // POST: api/Booking
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {
-            var guest = _context.Guests.FirstOrDefault(g => g.GuestPhoneNo == booking.Guest.GuestPhoneNo);
-            var gst = booking.Guest.Build();
-            _context.Bookings.Add(booking.Build(guest,gst));
-            await _context.SaveChangesAsync();
 
-
-            //if (guest != null)
-            //{
-
-            //    int id = guest.GuestId;
-            //    _context.Bookings.Add(booking.Build(id));
-            //    await _context.SaveChangesAsync();
-
-            //    //var guestId = _context.Guests.Add(booking.Guest.Build());
-            //    ////await _context.SaveChangesAsync();
-            //    //int gst = guestId.Entity.GuestId;
-            //    //guest = _context.Guests.FirstOrDefault(g => g.GuestId == gst);
-            //}
-            //else
-            //{
-            //    _context.Bookings.Add(booking.Build(guest));
-            //    await _context.SaveChangesAsync();
-            //}
-
-
-
+            int guestid = chechGuest(booking.Guest.GuestPhoneNo.ToString());
+            if (guestid == 0)
+            {
+                insert_guest(booking.Guest);
+                guestid = chechGuest(booking.Guest.GuestPhoneNo);
+                newbooking(guestid, booking);
+            }
+            else
+            {
+                newbooking(guestid, booking);
+            }
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }
