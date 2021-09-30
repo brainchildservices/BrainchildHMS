@@ -23,7 +23,7 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<BookingController> _logger;
-        BookingService bs = new BookingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
+        BookingService _bookingService = new BookingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
       
         
         public BookingController(BrainchildHMSDbContext context, ILogger<BookingController> logger)
@@ -89,36 +89,36 @@ namespace Brainchild.HMS.API.Controllers
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {
             
-            int guestid = bs.chechGuest(booking.Guest.GuestPhoneNo.ToString());
-            if (guestid == 0)
+            int guestId = _bookingService.CheckGuestPhoneNo(booking.Guest.GuestPhoneNo.ToString());
+            if (guestId == 0)
             {
-                bs.insert_guest(booking.Guest);
-                guestid = bs.chechGuest(booking.Guest.GuestPhoneNo);
-                int roomid = bs.checkRoom(booking);
-                if (roomid == 0)
+                _bookingService.PostGuestDetails(booking.Guest);
+                guestId = _bookingService.CheckGuestPhoneNo(booking.Guest.GuestPhoneNo);
+                int roomId = _bookingService.CheckRoomAvailability(booking);
+                if (roomId == 0)
                 {
                     //message there is no room available
                 }
                 else
                 {
-                    bs.newbooking(guestid, booking);
-                    int bid = bs.get_bookingId();
-                    bs.insert_RoomBooking(bid, roomid);
+                    _bookingService.NewBooking(guestId, booking);
+                    int bookingId = _bookingService.GetBookingId();
+                    _bookingService.PostRoomBooking(bookingId, roomId);
                 }
                
             }
             else
             {
-                int roomid = bs.checkRoom(booking);
-                if (roomid == 0)
+                int roomId = _bookingService.CheckRoomAvailability(booking);
+                if (roomId == 0)
                 {
                     //message there is no room available
                 }
                 else
                 {
-                    bs.newbooking(guestid, booking);
-                    int bid = bs.get_bookingId();
-                    bs.insert_RoomBooking(bid, roomid);
+                    _bookingService.NewBooking(guestId, booking);
+                    int bookingId = _bookingService.GetBookingId();
+                    _bookingService.PostRoomBooking(bookingId, roomId);
                 }
             }
 
