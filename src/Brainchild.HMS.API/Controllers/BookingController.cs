@@ -23,7 +23,7 @@ namespace Brainchild.HMS.API.Controllers
     public class BookingController : ControllerBase
     {
         private readonly BrainchildHMSDbContext _context;
-        private readonly ILogger<BookingController> _logger;       
+        private readonly ILogger<BookingController> _logger;
         public IBookingService _bookingService = new BookingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
 
         public BookingController(BrainchildHMSDbContext context, ILogger<BookingController> logger)
@@ -88,39 +88,20 @@ namespace Brainchild.HMS.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {
-            int guestId = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString());
             List<Room> availableRooms = new List<Room>();
-            if (guestId == 0)
+            availableRooms = _bookingService.CheckRoomAvailability(booking); //Checking for the availability of room            
+            if (availableRooms.Count >= 0) //there is no room 
             {
-                _bookingService.CreateGuest(booking.Guest);
-                guestId = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo);               
-                availableRooms= _bookingService.CheckRoomAvailability(booking);                 
-                if (availableRooms == null)
-                {
-                    //message there is no room available
-                }
-                else
-                {
-                    _bookingService.CreateBooking(guestId, booking);
-                    int bookingId = _bookingService.GetBookingId();
-                    booking.Rooms = availableRooms;
-                    _bookingService.AddRoomBooking(bookingId,booking.Rooms[0].RoomId);
-                }
+                return NotFound("No rooms are available on "+booking.CheckInDate.ToString("dd/MM/yyyy"));
             }
             else
             {
-                availableRooms = _bookingService.CheckRoomAvailability(booking);
-                if (availableRooms == null)
-                {
-                    //message there is no room available
-                }
-                else
-                {
-                    _bookingService.CreateBooking(guestId, booking);
-                    int bookingId = _bookingService.GetBookingId();
-                    booking.Rooms = availableRooms;
-                    _bookingService.AddRoomBooking(bookingId, booking.Rooms[0].RoomId);
-                }
+                int guestId = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString()); //Checking with the phone number,if the guest is already there fetching the details
+                if (guestId == 0)
+                    guestId = _bookingService.CreateGuest(booking.Guest); //if there is no existing data, Creating new Guest.
+                int bookingId = _bookingService.CreateBooking(guestId, booking); //Creating the booking.
+                booking.Rooms = availableRooms;
+                _bookingService.AddRoomBooking(bookingId, booking.Rooms[0].RoomId); //Creating RoomBooking for the Guest.
             }
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
