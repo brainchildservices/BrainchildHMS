@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 using Brainchild.HMS.API.DTOs;
+using Brainchild.HMS.Core.Models;
 
 namespace Brainchild.HMS.Data
 {
     public class BookingService
     {
-        
         private readonly string connectionString;
         public BookingService(string connection)
         {
             connectionString = connection;
         }
-        public void PostGuestDetails(GuestDTO guest)
+        public void CreateGuest(GuestDTO guest)
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
@@ -30,7 +30,7 @@ namespace Brainchild.HMS.Data
             cmd.ExecuteNonQuery();
             con.Close();
         }
-         public void NewBooking(int guestId, BookingDTO booking)
+        public void CreateBooking(int guestId, BookingDTO booking)
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
@@ -45,7 +45,7 @@ namespace Brainchild.HMS.Data
             cmd.ExecuteNonQuery();
             con.Close();
         }
-        public int CheckGuestPhoneNo(string phoneNo)
+        public int FindGuestByPhoneNumber(string phoneNo)
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
@@ -59,26 +59,26 @@ namespace Brainchild.HMS.Data
                     return id;
                 }
             }
-            
+
             return 0;
         }
-       
-        public int CheckRoomAvailability(BookingDTO booking)
+        List<Room> availableRooms = new List<Room>();
+        public List<Room> CheckRoomAvailability(BookingDTO booking)
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
-            SqlCommand cmd = new SqlCommand("select * from (select RoomId, RoomNo from Rooms where HotelId='"+booking.HotelId+"') as T1 except select Rooms.RoomId, Rooms.RoomNo from Bookings  inner join RoomBookings on RoomBookings.bookingid = Bookings.BookingId  inner join Rooms on Rooms.RoomId = RoomBookings.RoomId where CheckInDate = '" + booking.CheckInDate.ToString("dd/MMMM/yyyy")+"' and CheckOutDate = '"+booking.CheckOutDate.ToString("dd/MMMM/yyyy")+"'and Bookings.HotelId = '"+booking.HotelId+"'", con);
+            SqlCommand cmd = new SqlCommand("select * from (select RoomId, RoomNo from Rooms where HotelId='" + booking.HotelId + "') as T1 except select Rooms.RoomId, Rooms.RoomNo from Bookings  inner join RoomBookings on RoomBookings.bookingid = Bookings.BookingId  inner join Rooms on Rooms.RoomId = RoomBookings.RoomId where CheckInDate = '" + booking.CheckInDate.ToString("dd/MMMM/yyyy") + "' and CheckOutDate = '" + booking.CheckOutDate.ToString("dd/MMMM/yyyy") + "'and Bookings.HotelId = '" + booking.HotelId + "'", con);
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
             {
                 while (dr.Read())
-                {
-                    int id = Convert.ToInt32(dr["RoomId"]);
-                    return id;
+                {                   
+                    Room room = new Room();                    
+                    availableRooms.Add(room);                    
                 }
             }
 
-            return 0;
+            return availableRooms.ToList();
         }
         public int GetBookingId()
         {
@@ -97,11 +97,11 @@ namespace Brainchild.HMS.Data
 
             return 0;
         }
-        public void PostRoomBooking(int bookingId,int roomId)
+        public void AddRoomBooking(int bookingId, int roomId)
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
-            SqlCommand cmd = new SqlCommand("insert into RoomBookings values('"+ bookingId + "','"+ roomId + "')", con);            
+            SqlCommand cmd = new SqlCommand("insert into RoomBookings values('" + bookingId + "','" + roomId + "')", con);
             cmd.ExecuteNonQuery();
             con.Close();
         }

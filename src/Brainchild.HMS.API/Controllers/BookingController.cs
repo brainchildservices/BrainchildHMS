@@ -24,8 +24,8 @@ namespace Brainchild.HMS.API.Controllers
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<BookingController> _logger;
         BookingService _bookingService = new BookingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
-      
-        
+
+
         public BookingController(BrainchildHMSDbContext context, ILogger<BookingController> logger)
         {
             _context = context;
@@ -84,41 +84,42 @@ namespace Brainchild.HMS.API.Controllers
             return NoContent();
         }
 
-             
+
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {
-            
-            int guestId = _bookingService.CheckGuestPhoneNo(booking.Guest.GuestPhoneNo.ToString());
+            int guestId = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString());
+            List<Room> availableRooms = new List<Room>();
             if (guestId == 0)
             {
-                _bookingService.PostGuestDetails(booking.Guest);
-                guestId = _bookingService.CheckGuestPhoneNo(booking.Guest.GuestPhoneNo);
-                int roomId = _bookingService.CheckRoomAvailability(booking);
-                if (roomId == 0)
+                _bookingService.CreateGuest(booking.Guest);
+                guestId = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo);               
+                availableRooms= _bookingService.CheckRoomAvailability(booking);                 
+                if (availableRooms == null)
                 {
                     //message there is no room available
                 }
                 else
                 {
-                    _bookingService.NewBooking(guestId, booking);
+                    _bookingService.CreateBooking(guestId, booking);
                     int bookingId = _bookingService.GetBookingId();
-                    _bookingService.PostRoomBooking(bookingId, roomId);
+                    booking.RoomId = availableRooms;
+                    //_bookingService.AddRoomBooking(bookingId);
                 }
-               
             }
             else
             {
-                int roomId = _bookingService.CheckRoomAvailability(booking);
-                if (roomId == 0)
+                availableRooms = _bookingService.CheckRoomAvailability(booking);
+                if (availableRooms == null)
                 {
                     //message there is no room available
                 }
                 else
                 {
-                    _bookingService.NewBooking(guestId, booking);
+                    _bookingService.CreateBooking(guestId, booking);
                     int bookingId = _bookingService.GetBookingId();
-                    _bookingService.PostRoomBooking(bookingId, roomId);
+                    booking.RoomId = availableRooms;
+                    //_bookingService.AddRoomBooking(bookingId, roomId);
                 }
             }
 
