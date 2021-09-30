@@ -10,8 +10,18 @@ using Brainchild.HMS.Core.Models;
 
 namespace Brainchild.HMS.Data
 {
-    public class BookingService
+    public interface IBookingService
     {
+        void CreateGuest(GuestDTO guest);
+        void CreateBooking(int guestId, BookingDTO booking);
+        int FindGuestByPhoneNumber(string phoneNo);
+        List<Room> CheckRoomAvailability(BookingDTO booking);
+        int GetBookingId();
+        void AddRoomBooking(int bookingId, int roomId);
+
+    }
+    public class BookingService:IBookingService
+    {       
         private readonly string connectionString;
         public BookingService(string connection)
         {
@@ -71,14 +81,16 @@ namespace Brainchild.HMS.Data
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
             {
+                Room room = new Room();               
                 while (dr.Read())
-                {                   
-                    Room room = new Room();                    
-                    availableRooms.Add(room);                    
+                {  
+                    room.RoomId =Convert.ToInt32(dr["RoomId"]);
+                    room.RoomNo = dr["RoomNo"].ToString();
+                    availableRooms.Add(room);
                 }
             }
 
-            return availableRooms.ToList();
+            return availableRooms;
         }
         public int GetBookingId()
         {

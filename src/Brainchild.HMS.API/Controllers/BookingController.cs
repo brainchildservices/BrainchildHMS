@@ -13,6 +13,7 @@ using Brainchild.HMS.API.DTOs;
 using System.Data;
 using System.Data.SqlClient;
 using Brainchild.HMS.Data;
+using static Brainchild.HMS.Data.BookingService;
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -22,9 +23,8 @@ namespace Brainchild.HMS.API.Controllers
     public class BookingController : ControllerBase
     {
         private readonly BrainchildHMSDbContext _context;
-        private readonly ILogger<BookingController> _logger;
-        BookingService _bookingService = new BookingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
-
+        private readonly ILogger<BookingController> _logger;       
+        public IBookingService _bookingService = new BookingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
 
         public BookingController(BrainchildHMSDbContext context, ILogger<BookingController> logger)
         {
@@ -103,8 +103,8 @@ namespace Brainchild.HMS.API.Controllers
                 {
                     _bookingService.CreateBooking(guestId, booking);
                     int bookingId = _bookingService.GetBookingId();
-                    booking.RoomId = availableRooms;
-                    //_bookingService.AddRoomBooking(bookingId);
+                    booking.Rooms = availableRooms;
+                    _bookingService.AddRoomBooking(bookingId,booking.Rooms[0].RoomId);
                 }
             }
             else
@@ -118,8 +118,8 @@ namespace Brainchild.HMS.API.Controllers
                 {
                     _bookingService.CreateBooking(guestId, booking);
                     int bookingId = _bookingService.GetBookingId();
-                    booking.RoomId = availableRooms;
-                    //_bookingService.AddRoomBooking(bookingId, roomId);
+                    booking.Rooms = availableRooms;
+                    _bookingService.AddRoomBooking(bookingId, booking.Rooms[0].RoomId);
                 }
             }
 

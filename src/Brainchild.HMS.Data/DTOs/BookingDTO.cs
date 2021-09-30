@@ -28,7 +28,7 @@ namespace Brainchild.HMS.API.DTOs
 
         //public int[] RoomId { get; set; }
 
-        public List<Room> RoomId { get; set; }
+        public List<Room> Rooms { get; set; }
 
         public Booking Build(Guest guest, Guest gst)
         {
