@@ -30,15 +30,12 @@ namespace Brainchild.HMS.Data
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
-            SqlCommand cmd = new SqlCommand("insert into Guests values(@GuestName,@GuestAddress,@GuestEmail,@GuestPhoneNo,@GuestCountry)", con);
+            SqlCommand cmd = new SqlCommand("insert into Guests values(@GuestName,@GuestAddress,@GuestEmail,@GuestPhoneNo,@GuestCountry); SELECT SCOPE_IDENTITY()", con);
             cmd.Parameters.AddWithValue("@GuestName", guest.GuestName);
             cmd.Parameters.AddWithValue("@GuestAddress", guest.GuestAddress);
             cmd.Parameters.AddWithValue("@GuestEmail", guest.GuestEmail);
             cmd.Parameters.AddWithValue("@GuestPhoneNo", guest.GuestPhoneNo);
-            cmd.Parameters.AddWithValue("@GuestCountry", guest.GuestCountry);
-            cmd.ExecuteNonQuery();
-            cmd.Parameters.Clear();
-            cmd.CommandText = "SELECT @@IDENTITY";
+            cmd.Parameters.AddWithValue("@GuestCountry", guest.GuestCountry);            
             int guestId = Convert.ToInt32(cmd.ExecuteScalar());
             return guestId;
 
@@ -47,17 +44,14 @@ namespace Brainchild.HMS.Data
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
-            SqlCommand cmd = new SqlCommand("insert into Bookings(GuestId,BookingDate,NoOfAdults,NoOfAChildren,CheckInDate,CheckOutDate,Status,HotelId) values(@gustid,@bookingDate,@NoOdAdult,@NoOfChildren,@checkin,@checkout,1,@hotelid)", con);
+            SqlCommand cmd = new SqlCommand("insert into Bookings(GuestId,BookingDate,NoOfAdults,NoOfAChildren,CheckInDate,CheckOutDate,Status,HotelId) values(@gustid,@bookingDate,@NoOdAdult,@NoOfChildren,@checkin,@checkout,1,@hotelid);  SELECT SCOPE_IDENTITY()", con);
             cmd.Parameters.AddWithValue("@gustid", guestId);
             cmd.Parameters.AddWithValue("@bookingDate", DateTime.Now.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@NoOdAdult", booking.NoOfAdults);
             cmd.Parameters.AddWithValue("@NoOfChildren", booking.NoOfAChildren);
             cmd.Parameters.AddWithValue("@checkin", booking.CheckInDate.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@checkout", booking.CheckOutDate.ToString("dd/MMMM/yyyy"));
-            cmd.Parameters.AddWithValue("@hotelid", booking.HotelId);
-            cmd.ExecuteNonQuery();
-            cmd.Parameters.Clear();
-            cmd.CommandText = "SELECT @@IDENTITY";
+            cmd.Parameters.AddWithValue("@hotelid", booking.HotelId);            
             int bookingId = Convert.ToInt32(cmd.ExecuteScalar());
             return bookingId;
         }
@@ -92,10 +86,10 @@ namespace Brainchild.HMS.Data
             SqlCommand cmd = new SqlCommand("select * from (select RoomId, RoomNo from Rooms where HotelId='" + booking.HotelId + "') as T1 except select Rooms.RoomId, Rooms.RoomNo from Bookings  inner join RoomBookings on RoomBookings.bookingid = Bookings.BookingId  inner join Rooms on Rooms.RoomId = RoomBookings.RoomId where CheckInDate = '" + booking.CheckInDate.ToString("dd/MMMM/yyyy") + "' and CheckOutDate = '" + booking.CheckOutDate.ToString("dd/MMMM/yyyy") + "'and Bookings.HotelId = '" + booking.HotelId + "'", con);
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
-            {
-                Room room = new Room();
+            {                
                 while (dr.Read())
                 {
+                    Room room = new Room();
                     room.RoomId = Convert.ToInt32(dr["RoomId"]);
                     room.RoomNo = dr["RoomNo"].ToString();
                     availableRooms.Add(room);
@@ -111,7 +105,8 @@ namespace Brainchild.HMS.Data
             con.Open();
             SqlCommand cmd = new SqlCommand("insert into RoomBookings values('" + bookingId + "','" + roomId + "')", con);
             cmd.ExecuteNonQuery();
-            con.Close();
+            con.Close();            
         }
+
     }
 }

@@ -14,6 +14,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Brainchild.HMS.Data;
 using static Brainchild.HMS.Data.BookingService;
+using System.Collections;
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -89,21 +90,52 @@ namespace Brainchild.HMS.API.Controllers
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {
             List<Room> availableRooms = new List<Room>();
-            availableRooms = _bookingService.GetAvailableRooms(booking); //Checking for the availability of room            
-            if (availableRooms.Count <= 0) //there is no room 
+
+            //selecting the available rooms 
+            availableRooms = _bookingService.GetAvailableRooms(booking);
+
+            Hashtable availableRoomList = new Hashtable();
+
+            //Converting availableRooms to Hashtable.
+            foreach (var item in availableRooms)
             {
-                return NotFound("No rooms are available on " + booking.CheckInDate.ToString("dd/MM/yyyy"));
+                availableRoomList.Add(item.RoomId,item.RoomNo);
+            }
+
+            //Checking the selected rooms are available.
+            int count = 0;
+            foreach (var item in availableRooms)
+            {
+                if (availableRoomList.ContainsValue(item.RoomNo))
+                    count++;
+            }                     
+
+            if (booking.Rooms.Count != count)
+            {                
+                return BadRequest("The Selected rooms are NOT available on " + booking.CheckInDate.ToString("dd/MM/yyyy"));
             }
             else
             {
                 GuestDTO guest = new GuestDTO();
-                guest = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString()); //Checking with the phone number,if the guest is already there fetching the details
-                if (guest == null)
-                    guest.GuestId = _bookingService.CreateGuest(booking.Guest); //if there is no existing data, Creating new Guest.
-                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking); //Creating the booking.
-                booking.Rooms = availableRooms;
-                _bookingService.AddRoomBooking(bookingId, booking.Rooms[0].RoomId); //Creating RoomBooking for the Guest.(selecting the RoomId at the 0th position of the array)
+
+                //Checking with the phone number,if the guest is already there fetching the details
+                guest = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString());
+
+                //if there is no existing data, Creating new Guest.
+                if (guest.GuestId == 0)
+                    guest.GuestId = _bookingService.CreateGuest(booking.Guest);
+
+                //Creating the booking.
+                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);            
+
+                //Creating RoomBooking for the Guest.
+                for(int i = 0; i < booking.Rooms.Count; i++)
+                {
+                    _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId);
+                }
+               
             }
+
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }
@@ -112,6 +144,7 @@ namespace Brainchild.HMS.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
+
             var booking = await _context.Bookings.FindAsync(id);
             if (booking == null)
             {
