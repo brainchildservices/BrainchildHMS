@@ -89,19 +89,20 @@ namespace Brainchild.HMS.API.Controllers
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {
             List<Room> availableRooms = new List<Room>();
-            availableRooms = _bookingService.CheckRoomAvailability(booking); //Checking for the availability of room            
-            if (availableRooms.Count >= 0) //there is no room 
+            availableRooms = _bookingService.GetAvailableRooms(booking); //Checking for the availability of room            
+            if (availableRooms.Count <= 0) //there is no room 
             {
-                return NotFound("No rooms are available on "+booking.CheckInDate.ToString("dd/MM/yyyy"));
+                return NotFound("No rooms are available on " + booking.CheckInDate.ToString("dd/MM/yyyy"));
             }
             else
             {
-                int guestId = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString()); //Checking with the phone number,if the guest is already there fetching the details
-                if (guestId == 0)
-                    guestId = _bookingService.CreateGuest(booking.Guest); //if there is no existing data, Creating new Guest.
-                int bookingId = _bookingService.CreateBooking(guestId, booking); //Creating the booking.
+                GuestDTO guest = new GuestDTO();
+                guest = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString()); //Checking with the phone number,if the guest is already there fetching the details
+                if (guest == null)
+                    guest.GuestId = _bookingService.CreateGuest(booking.Guest); //if there is no existing data, Creating new Guest.
+                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking); //Creating the booking.
                 booking.Rooms = availableRooms;
-                _bookingService.AddRoomBooking(bookingId, booking.Rooms[0].RoomId); //Creating RoomBooking for the Guest.
+                _bookingService.AddRoomBooking(bookingId, booking.Rooms[0].RoomId); //Creating RoomBooking for the Guest.(selecting the RoomId at the 0th position of the array)
             }
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);

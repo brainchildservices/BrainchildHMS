@@ -14,14 +14,13 @@ namespace Brainchild.HMS.Data
     {
         int CreateGuest(GuestDTO guest);
         int CreateBooking(int guestId, BookingDTO booking);
-        int FindGuestByPhoneNumber(string phoneNo);
-        List<Room> CheckRoomAvailability(BookingDTO booking);
-        int GetId(string id,string tableName);
+        GuestDTO FindGuestByPhoneNumber(string phoneNo);
+        List<Room> GetAvailableRooms(BookingDTO booking);
         void AddRoomBooking(int bookingId, int roomId);
 
     }
-    public class BookingService:IBookingService
-    {       
+    public class BookingService : IBookingService
+    {
         private readonly string connectionString;
         public BookingService(string connection)
         {
@@ -37,13 +36,12 @@ namespace Brainchild.HMS.Data
             cmd.Parameters.AddWithValue("@GuestEmail", guest.GuestEmail);
             cmd.Parameters.AddWithValue("@GuestPhoneNo", guest.GuestPhoneNo);
             cmd.Parameters.AddWithValue("@GuestCountry", guest.GuestCountry);
-            int inserted=cmd.ExecuteNonQuery();
-            if (inserted > 0)
-            {
-                return GetId("GuestId", "Guests");
-            }
-            return 0;
-            
+            cmd.ExecuteNonQuery();
+            cmd.Parameters.Clear();
+            cmd.CommandText = "SELECT @@IDENTITY";
+            int guestId = Convert.ToInt32(cmd.ExecuteScalar());
+            return guestId;
+
         }
         public int CreateBooking(int guestId, BookingDTO booking)
         {
@@ -57,32 +55,37 @@ namespace Brainchild.HMS.Data
             cmd.Parameters.AddWithValue("@checkin", booking.CheckInDate.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@checkout", booking.CheckOutDate.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@hotelid", booking.HotelId);
-            int inserted = cmd.ExecuteNonQuery();
-            if (inserted > 0)
-            {
-                return GetId("BookingId", "Bookings");
-            }
-            return 0;
+            cmd.ExecuteNonQuery();
+            cmd.Parameters.Clear();
+            cmd.CommandText = "SELECT @@IDENTITY";
+            int bookingId = Convert.ToInt32(cmd.ExecuteScalar());
+            return bookingId;
         }
-        public int FindGuestByPhoneNumber(string phoneNo)
+        public GuestDTO FindGuestByPhoneNumber(string phoneNo)
         {
+            GuestDTO gust = new GuestDTO();
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
             SqlCommand cmd = new SqlCommand("select * from Guests where GuestPhoneNo='" + phoneNo + "'", con);
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
             {
+
                 while (dr.Read())
                 {
-                    int id = Convert.ToInt32(dr["GuestId"]);
-                    return id;
+                    gust.GuestId = Convert.ToInt32(dr["GuestId"]);
+                    gust.GuestName = dr["GuestName"].ToString();
+                    gust.GuestPhoneNo = dr["GuestPhoneNo"].ToString();
+                    gust.GuestAddress = dr["GuestAddress"].ToString();
+                    gust.GuestEmail = dr["GuestEmail"].ToString();
+                    gust.GuestCountry = dr["GuestCountry"].ToString();
                 }
             }
 
-            return 0;
+            return gust;
         }
         List<Room> availableRooms = new List<Room>();
-        public List<Room> CheckRoomAvailability(BookingDTO booking)
+        public List<Room> GetAvailableRooms(BookingDTO booking)
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
@@ -90,10 +93,10 @@ namespace Brainchild.HMS.Data
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
             {
-                Room room = new Room();               
+                Room room = new Room();
                 while (dr.Read())
-                {  
-                    room.RoomId =Convert.ToInt32(dr["RoomId"]);
+                {
+                    room.RoomId = Convert.ToInt32(dr["RoomId"]);
                     room.RoomNo = dr["RoomNo"].ToString();
                     availableRooms.Add(room);
                 }
@@ -101,23 +104,7 @@ namespace Brainchild.HMS.Data
 
             return availableRooms;
         }
-        public int GetId(string id,string tableName)
-        {
-            string query="select max("+id+") from "+tableName+"";
-            SqlConnection con = new SqlConnection(connectionString);
-            con.Open();
-            SqlCommand cmd = new SqlCommand(query, con);
-            SqlDataReader dr = cmd.ExecuteReader();
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {                     
-                    return Convert.ToInt32(dr[0]);
-                }
-            }
 
-            return 0;
-        }
         public void AddRoomBooking(int bookingId, int roomId)
         {
             SqlConnection con = new SqlConnection(connectionString);
