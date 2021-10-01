@@ -104,7 +104,7 @@ namespace Brainchild.HMS.API.Controllers
 
             //Checking the selected rooms are available.
             int count = 0;
-            foreach (var item in availableRooms)
+            foreach (var item in booking.Rooms)
             {
                 if (availableRoomList.ContainsValue(item.RoomNo))
                     count++;
