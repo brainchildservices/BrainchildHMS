@@ -5,11 +5,13 @@ clone the project using
 
 `git clone https://github.com/brainchildservices/BrainchildHMS.git`
 
+Goto the Brainchild.HMS.Web Project and run the command **dotnet restore**
+
 to build, simply run **dotnet build**
 
 Before run the project, delete the AppData folder inside Brainchild.Core.Web project
 
-to run the project, you have to run **dotnet run**
+to run the project, you have to run **dotnet run** (always run the **Brainchild.HMS.Web** Project)
 
 Then in the Setup page 
 * select *Software as a Service* Recipe  
@@ -36,6 +38,10 @@ dotnet tool install --global dotnet-ef
 ```
 dotnet tool update --global dotnet-ef
 ```
+
+If you don't have Visual studio or Microsoft SQL Management Studio in your local machine, please install it.
+*for SQL Management studio https://www.microsoft.com/en-in/sql-server/sql-server-downloads*
+*for Visual Studio https://visualstudio.microsoft.com/downloads/*
 
 change the connection string according to your machine configuration DefaultConnection in appsettings.json inside Brainchild.Core.Data project, appsettings.json and Startup.cs inside the Brainchild.Core.Web project
 
