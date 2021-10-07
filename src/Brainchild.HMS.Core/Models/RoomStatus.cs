@@ -7,9 +7,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Brainchild.HMS.Core.Models
 {
     public enum RoomStatus
-{
-    Occupied, 
-    Vacant, 
-    OutOfOrder     
-}
+    {
+        Vacant,
+        Occupied,        
+        OutOfOrder
+    }
 }
