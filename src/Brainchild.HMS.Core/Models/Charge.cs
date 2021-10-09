@@ -5,22 +5,21 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace Brainchild.HMS.Core.Models
 {
-    public class Charge
-    {
-        [Key]
-        public int ChargeId { get; set; }
+public class Charge
+{
+    [Key]
+    public int ChargeId { get; set; }
 
-        [ForeignKey("ChargeTypeId")]
-        public ChargeType ChargeType { get; set; }
+    [ForeignKey("ChargeTypeId")]   
+    public ChargeType ChargeType { get; set; }    
 
-        [ForeignKey("CurrencyId")]
-        public Currency Currency { get; set; }
+    [ForeignKey("CurrencyId")]
+    public Currency Currency { get; set;}
 
-        [Required]
-        public float ChargeAmount { get; set; }
+    [Required]
+    public float ChargeAmount { get; set; }   
 
-        [ForeignKey("BookingId")]
-        public Booking Booking { get; set; }
-
-    }
+   
+    
+}
 }

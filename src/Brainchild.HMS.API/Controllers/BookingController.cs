@@ -9,7 +9,7 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using Brainchild.HMS.Data.DTOs;
+using Brainchild.HMS.API.DTOs;
 using System.Data;
 using System.Data.SqlClient;
 using Brainchild.HMS.Data;
@@ -99,7 +99,7 @@ namespace Brainchild.HMS.API.Controllers
             //Converting availableRooms to Hashtable.
             foreach (var item in availableRooms)
             {
-                availableRoomList.Add(item.RoomId, item.RoomNo);
+                availableRoomList.Add(item.RoomId,item.RoomNo);
             }
 
             //Checking the selected rooms are available.
@@ -108,10 +108,10 @@ namespace Brainchild.HMS.API.Controllers
             {
                 if (availableRoomList.ContainsValue(item.RoomNo))
                     count++;
-            }
+            }                     
 
             if (booking.Rooms.Count != count)
-            {
+            {                
                 return BadRequest("The Selected rooms are NOT available on " + booking.CheckInDate.ToString("dd/MM/yyyy"));
             }
             else
@@ -126,42 +126,19 @@ namespace Brainchild.HMS.API.Controllers
                     guest.GuestId = _bookingService.CreateGuest(booking.Guest);
 
                 //Creating the booking.
-                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);
+                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);            
 
                 //Creating RoomBooking for the Guest.
-                for (int i = 0; i < booking.Rooms.Count; i++)
+                for(int i = 0; i < booking.Rooms.Count; i++)
                 {
                     _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId);
                 }
-
+               
             }
 
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }
-
-        //Check-in
-        [HttpPost("{id}/checkin")]
-        public async Task<IActionResult> CheckIn(int id, CheckInDTO checkIn)
-        {
-            //fetching the bookingid from db
-            int bookingId = _bookingService.GetBookingDetails(checkIn.RoomNo, checkIn.HotelId, id);
-
-            //validating the booking id from the URL and from the db
-            if (bookingId == id)
-            {
-                //Doing the checkIn by changing the status of Bookings from Booked to StayOver and Rooms from vacant to occupied.
-                _bookingService.DoCheckIn(bookingId, checkIn.RoomNo);
-            }
-            else
-            {
-                return BadRequest("No bookings available for the RoomNo: "+ checkIn.RoomNo);
-            }
-
-            return NoContent();
-        }
-
-
 
         // DELETE: api/Booking/5
         [HttpDelete("{id}")]
