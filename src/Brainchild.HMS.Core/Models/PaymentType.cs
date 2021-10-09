@@ -9,9 +9,7 @@ namespace Brainchild.HMS.Core.Models
     {
         [Key]
         public int PaymentTypeID { get; set; }
-
-        [Required]
-        public DateTime PaymentDate { get; set; }
+        
 
         [Required]
         [Column(TypeName = "varchar(1000)")]

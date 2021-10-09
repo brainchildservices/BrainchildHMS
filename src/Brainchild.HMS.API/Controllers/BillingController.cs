@@ -9,6 +9,9 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using System.Collections;
+using Brainchild.HMS.Data.DTOs;
+using Brainchild.HMS.Data;
 namespace Brainchild.HMS.Web.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -18,8 +21,9 @@ namespace Brainchild.HMS.Web.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<BillingController> _logger;
+        public IBillingService _billingService = new BillingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
 
-        public BillingController(BrainchildHMSDbContext context,ILogger<BillingController> logger)
+        public BillingController(BrainchildHMSDbContext context, ILogger<BillingController> logger)
         {
             _context = context;
             _logger = logger;
@@ -80,12 +84,32 @@ namespace Brainchild.HMS.Web.Controllers
         // POST: api/Billing
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Billing>> PostBilling(Billing billing)
+        public async Task<ActionResult<Billing>> PostBilling(BillingDTO billing)
         {
-            _context.Billings.Add(billing);
-            await _context.SaveChangesAsync();
+            BookingDTO booking = new BookingDTO();
 
-            return CreatedAtAction("GetBilling", new { id = billing.BillingId }, billing);
+            //fetching the booking details by using the bookingId.
+            booking = _billingService.GetBookingDetails(billing.BookingId);
+
+            //calculating the days spend in the hotel by using the check-in and checkout dates.
+            double noOfDaysSpend = (booking.CheckOutDate - booking.CheckInDate).TotalDays;
+
+            List<RoomDTO> roomDetails = new List<RoomDTO>();
+
+            //fetching the roomdetails including the room rate by using the bookinId.
+            roomDetails = _billingService.GetRoomDetails(billing.BookingId, billing.HotelId);
+
+            //calculate the Room rent
+            double roomRent = 0;
+            for (int i = 0; i < roomDetails.Count; i++)
+            {
+                roomRent += (roomDetails[i].RoomRate * noOfDaysSpend);
+            }
+
+
+
+
+            return CreatedAtAction("GetBilling", new { id = billing.BookingId }, billing);
         }
 
         // DELETE: api/Billing/5

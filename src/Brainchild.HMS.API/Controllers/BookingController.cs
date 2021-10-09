@@ -13,7 +13,6 @@ using Brainchild.HMS.Data.DTOs;
 using System.Data;
 using System.Data.SqlClient;
 using Brainchild.HMS.Data;
-using static Brainchild.HMS.Data.BookingService;
 using System.Collections;
 
 namespace Brainchild.HMS.API.Controllers
