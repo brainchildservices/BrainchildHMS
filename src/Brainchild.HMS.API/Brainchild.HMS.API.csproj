@@ -21,6 +21,7 @@
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.0.0" />
     <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.0.0" />
     <PackageReference Include="OrchardCore.DisplayManagement" Version="1.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
   </ItemGroup>
 
 <ItemGroup>

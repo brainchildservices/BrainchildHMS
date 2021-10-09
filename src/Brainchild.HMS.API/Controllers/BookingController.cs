@@ -9,6 +9,13 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using Brainchild.HMS.API.DTOs;
+using System.Data;
+using System.Data.SqlClient;
+using Brainchild.HMS.Data;
+using static Brainchild.HMS.Data.BookingService;
+using System.Collections;
+
 namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -18,8 +25,9 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<BookingController> _logger;
+        public IBookingService _bookingService = new BookingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
 
-        public BookingController(BrainchildHMSDbContext context,ILogger<BookingController> logger)
+        public BookingController(BrainchildHMSDbContext context, ILogger<BookingController> logger)
         {
             _context = context;
             _logger = logger;
@@ -77,13 +85,57 @@ namespace Brainchild.HMS.API.Controllers
             return NoContent();
         }
 
-        // POST: api/Booking
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPost]
-        public async Task<ActionResult<Booking>> PostBooking(Booking booking)
+        public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {
-            _context.Bookings.Add(booking);
-            await _context.SaveChangesAsync();
+            List<Room> availableRooms = new List<Room>();
+
+            //selecting the available rooms 
+            availableRooms = _bookingService.GetAvailableRooms(booking);
+
+            Hashtable availableRoomList = new Hashtable();
+
+            //Converting availableRooms to Hashtable.
+            foreach (var item in availableRooms)
+            {
+                availableRoomList.Add(item.RoomId,item.RoomNo);
+            }
+
+            //Checking the selected rooms are available.
+            int count = 0;
+            foreach (var item in booking.Rooms)
+            {
+                if (availableRoomList.ContainsValue(item.RoomNo))
+                    count++;
+            }                     
+
+            if (booking.Rooms.Count != count)
+            {                
+                return BadRequest("The Selected rooms are NOT available on " + booking.CheckInDate.ToString("dd/MM/yyyy"));
+            }
+            else
+            {
+                GuestDTO guest = new GuestDTO();
+
+                //Checking with the phone number,if the guest is already there fetching the details
+                guest = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString());
+
+                //if there is no existing data, Creating new Guest.
+                if (guest.GuestId == 0)
+                    guest.GuestId = _bookingService.CreateGuest(booking.Guest);
+
+                //Creating the booking.
+                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);            
+
+                //Creating RoomBooking for the Guest.
+                for(int i = 0; i < booking.Rooms.Count; i++)
+                {
+                    _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId);
+                }
+               
+            }
+
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }
@@ -92,6 +144,7 @@ namespace Brainchild.HMS.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
+
             var booking = await _context.Bookings.FindAsync(id);
             if (booking == null)
             {
