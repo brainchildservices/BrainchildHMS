@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Brainchild.HMS.Core.Models;
-namespace Brainchild.HMS.API.DTOs
+namespace Brainchild.HMS.Data.DTOs
 {
 public class GuestDTO
 {
