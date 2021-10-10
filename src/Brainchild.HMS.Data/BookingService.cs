@@ -17,6 +17,8 @@ namespace Brainchild.HMS.Data
         GuestDTO FindGuestByPhoneNumber(string phoneNo);
         List<Room> GetAvailableRooms(BookingDTO booking);
         void AddRoomBooking(int bookingId, int roomId);
+        int GetBookingId(string roomNo, int hotelId, int bookingId);
+        void DoCheckIn(int bookingId, string roomNo);
 
     }
     public class BookingService : IBookingService
@@ -35,7 +37,7 @@ namespace Brainchild.HMS.Data
             cmd.Parameters.AddWithValue("@GuestAddress", guest.GuestAddress);
             cmd.Parameters.AddWithValue("@GuestEmail", guest.GuestEmail);
             cmd.Parameters.AddWithValue("@GuestPhoneNo", guest.GuestPhoneNo);
-            cmd.Parameters.AddWithValue("@GuestCountry", guest.GuestCountry);            
+            cmd.Parameters.AddWithValue("@GuestCountry", guest.GuestCountry);
             int guestId = Convert.ToInt32(cmd.ExecuteScalar());
             return guestId;
 
@@ -51,7 +53,7 @@ namespace Brainchild.HMS.Data
             cmd.Parameters.AddWithValue("@NoOfChildren", booking.NoOfAChildren);
             cmd.Parameters.AddWithValue("@checkin", booking.CheckInDate.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@checkout", booking.CheckOutDate.ToString("dd/MMMM/yyyy"));
-            cmd.Parameters.AddWithValue("@hotelid", booking.HotelId);            
+            cmd.Parameters.AddWithValue("@hotelid", booking.HotelId);
             int bookingId = Convert.ToInt32(cmd.ExecuteScalar());
             return bookingId;
         }
@@ -86,7 +88,7 @@ namespace Brainchild.HMS.Data
             SqlCommand cmd = new SqlCommand("select * from (select RoomId, RoomNo from Rooms where HotelId='" + booking.HotelId + "') as T1 except select Rooms.RoomId, Rooms.RoomNo from Bookings  inner join RoomBookings on RoomBookings.bookingid = Bookings.BookingId  inner join Rooms on Rooms.RoomId = RoomBookings.RoomId where CheckInDate = '" + booking.CheckInDate.ToString("dd/MMMM/yyyy") + "' and CheckOutDate = '" + booking.CheckOutDate.ToString("dd/MMMM/yyyy") + "'and Bookings.HotelId = '" + booking.HotelId + "'", con);
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
-            {                
+            {
                 while (dr.Read())
                 {
                     Room room = new Room();
@@ -105,8 +107,37 @@ namespace Brainchild.HMS.Data
             con.Open();
             SqlCommand cmd = new SqlCommand("insert into RoomBookings values('" + bookingId + "','" + roomId + "')", con);
             cmd.ExecuteNonQuery();
-            con.Close();            
+            con.Close();
         }
+        public int GetBookingId(string roomNo, int hotelId, int bookingId)
+        {
 
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select * from Bookings inner join RoomBookings on RoomBookings.BookingId = Bookings.BookingId inner join Rooms on Rooms.RoomId = RoomBookings.RoomId inner join Guests on Guests.GuestId = Bookings.GuestId where Rooms.RoomNo = @roomNo and Bookings.HotelId = @hotelId and Bookings.BookingId = @bookingId and Bookings.Status=0", con);
+            cmd.Parameters.AddWithValue("@roomNo", roomNo);
+            cmd.Parameters.AddWithValue("@hotelId", hotelId);
+            cmd.Parameters.AddWithValue("@bookingId", bookingId);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+
+                while (dr.Read())
+                {
+                    return Convert.ToInt32(dr["BookingId"]);
+                }
+            }
+            return 0;
+        }
+        public void DoCheckIn(int bookingId, string roomNo)
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("update Bookings set Status=1 where BookingId='" + bookingId + "'", con);
+            SqlCommand cmd1 = new SqlCommand("update Rooms set RoomStatus=1 where RoomNo='" + roomNo + "'", con);
+            cmd.ExecuteNonQuery();
+            cmd1.ExecuteNonQuery();
+        }
     }
 }
+

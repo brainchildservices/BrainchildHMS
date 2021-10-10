@@ -140,6 +140,27 @@ namespace Brainchild.HMS.API.Controllers
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }
 
+        //Check-in
+        [HttpPost("{id}/checkin")]
+        public async Task<IActionResult> CheckIn(int id, CheckInDTO checkIn)
+        {
+            //fetching the bookingid from db
+            int bookingId = _bookingService.GetBookingId(checkIn.RoomNo, checkIn.HotelId, id);
+
+            //validating the booking id from the URL and from the db
+            if (bookingId == id)
+            {
+                //Doing the checkIn by changing the status of Bookings from Booked to StayOver and Rooms from vacant to occupied.
+                _bookingService.DoCheckIn(bookingId, checkIn.RoomNo);
+            }
+            else
+            {
+                return BadRequest("No bookings available for the RoomNo: " + checkIn.RoomNo);
+            }
+
+            return NoContent();
+        }
+
         // DELETE: api/Booking/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
