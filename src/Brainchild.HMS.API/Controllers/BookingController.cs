@@ -9,7 +9,7 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using Brainchild.HMS.API.DTOs;
+using Brainchild.HMS.Data.DTOs;
 using System.Data;
 using System.Data.SqlClient;
 using Brainchild.HMS.Data;

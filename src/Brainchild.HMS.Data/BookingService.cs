@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
-using Brainchild.HMS.API.DTOs;
+using Brainchild.HMS.Data.DTOs;
 using Brainchild.HMS.Core.Models;
 
 namespace Brainchild.HMS.Data
