@@ -251,13 +251,10 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<int?>("BillingId")
                         .HasColumnType("int");
 
-                    b.Property<float>("PaymentAmount")
+                    b.Property<float>("PaymentAdvance")
                         .HasColumnType("real");
 
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<float>("PaymentDescription")
+                    b.Property<float>("PaymentAmount")
                         .HasColumnType("real");
 
                     b.Property<int?>("PaymentTypeId")
