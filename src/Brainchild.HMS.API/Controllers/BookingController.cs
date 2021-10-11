@@ -161,6 +161,10 @@ namespace Brainchild.HMS.API.Controllers
 
                 //Doing the checkIn by changing the status of Rooms from vacant to occupied.
                 _bookingService.DoCheckIn(checkIn.RoomNo);
+
+                //Generate bill for the booking by room number
+                _bookingService.GenerateBill(checkIn.RoomNo, bookingId);
+               
             }
             else
             {

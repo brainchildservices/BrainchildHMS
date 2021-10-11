@@ -21,6 +21,7 @@ namespace Brainchild.HMS.Data
         void DoCheckIn(string roomNo);
         int GetRoomBookingCountByBookingId(int bookingId);
         void ChangeBookingStatus(int bookingId);
+        void GenerateBill(string roomNo, int bookingId);
 
     }
     public class BookingService : IBookingService
@@ -134,9 +135,9 @@ namespace Brainchild.HMS.Data
         public void DoCheckIn(string roomNo)
         {
             SqlConnection con = new SqlConnection(connectionString);
-            con.Open();           
+            con.Open();
             SqlCommand cmd = new SqlCommand("update Rooms set RoomStatus=1 where RoomNo='" + roomNo + "'", con);
-            cmd.ExecuteNonQuery();          
+            cmd.ExecuteNonQuery();
         }
 
         public int GetRoomBookingCountByBookingId(int bookingId)
@@ -144,11 +145,11 @@ namespace Brainchild.HMS.Data
             int count = 0;
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
-            SqlCommand cmd = new SqlCommand("select * from Bookings inner join RoomBookings on Bookings.BookingId = RoomBookings.BookingId inner join Rooms on RoomBookings.RoomId = Rooms.RoomId where Rooms.RoomStatus = 0 and Bookings.BookingId ='"+bookingId+"'", con);
+            SqlCommand cmd = new SqlCommand("select * from Bookings inner join RoomBookings on Bookings.BookingId = RoomBookings.BookingId inner join Rooms on RoomBookings.RoomId = Rooms.RoomId where Rooms.RoomStatus = 0 and Bookings.BookingId ='" + bookingId + "'", con);
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
             {
-                
+
                 while (dr.Read())
                 {
                     count++;
@@ -162,6 +163,32 @@ namespace Brainchild.HMS.Data
             con.Open();
             SqlCommand cmd = new SqlCommand("update Bookings set Status=1 where BookingId='" + bookingId + "'", con);
             cmd.ExecuteNonQuery();
+        }
+        public void GenerateBill(string roomNo, int bookingId)
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select * from Rooms where RoomNo='" + roomNo + "'", con);
+            SqlDataReader dr = cmd.ExecuteReader();
+            int roomId=0;
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    roomId = Convert.ToInt32(dr["RoomId"]);
+                }
+            }
+            con.Close();
+            con.Open();
+            if (roomId != 0)
+            {
+                SqlCommand cmd1 = new SqlCommand("insert into Billings(BillingDate,BookingId,RoomId) values(@billDate,@bookingId,@roomId)", con);
+                cmd1.Parameters.AddWithValue("@billDate", DateTime.Now.ToString());
+                cmd1.Parameters.AddWithValue("@bookingId", bookingId);                
+                cmd1.Parameters.AddWithValue("@roomId", roomId);
+                cmd1.ExecuteNonQuery();
+                con.Close();
+            }
         }
     }
 }
