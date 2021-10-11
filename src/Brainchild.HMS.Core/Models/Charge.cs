@@ -22,5 +22,8 @@ namespace Brainchild.HMS.Core.Models
         [ForeignKey("BookingId")]
         public Booking Booking { get; set; }
 
+        [ForeignKey("RoomId")]
+        public Room Room { get; set; }
+
     }
 }
