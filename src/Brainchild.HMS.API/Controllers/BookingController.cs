@@ -150,8 +150,17 @@ namespace Brainchild.HMS.API.Controllers
             //validating the booking id from the URL and from the db
             if (bookingId == id)
             {
-                //Doing the checkIn by changing the status of Bookings from Booked to StayOver and Rooms from vacant to occupied.
-                _bookingService.DoCheckIn(bookingId, checkIn.RoomNo);
+                //check the room count on a booking 
+                int noOfRooms = _bookingService.GetRoomBookingCountByBookingId(bookingId);
+                //if the room count on a booking is less than or equal to 1, then change the booking status.
+                if (noOfRooms <= 1)
+                {
+                    //Change the Booking Status to stayover
+                    _bookingService.ChangeBookingStatus(bookingId);
+                }
+
+                //Doing the checkIn by changing the status of Rooms from vacant to occupied.
+                _bookingService.DoCheckIn(checkIn.RoomNo);
             }
             else
             {

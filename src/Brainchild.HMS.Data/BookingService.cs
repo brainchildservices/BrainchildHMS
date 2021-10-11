@@ -18,7 +18,9 @@ namespace Brainchild.HMS.Data
         List<Room> GetAvailableRooms(BookingDTO booking);
         void AddRoomBooking(int bookingId, int roomId);
         int GetBookingId(string roomNo, int hotelId, int bookingId);
-        void DoCheckIn(int bookingId, string roomNo);
+        void DoCheckIn(string roomNo);
+        int GetRoomBookingCountByBookingId(int bookingId);
+        void ChangeBookingStatus(int bookingId);
 
     }
     public class BookingService : IBookingService
@@ -129,14 +131,37 @@ namespace Brainchild.HMS.Data
             }
             return 0;
         }
-        public void DoCheckIn(int bookingId, string roomNo)
+        public void DoCheckIn(string roomNo)
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();           
+            SqlCommand cmd = new SqlCommand("update Rooms set RoomStatus=1 where RoomNo='" + roomNo + "'", con);
+            cmd.ExecuteNonQuery();          
+        }
+
+        public int GetRoomBookingCountByBookingId(int bookingId)
+        {
+            int count = 0;
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select * from Bookings inner join RoomBookings on Bookings.BookingId = RoomBookings.BookingId inner join Rooms on RoomBookings.RoomId = Rooms.RoomId where Rooms.RoomStatus = 0 and Bookings.BookingId ='"+bookingId+"'", con);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                
+                while (dr.Read())
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+        public void ChangeBookingStatus(int bookingId)
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
             SqlCommand cmd = new SqlCommand("update Bookings set Status=1 where BookingId='" + bookingId + "'", con);
-            SqlCommand cmd1 = new SqlCommand("update Rooms set RoomStatus=1 where RoomNo='" + roomNo + "'", con);
             cmd.ExecuteNonQuery();
-            cmd1.ExecuteNonQuery();
         }
     }
 }
