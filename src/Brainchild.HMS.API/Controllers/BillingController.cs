@@ -9,6 +9,10 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using System.Collections;
+using Brainchild.HMS.Data;
+using Brainchild.HMS.Data.DTOs;
+
 namespace Brainchild.HMS.Web.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -18,7 +22,7 @@ namespace Brainchild.HMS.Web.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<BillingController> _logger;
-
+        public IBillingService _billingService = new BillingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
         public BillingController(BrainchildHMSDbContext context,ILogger<BillingController> logger)
         {
             _context = context;
@@ -80,12 +84,25 @@ namespace Brainchild.HMS.Web.Controllers
         // POST: api/Billing
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Billing>> PostBilling(Billing billing)
+        public async Task<ActionResult<Billing>> CheckOut(CheckOutDTO checkout)
         {
-            _context.Billings.Add(billing);
-            await _context.SaveChangesAsync();
+            BookingDTO booking = new BookingDTO();
 
-            return CreatedAtAction("GetBilling", new { id = billing.BillingId }, billing);
+            //fetching the booking details by using the bookingId.
+            booking = _billingService.GetBookingDetails(checkout.BookingId);
+
+            //calculating the days spend in the hotel by using the check-in and checkout dates.
+            double noOfDaysSpend = (booking.CheckOutDate - booking.CheckInDate).TotalDays;
+
+            //fetching the RoomRate by roomId
+            double roomRate = _billingService.GetRoomRateByRoomId(checkout.RoomId, checkout.HotelId);
+
+            //calculating the total room rate 
+            double totalRoomRate = roomRate * noOfDaysSpend;
+
+
+
+            return CreatedAtAction("GetBilling", new { id = checkout.BookingId }, checkout);
         }
 
         // DELETE: api/Billing/5
