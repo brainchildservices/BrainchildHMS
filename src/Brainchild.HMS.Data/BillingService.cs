@@ -13,7 +13,7 @@ namespace Brainchild.HMS.Data
     {
         BookingDTO GetBookingDetails(int bookingId);
         double GetRoomRateByRoomId(int roomId, int hotelId);
-      
+        double GetTotalCharges(int roomId);      
     }
     public class BillingService:IBillingService
     {
@@ -61,6 +61,22 @@ namespace Brainchild.HMS.Data
 
             return roomRate;
         }
+        public double GetTotalCharges(int roomId)
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select sum(ChargeAmount) as ChargeAmount from Charges where RoomId='" + roomId + "'", con);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    return Convert.ToDouble(dr["ChargeAmount"]);
+                }
+            }
 
+            return 0;            
+        }
+       
     }
 }

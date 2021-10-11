@@ -100,8 +100,10 @@ namespace Brainchild.HMS.Web.Controllers
             //calculating the total room rate 
             double totalRoomRate = roomRate * noOfDaysSpend;
 
+            //fetch the total charges by the roomId
+            double totalCharges = _billingService.GetTotalCharges(checkout.RoomId);
 
-
+           
             return CreatedAtAction("GetBilling", new { id = checkout.BookingId }, checkout);
         }
 
