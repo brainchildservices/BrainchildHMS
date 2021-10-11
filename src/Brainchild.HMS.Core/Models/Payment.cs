@@ -18,7 +18,7 @@ namespace Brainchild.HMS.Core.Models
 
         public float PaymentAmount { get; set; }
 
-        public float PaymentDescription { get; set; }
+        public string PaymentDescription { get; set; }
 
         [ForeignKey("BillingId")]
         public Billing Billing { get; set; }

@@ -103,6 +103,24 @@ namespace Brainchild.HMS.Web.Controllers
             //fetch the total charges by the roomId
             double totalCharges = _billingService.GetTotalCharges(checkout.RoomId);
 
+            //fetch the total payments
+            double totalPayments = _billingService.GetTotalPayments(checkout.RoomId);
+
+            //checking whether the totalcharges and totalpayments are equal
+            if (totalCharges == totalPayments)
+            {
+                //change the booking status
+                _billingService.ChangeBookingStatus(checkout.BookingId);
+                //do checkout for the guest. (change the room status to available)
+                _billingService.DoCheckOut(checkout.RoomId);                
+            }
+            else
+            {
+                if (totalCharges > totalPayments)
+                    return BadRequest("Please pay the outstanding amount of Rs " + (totalCharges - totalPayments) + "/- for Check out the Guest");
+                else
+                    return BadRequest("Please settle the amount of Rs " + (totalPayments - totalCharges) + "/- for Check out the Guest");
+            }
            
             return CreatedAtAction("GetBilling", new { id = checkout.BookingId }, checkout);
         }

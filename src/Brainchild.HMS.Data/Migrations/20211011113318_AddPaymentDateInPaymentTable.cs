@@ -7,12 +7,16 @@ namespace Brainchild.HMS.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            
+            migrationBuilder.DropColumn(
+            name: "PaymentAdvance",
+            table: "Payments");
 
-            migrationBuilder.RenameColumn(
-                name: "PaymentAdvance",
+            migrationBuilder.AddColumn<string>(
+                name: "PaymentDescription",
                 table: "Payments",
-                newName: "PaymentDescription");
+                nullable: true);
+
+          
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "PaymentDate",
@@ -21,7 +25,9 @@ namespace Brainchild.HMS.Data.Migrations
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
-           
+            
+
+
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

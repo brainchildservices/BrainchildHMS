@@ -13,7 +13,10 @@ namespace Brainchild.HMS.Data
     {
         BookingDTO GetBookingDetails(int bookingId);
         double GetRoomRateByRoomId(int roomId, int hotelId);
-        double GetTotalCharges(int roomId);      
+        double GetTotalCharges(int roomId);
+        double GetTotalPayments(int roomId);
+        void DoCheckOut(int roomId);
+        void ChangeBookingStatus(int bookingId);
     }
     public class BillingService:IBillingService
     {
@@ -77,6 +80,53 @@ namespace Brainchild.HMS.Data
 
             return 0;            
         }
-       
+       public double GetTotalPayments(int roomId)
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select sum(Payments.PaymentAmount) as PaymentAmount from Payments inner join Billings on Payments.BillingId = Billings.BillingId inner join Rooms on Billings.RoomId = Rooms.RoomId where Rooms.RoomId = @roomId", con);
+            cmd.Parameters.AddWithValue("@roomId", roomId);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    return Convert.ToDouble(dr["PaymentAmount"]);
+                }
+            }
+            return 0;
+        }
+        public void DoCheckOut(int roomId)
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();          
+            SqlCommand cmd = new SqlCommand("update Rooms set RoomStatus=0 where RoomId='" + roomId + "'", con);
+            cmd.ExecuteNonQuery();           
+        }
+        public void ChangeBookingStatus(int bookingId)
+        {
+            int count = 0;
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select * from Bookings inner join RoomBookings on Bookings.BookingId = RoomBookings.BookingId inner join Rooms on RoomBookings.RoomId = Rooms.RoomId where Rooms.RoomStatus = 1 and Bookings.BookingId = @bookingId", con);
+            cmd.Parameters.AddWithValue("@bookingID", bookingId);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    count++;
+                }
+            }
+            con.Close();
+            if (count <= 1)
+            {
+                con.Open();
+                SqlCommand cmd1 = new SqlCommand("update Bookings set Status=2 where BookingId='"+bookingId+"'", con);
+                cmd1.ExecuteNonQuery();
+                con.Close();
+
+            }
+        }
     }
 }
