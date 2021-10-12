@@ -17,6 +17,9 @@ namespace Brainchild.HMS.Data
         GuestDTO FindGuestByPhoneNumber(string phoneNo);
         List<Room> GetAvailableRooms(BookingDTO booking);
         void AddRoomBooking(int bookingId, int roomId);
+        List<Room> GetRoomListByBookingId(int bookingId);
+        void CancelBooking(CancelBookingDTO cancelBooking);
+        void ChangeRoomStatus(int roomId);
 
     }
     public class BookingService : IBookingService
@@ -48,7 +51,7 @@ namespace Brainchild.HMS.Data
             cmd.Parameters.AddWithValue("@gustid", guestId);
             cmd.Parameters.AddWithValue("@bookingDate", DateTime.Now.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@NoOdAdult", booking.NoOfAdults);
-            cmd.Parameters.AddWithValue("@NoOfChildren", booking.NoOfAChildren);
+            cmd.Parameters.AddWithValue("@NoOfChildren", booking.NoOfChildren);
             cmd.Parameters.AddWithValue("@checkin", booking.CheckInDate.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@checkout", booking.CheckOutDate.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@hotelid", booking.HotelId);            
@@ -106,6 +109,49 @@ namespace Brainchild.HMS.Data
             SqlCommand cmd = new SqlCommand("insert into RoomBookings values('" + bookingId + "','" + roomId + "')", con);
             cmd.ExecuteNonQuery();
             con.Close();            
+        }
+
+        public List<Room> GetRoomListByBookingId(int bookingId)
+        {
+            List<Room> roomList = new List<Room>();
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("select * from Bookings inner join RoomBookings on Bookings.BookingId = RoomBookings.BookingId inner join Rooms on RoomBookings.RoomId = Rooms.RoomId where Bookings.BookingId = @bookingId", con);
+            cmd.Parameters.AddWithValue("@bookingId", bookingId);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    Room room = new Room();
+                    room.RoomId = Convert.ToInt32(dr["RoomId"]);
+                    room.RoomNo = dr["RoomNo"].ToString();
+                    roomList.Add(room);
+                }
+            }
+
+            return roomList;
+        }
+
+        public void CancelBooking(CancelBookingDTO cancelBooking)
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("update Bookings set IsCancelled=@isCancelled, CancelledDate=@cancelledDate,Status=@status where BookingId=@bookingId", con);
+            cmd.Parameters.AddWithValue("@isCancelled", 1);
+            cmd.Parameters.AddWithValue("@cancelledDate", cancelBooking.CancelledDate);
+            cmd.Parameters.AddWithValue("@status", 3);
+            cmd.Parameters.AddWithValue("@bookingId", cancelBooking.BookingId);
+            cmd.ExecuteNonQuery();
+            con.Close();
+        }
+        public void ChangeRoomStatus(int roomId)
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("update Rooms set RoomStatus=0 where RoomId='"+roomId+"'", con);
+            cmd.ExecuteNonQuery();
+            con.Close();
         }
 
     }

@@ -140,8 +140,27 @@ namespace Brainchild.HMS.API.Controllers
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }
 
-        // DELETE: api/Booking/5
-        [HttpDelete("{id}")]
+        [HttpPost("{id}/cancelbooking")]
+        public async Task<IActionResult> CancelBooking(int id,  CancelBookingDTO cancelBooking)
+        {
+            List<Room> roomList = new List<Room>();
+            //fetch the room details by bookingId
+            roomList = _bookingService.GetRoomListByBookingId(cancelBooking.BookingId);
+
+            //Cancel the booking by changing the status
+            _bookingService.CancelBooking(cancelBooking);
+
+            //change the room staus to available
+            for(int i = 0; i < roomList.Count; i++)
+            {
+                _bookingService.ChangeRoomStatus(roomList[i].RoomId);
+            }
+
+            return CreatedAtAction("GetBooking", new { id = cancelBooking.BookingId }, cancelBooking);
+        }
+
+            // DELETE: api/Booking/5
+            [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
 
