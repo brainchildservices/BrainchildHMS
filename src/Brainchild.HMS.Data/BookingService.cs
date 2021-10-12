@@ -16,11 +16,10 @@ namespace Brainchild.HMS.Data
         int CreateBooking(int guestId, BookingDTO booking);
         GuestDTO FindGuestByPhoneNumber(string phoneNo);
         List<Room> GetAvailableRooms(BookingDTO booking);
-        void AddRoomBooking(int bookingId, int roomId);
-        List<Room> GetRoomListByBookingId(int bookingId);
+        void AddRoomBooking(int bookingId, int roomId);       
         void CancelBooking(int bookingId);
-        void AddCancelNotes(CancelBookingDTO cancelBooking);
-        void ChangeRoomStatus(int roomId);
+        void AddCancelNotes(CancelBookingDTO cancelBooking);       
+        void DeleteRoomBookings(int bookingId);
 
     }
     public class BookingService : IBookingService
@@ -112,28 +111,7 @@ namespace Brainchild.HMS.Data
             con.Close();            
         }
 
-        public List<Room> GetRoomListByBookingId(int bookingId)
-        {
-            List<Room> roomList = new List<Room>();
-            SqlConnection con = new SqlConnection(connectionString);
-            con.Open();
-            SqlCommand cmd = new SqlCommand("select * from Bookings inner join RoomBookings on Bookings.BookingId = RoomBookings.BookingId inner join Rooms on RoomBookings.RoomId = Rooms.RoomId where Bookings.BookingId = @bookingId", con);
-            cmd.Parameters.AddWithValue("@bookingId", bookingId);
-            SqlDataReader dr = cmd.ExecuteReader();
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    Room room = new Room();
-                    room.RoomId = Convert.ToInt32(dr["RoomId"]);
-                    room.RoomNo = dr["RoomNo"].ToString();
-                    roomList.Add(room);
-                }
-            }
-
-            return roomList;
-        }
-
+        
         public void CancelBooking(int bookingId)
         {
             SqlConnection con = new SqlConnection(connectionString);
@@ -156,11 +134,12 @@ namespace Brainchild.HMS.Data
             cmd.ExecuteNonQuery();
             con.Close();
         }
-        public void ChangeRoomStatus(int roomId)
+       
+        public void DeleteRoomBookings(int bookingId)
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
-            SqlCommand cmd = new SqlCommand("update Rooms set RoomStatus=0 where RoomId='"+roomId+"'", con);
+            SqlCommand cmd = new SqlCommand("delete from RoomBookings where BookingId='"+bookingId+"'", con);
             cmd.ExecuteNonQuery();
             con.Close();
         }

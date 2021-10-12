@@ -143,33 +143,33 @@ namespace Brainchild.HMS.API.Controllers
         [HttpPost("{id}/cancelbooking")]
         public async Task<IActionResult> CancelBooking(int id,  CancelBookingDTO cancelBooking)
         {
-            _logger.LogInformation("BookingController.CancelBooking Method Called.");    
-
-            List<Room> roomList = new List<Room>();
-
-            //Fetch the room list by bookingId
-            _logger.LogInformation("_bookingService.GetRoomListByBookingId Method Called with Parameter bookingId("+cancelBooking.BookingId+")");
-            roomList = _bookingService.GetRoomListByBookingId(cancelBooking.BookingId);
-            _logger.LogInformation("_bookingService.GetRoomListByBookingId Method Returned "+roomList);
-
-            //Cancel the booking by changing the status
-            _logger.LogInformation("_bookingService.CancelBooking Method Called with Parameter BookingId(" + cancelBooking.BookingId + ")");
-            _bookingService.CancelBooking(cancelBooking.BookingId);
-            _logger.LogInformation("Cancelled the Booking(bookingId-'"+cancelBooking.BookingId+"')");
-
-            //Add Cancel Notes
-            _logger.LogInformation("_bookingService.AddCancelNotes Method called with parameters"+cancelBooking);
-            _bookingService.AddCancelNotes(cancelBooking);
-            _logger.LogInformation("Added the Notes for Cancellation");
-            //Change the room status to available
-            for(int i = 0; i < roomList.Count; i++)
+            try
             {
-                _logger.LogInformation(" _bookingService.ChangeRoomStatus Method Called with "+roomList[i].RoomId);
-                _bookingService.ChangeRoomStatus(roomList[i].RoomId);
-                _logger.LogInformation("Changed the status of the RoomNo. "+ roomList[i].RoomNo + " to AVAILABLE");
-            }
+                _logger.LogInformation("BookingController.CancelBooking Method Called.");
 
-            return CreatedAtAction("GetBooking", new { id = cancelBooking.BookingId }, cancelBooking);
+                //Cancel the booking by changing the status
+                _logger.LogInformation($"_bookingService.CancelBooking Method Called with Parameter bookingId({cancelBooking.BookingId})");
+                _bookingService.CancelBooking(cancelBooking.BookingId);
+                _logger.LogInformation($"Cancelled the Booking(bookingId-{cancelBooking.BookingId}");
+
+                //Add Cancel Notes
+                _logger.LogInformation($"_bookingService.AddCancelNotes Method called with parameters{cancelBooking.BookingId} and {cancelBooking.NoteDescription}");
+                _bookingService.AddCancelNotes(cancelBooking);
+                _logger.LogInformation("Added the Notes for Cancellation");
+
+
+                //Deleting the RoomBookings by BookingId
+                _logger.LogInformation($"_bookingService.DeleteRoomBookings Method called with parameters{cancelBooking.BookingId}");
+                _bookingService.DeleteRoomBookings(cancelBooking.BookingId);
+                _logger.LogInformation($"Deleted all the RoomBookings on the BookingId - {cancelBooking.BookingId}");
+
+                return CreatedAtAction("GetBooking", new { id = cancelBooking.BookingId }, cancelBooking);
+            }catch(Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return BadRequest(exception);
+            }
+          
         }
 
             // DELETE: api/Booking/5
