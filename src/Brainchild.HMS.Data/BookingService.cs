@@ -18,7 +18,8 @@ namespace Brainchild.HMS.Data
         List<Room> GetAvailableRooms(BookingDTO booking);
         void AddRoomBooking(int bookingId, int roomId);
         List<Room> GetRoomListByBookingId(int bookingId);
-        void CancelBooking(CancelBookingDTO cancelBooking);
+        void CancelBooking(int bookingId);
+        void AddCancelNotes(CancelBookingDTO cancelBooking);
         void ChangeRoomStatus(int roomId);
 
     }
@@ -133,14 +134,24 @@ namespace Brainchild.HMS.Data
             return roomList;
         }
 
-        public void CancelBooking(CancelBookingDTO cancelBooking)
+        public void CancelBooking(int bookingId)
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
             SqlCommand cmd = new SqlCommand("update Bookings set IsCancelled=@isCancelled, CancelledDate=@cancelledDate,Status=@status where BookingId=@bookingId", con);
             cmd.Parameters.AddWithValue("@isCancelled", 1);
-            cmd.Parameters.AddWithValue("@cancelledDate", cancelBooking.CancelledDate);
+            cmd.Parameters.AddWithValue("@cancelledDate", DateTime.Now.ToString());
             cmd.Parameters.AddWithValue("@status", 3);
+            cmd.Parameters.AddWithValue("@bookingId", bookingId);
+            cmd.ExecuteNonQuery();
+            con.Close();
+        }
+        public void AddCancelNotes(CancelBookingDTO cancelBooking)
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            SqlCommand cmd = new SqlCommand("insert into Notes values(@noteDecription,@bookingId)", con);
+            cmd.Parameters.AddWithValue("@noteDecription", cancelBooking.NoteDescription);
             cmd.Parameters.AddWithValue("@bookingId", cancelBooking.BookingId);
             cmd.ExecuteNonQuery();
             con.Close();

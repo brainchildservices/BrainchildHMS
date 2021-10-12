@@ -9,15 +9,15 @@ namespace Brainchild.HMS.Data.Context
     public class BrainchildHMSDbContext : DbContext
     {
 
-         public BrainchildHMSDbContext(DbContextOptions<BrainchildHMSDbContext> options)
-        : base(options)
-    {
-    }
+        public BrainchildHMSDbContext(DbContextOptions<BrainchildHMSDbContext> options)
+       : base(options)
+        {
+        }
 
-        public DbSet<Billing> Billings { get; set; } 
+        public DbSet<Billing> Billings { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Charge> Charges { get; set; }
-        public DbSet<ChargeType> ChargeTypes { get; set; }    
+        public DbSet<ChargeType> ChargeTypes { get; set; }
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<Payment> Payments { get; set; }
@@ -27,6 +27,7 @@ namespace Brainchild.HMS.Data.Context
         public DbSet<RoomType> RoomTypes { get; set; }
         public DbSet<Tax> Taxes { get; set; }
         public DbSet<Currency> Currencies { get; set; }
+        public DbSet<Note> Notes { get; set; }
 
-    }   
     }
+}

@@ -10,6 +10,7 @@ namespace Brainchild.HMS.Data.DTOs
     public class CancelBookingDTO
     {
         public int BookingId { get; set; }
-        public DateTime CancelledDate { get; set; }
+        public string NoteDescription { get; set; }
+
     }
 }

@@ -144,13 +144,17 @@ namespace Brainchild.HMS.API.Controllers
         public async Task<IActionResult> CancelBooking(int id,  CancelBookingDTO cancelBooking)
         {
             List<Room> roomList = new List<Room>();
-            //fetch the room details by bookingId
+
+            //Fetch the room list by bookingId
             roomList = _bookingService.GetRoomListByBookingId(cancelBooking.BookingId);
 
             //Cancel the booking by changing the status
-            _bookingService.CancelBooking(cancelBooking);
+            _bookingService.CancelBooking(cancelBooking.BookingId);
 
-            //change the room staus to available
+            //Add Cancel Notes
+            _bookingService.AddCancelNotes(cancelBooking);
+
+            //Change the room status to available
             for(int i = 0; i < roomList.Count; i++)
             {
                 _bookingService.ChangeRoomStatus(roomList[i].RoomId);
