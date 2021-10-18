@@ -9,6 +9,7 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using static Brainchild.HMS.Data.RoomService;
 namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -18,6 +19,9 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<HotelsController> _logger;
+
+         
+        
 
         public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger)
         {
@@ -33,6 +37,7 @@ namespace Brainchild.HMS.API.Controllers
         {
             _logger.LogInformation("Hello From HotelsController");
             return await _context.Hotels.ToListAsync();
+        
         }
 
         // GET: api/Hotels/5
