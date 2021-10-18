@@ -99,7 +99,7 @@ namespace Brainchild.HMS.API.Controllers
             //Converting availableRooms to Hashtable.
             foreach (var item in availableRooms)
             {
-                availableRoomList.Add(item.RoomId,item.RoomNo);
+                availableRoomList.Add(item.RoomId, item.RoomNo);
             }
 
             //Checking the selected rooms are available.
@@ -108,10 +108,10 @@ namespace Brainchild.HMS.API.Controllers
             {
                 if (availableRoomList.ContainsValue(item.RoomNo))
                     count++;
-            }                     
+            }
 
             if (booking.Rooms.Count != count)
-            {                
+            {
                 return BadRequest("The Selected rooms are NOT available on " + booking.CheckInDate.ToString("dd/MM/yyyy"));
             }
             else
@@ -126,14 +126,14 @@ namespace Brainchild.HMS.API.Controllers
                     guest.GuestId = _bookingService.CreateGuest(booking.Guest);
 
                 //Creating the booking.
-                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);            
+                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);
 
                 //Creating RoomBooking for the Guest.
-                for(int i = 0; i < booking.Rooms.Count; i++)
+                for (int i = 0; i < booking.Rooms.Count; i++)
                 {
                     _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId);
                 }
-               
+
             }
 
 
@@ -141,7 +141,7 @@ namespace Brainchild.HMS.API.Controllers
         }
 
         [HttpPost("{id}/cancelbooking")]
-        public async Task<IActionResult> CancelBooking(int id,  CancelBookingDTO cancelBooking)
+        public async Task<IActionResult> CancelBooking(int id, CancelBookingDTO cancelBooking)
         {
             try
             {
@@ -164,16 +164,17 @@ namespace Brainchild.HMS.API.Controllers
                 _logger.LogInformation($"Deleted all the RoomBookings on the BookingId - {cancelBooking.BookingId}");
 
                 return CreatedAtAction("GetBooking", new { id = cancelBooking.BookingId }, cancelBooking);
-            }catch(Exception exception)
+            }
+            catch (Exception exception)
             {
                 _logger.LogError($"Exception: {exception}");
-                return BadRequest(exception);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
-          
+
         }
 
-            // DELETE: api/Booking/5
-            [HttpDelete("{id}")]
+        // DELETE: api/Booking/5
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
 
