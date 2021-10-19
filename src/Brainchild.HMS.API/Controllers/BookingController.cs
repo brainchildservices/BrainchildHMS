@@ -144,34 +144,55 @@ namespace Brainchild.HMS.API.Controllers
         [HttpPost("{id}/checkin")]
         public async Task<IActionResult> CheckIn(int id, CheckInDTO checkIn)
         {
-            //fetching the bookingid from db
-            int bookingId = _bookingService.GetBookingId(checkIn.RoomNo, checkIn.HotelId, id);
-
-            //validating the booking id from the URL and from the db
-            if (bookingId == id)
+            try
             {
-                //check the room count on a booking 
-                int noOfRooms = _bookingService.GetRoomBookingCountByBookingId(bookingId);
-                //if the room count on a booking is less than or equal to 1, then change the booking status.
-                if (noOfRooms <= 1)
+                _logger.LogInformation("BookingController.CheckIn Method Called.");
+
+                //fetching the bookingid from db
+                _logger.LogInformation($"_bookingService.GetBookingId Method Called with Parameters (Room id:{checkIn.RoomNo} Hotel Id:{checkIn.HotelId} Booking Id:{id})");
+                int bookingId = _bookingService.GetBookingId(checkIn.RoomNo, checkIn.HotelId, id);
+                _logger.LogInformation($"Fetched the BookingId from Database(bookingId-{bookingId}");
+
+                //validating the booking id from the URL and from the db
+                if (bookingId == id)
                 {
-                    //Change the Booking Status to stayover
-                    _bookingService.ChangeBookingStatus(bookingId);
+                    //check the room count on a booking 
+                    _logger.LogInformation($"_bookingService.GetRoomBookingCountByBookingId Mehod called with parameter bookingId({bookingId})");
+                    int noOfRooms = _bookingService.GetRoomBookingCountByBookingId(bookingId);
+                    _logger.LogInformation($"The room booking count is {noOfRooms}");
+                    //if the room count on a booking is less than or equal to 1, then change the booking status.
+                    if (noOfRooms <= 1)
+                    {
+                        //Change the Booking Status to stayover
+                        _logger.LogInformation($" _bookingService.ChangeBookingStatus Method called with parameter bookingId {bookingId}");
+                        _bookingService.ChangeBookingStatus(bookingId);
+                        _logger.LogInformation("Changed the booking status to stayOver");
+                    }
+
+                    //Doing the checkIn by changing the status of Rooms from vacant to occupied.
+                    _logger.LogInformation($" _bookingService.DoCheckIn Method called with parameter RoomNo {checkIn.RoomNo}");
+                    _bookingService.DoCheckIn(checkIn.RoomNo);
+                    _logger.LogInformation("Done the CheckIn by changing the status of Rooms from vacant to occupied");
+
+                    //Generate bill for the booking by room number
+                    _logger.LogInformation($"_bookingService.GenerateBill Method called with parameters RoomNo:{checkIn.RoomNo} and bookingId {bookingId}");
+                    _bookingService.GenerateBill(checkIn.RoomNo, bookingId);
+                    _logger.LogInformation($"Generated bill for RoomNo:{checkIn.RoomNo}");
+                }
+                else
+                {
+                    _logger.LogInformation($"No bookings available for the RoomNo:{checkIn.RoomNo}");
+                    return BadRequest("No bookings available for the RoomNo: " + checkIn.RoomNo);
                 }
 
-                //Doing the checkIn by changing the status of Rooms from vacant to occupied.
-                _bookingService.DoCheckIn(checkIn.RoomNo);
-
-                //Generate bill for the booking by room number
-                _bookingService.GenerateBill(checkIn.RoomNo, bookingId);
-               
+                return NoContent();
             }
-            else
+            catch (Exception exception)
             {
-                return BadRequest("No bookings available for the RoomNo: " + checkIn.RoomNo);
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
-            return NoContent();
         }
 
         // DELETE: api/Booking/5
