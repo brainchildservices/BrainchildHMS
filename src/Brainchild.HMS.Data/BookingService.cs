@@ -17,11 +17,10 @@ namespace Brainchild.HMS.Data
         GuestDTO FindGuestByPhoneNumber(string phoneNo);
         List<Room> GetAvailableRooms(BookingDTO booking);
         void AddRoomBooking(int bookingId, int roomId);
-        int GetBookingId(string roomNo, int hotelId, int bookingId);
-        void DoCheckIn(string roomNo);
-        int GetRoomBookingCountByBookingId(int bookingId);
-        void ChangeBookingStatus(int bookingId);
-        void GenerateBill(string roomNo, int bookingId);
+
+        int GetRoomId(int bookingId, CheckInDTO checkIn);
+        void DoCheckIn(CheckInDTO checkIn);
+        void GenerateBill(int roomId, int bookingId);
 
     }
     public class BookingService : IBookingService
@@ -40,8 +39,8 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Sql query for creating Guest
-            SqlCommand sqlCommand = new SqlCommand("insert into Guests values(@GuestName,@GuestAddress,@GuestEmail,@GuestPhoneNo,@GuestCountry); SELECT SCOPE_IDENTITY()", sqlConnection);
-            
+            SqlCommand sqlCommand = new SqlCommand("INSERT INTO Guests values(@GuestName,@GuestAddress,@GuestEmail,@GuestPhoneNo,@GuestCountry); SELECT SCOPE_IDENTITY()", sqlConnection);
+
             //Adding parameters 
             sqlCommand.Parameters.AddWithValue("@GuestName", guest.GuestName);
             sqlCommand.Parameters.AddWithValue("@GuestAddress", guest.GuestAddress);
@@ -65,16 +64,16 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Sql query for creating a booking
-            SqlCommand sqlCommand = new SqlCommand("insert into Bookings(GuestId,BookingDate,NoOfAdults,NoOfAChildren,CheckInDate,CheckOutDate,Status,HotelId) values(@gustid,@bookingDate,@NoOdAdult,@NoOfChildren,@checkin,@checkout,1,@hotelid);  SELECT SCOPE_IDENTITY()", sqlConnection);
-            
+            SqlCommand sqlCommand = new SqlCommand("INSERT INTO Bookings(GuestId,BookingDate,NoOfAdults,NoOfAChildren,CheckInDate,CheckOutDate,Status,HotelId) values(@gustId,@bookingDate,@noOdAdult,@noOfChildren,@checkIn,@checkOut,1,@hotelId);  SELECT SCOPE_IDENTITY()", sqlConnection);
+
             //Adding the parameters
-            sqlCommand.Parameters.AddWithValue("@gustid", guestId);
+            sqlCommand.Parameters.AddWithValue("@gustId", guestId);
             sqlCommand.Parameters.AddWithValue("@bookingDate", DateTime.Now.ToString("dd/MMMM/yyyy"));
-            sqlCommand.Parameters.AddWithValue("@NoOdAdult", booking.NoOfAdults);
-            sqlCommand.Parameters.AddWithValue("@NoOfChildren", booking.NoOfAChildren);
-            sqlCommand.Parameters.AddWithValue("@checkin", booking.CheckInDate.ToString("dd/MMMM/yyyy"));
-            sqlCommand.Parameters.AddWithValue("@checkout", booking.CheckOutDate.ToString("dd/MMMM/yyyy"));
-            sqlCommand.Parameters.AddWithValue("@hotelid", booking.HotelId);
+            sqlCommand.Parameters.AddWithValue("@noOdAdult", booking.NoOfAdults);
+            sqlCommand.Parameters.AddWithValue("@noOfChildren", booking.NoOfAChildren);
+            sqlCommand.Parameters.AddWithValue("@checkIn", booking.CheckInDate.ToString("dd/MMMM/yyyy"));
+            sqlCommand.Parameters.AddWithValue("@checkOut", booking.CheckOutDate.ToString("dd/MMMM/yyyy"));
+            sqlCommand.Parameters.AddWithValue("@hotelId", booking.HotelId);
 
             //Executing the query and storing the bookingId
             int bookingId = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -94,7 +93,7 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Sql query for selecting the guest details by phone number
-            SqlCommand sqlCommand = new SqlCommand("select * from Guests where GuestPhoneNo='" + phoneNo + "'", sqlConnection);
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Guests WHERE GuestPhoneNo='" + phoneNo + "'", sqlConnection);
 
             //executing the query and storing the data
             SqlDataReader dr = sqlCommand.ExecuteReader();
@@ -127,8 +126,8 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Sql query for selecting the available rooms in the hotel
-            SqlCommand sqlCommand = new SqlCommand("select * from (select RoomId, RoomNo from Rooms where HotelId='" + booking.HotelId + "') as T1 except select Rooms.RoomId, Rooms.RoomNo from Bookings  inner join RoomBookings on RoomBookings.bookingid = Bookings.BookingId  inner join Rooms on Rooms.RoomId = RoomBookings.RoomId where CheckInDate = '" + booking.CheckInDate.ToString("dd/MMMM/yyyy") + "' and CheckOutDate = '" + booking.CheckOutDate.ToString("dd/MMMM/yyyy") + "'and Bookings.HotelId = '" + booking.HotelId + "'", sqlConnection);
-           
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM (SELECT RoomId, RoomNo FROM Rooms where HotelId='" + booking.HotelId + "') as T1 EXCEPT SELECT Rooms.RoomId, Rooms.RoomNo FROM Bookings  INNER JOIN RoomBookings ON RoomBookings.bookingid = Bookings.BookingId  INNER JOIN Rooms ON Rooms.RoomId = RoomBookings.RoomId WHERE CheckInDate = '" + booking.CheckInDate.ToString("dd/MMMM/yyyy") + "' and CheckOutDate = '" + booking.CheckOutDate.ToString("dd/MMMM/yyyy") + "'and Bookings.HotelId = '" + booking.HotelId + "'", sqlConnection);
+
             //Executing the query and storing the data
             SqlDataReader dr = sqlCommand.ExecuteReader();
 
@@ -160,15 +159,16 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Sql query for Add room booking
-            SqlCommand cmd = new SqlCommand("insert into RoomBookings values('" + bookingId + "','" + roomId + "')", sqlConnection);
+            SqlCommand sqlCommand = new SqlCommand("INSERT INTO RoomBookings values('" + bookingId + "','" + roomId + "')", sqlConnection);
 
             //Executing the query
-            cmd.ExecuteNonQuery();
+            sqlCommand.ExecuteNonQuery();
 
             //closing the connection
             sqlConnection.Close();
         }
-        public int GetBookingId(string roomNo, int hotelId, int bookingId)
+
+        public int GetRoomId(int bookingId, CheckInDTO checkIn)
         {
             //Creating connection object
             SqlConnection sqlConnection = new SqlConnection(connectionString);
@@ -176,30 +176,34 @@ namespace Brainchild.HMS.Data
             //Opening the connection
             sqlConnection.Open();
 
-            //Sql query for fetching the booking id
-            SqlCommand sqlCommand = new SqlCommand("select * from Bookings inner join RoomBookings on RoomBookings.BookingId = Bookings.BookingId inner join Rooms on Rooms.RoomId = RoomBookings.RoomId inner join Guests on Guests.GuestId = Bookings.GuestId where Rooms.RoomNo = @roomNo and Bookings.HotelId = @hotelId and Bookings.BookingId = @bookingId and Bookings.Status=0", sqlConnection);
-            
-            //Adding patameters
-            sqlCommand.Parameters.AddWithValue("@roomNo", roomNo);
-            sqlCommand.Parameters.AddWithValue("@hotelId", hotelId);
-            sqlCommand.Parameters.AddWithValue("@bookingId", bookingId);
+            //Sql query for Add room booking
+            SqlCommand sqlCommand = new SqlCommand("SELECT Rooms.RoomId FROM Bookings INNER JOIN RoomBookings ON Bookings.BookingId = RoomBookings.BookingId INNER JOIN Rooms ON RoomBookings.RoomId = Rooms.RoomId WHERE Bookings.BookingId = @bookingId and Rooms.RoomNo = @roomNo and Bookings.HotelId = @hotelId", sqlConnection);
 
-            //Executing the query and storing the data
-            SqlDataReader dr = sqlCommand.ExecuteReader();
+            //Adding the parameters
+            sqlCommand.Parameters.AddWithValue("@bookingId", bookingId);
+            sqlCommand.Parameters.AddWithValue("@roomNo", checkIn.RoomNo);
+            sqlCommand.Parameters.AddWithValue("@hotelId", checkIn.HotelId);
+
+            //Executing the query
+            SqlDataReader dataReader = sqlCommand.ExecuteReader();
 
             //Checking the object having data
-            if (dr.HasRows)
+            if (dataReader.HasRows)
             {
                 //Reading the data row by row
-                while (dr.Read())
+                while (dataReader.Read())
                 {
-                    //returning the bookingId
-                    return Convert.ToInt32(dr["BookingId"]);
+                    //returning the value(roomId)
+                    return Convert.ToInt32(dataReader[0]);
                 }
             }
+
+            //closing the connection
+            sqlConnection.Close();
             return 0;
         }
-        public void DoCheckIn(string roomNo)
+
+        public void DoCheckIn(CheckInDTO checkIn)
         {
             //Creating connection object
             SqlConnection sqlConnection = new SqlConnection(connectionString);
@@ -208,59 +212,16 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Sql query for changing the status og Room table for the check-in
-            SqlCommand sqlCommand = new SqlCommand("update Rooms set RoomStatus=1 where RoomNo='" + roomNo + "'", sqlConnection);
-            
+            SqlCommand sqlCommand = new SqlCommand("UPDATE Rooms SET RoomStatus=1 WHERE RoomNo='" + checkIn.RoomNo + "' AND HotelId='" + checkIn.HotelId + "'", sqlConnection);
+
             //Executing the query
             sqlCommand.ExecuteNonQuery();
-        }
 
-        public int GetRoomBookingCountByBookingId(int bookingId)
-        {
-            int count = 0;
-            //Creating connection object
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-
-            //Opening the connection
-            sqlConnection.Open();
-
-            //Query for selecting  the roombooking count by bookingId
-            SqlCommand sqlCommand = new SqlCommand("select * from Bookings inner join RoomBookings on Bookings.BookingId = RoomBookings.BookingId inner join Rooms on RoomBookings.RoomId = Rooms.RoomId where Rooms.RoomStatus = 0 and Bookings.BookingId ='" + bookingId + "'", sqlConnection);
-            
-            //Executing the query and storing the data
-            SqlDataReader dr = sqlCommand.ExecuteReader();
-
-            //Checking the object dr having data
-            if (dr.HasRows)
-            {
-                //Reading the data row by row
-                while (dr.Read())
-                {
-                    //incrementing the counter variable
-                    count++;
-                }
-            }
-
-            //returning the count
-            return count;
-        }
-        public void ChangeBookingStatus(int bookingId)
-        {
-            //Creating connection object
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-
-            //Opening the connection
-            sqlConnection.Open();
-
-            //Sql query for changing the booking status
-            SqlCommand sqlCommand = new SqlCommand("update Bookings set Status=1 where BookingId='" + bookingId + "'", sqlConnection);
-
-            //Execute the query
-            sqlCommand.ExecuteNonQuery();
-
-            //Closing the connection
+            //Closing the connection 
             sqlConnection.Close();
         }
-        public void GenerateBill(string roomNo, int bookingId)
+
+        public void GenerateBill(int roomId, int bookingId)
         {
             //Creating connection object
             SqlConnection sqlConnection = new SqlConnection(connectionString);
@@ -268,41 +229,20 @@ namespace Brainchild.HMS.Data
             //Opening the connection
             sqlConnection.Open();
 
-            //Sql query for selecting the roomid
-            SqlCommand sqlCommand = new SqlCommand("select * from Rooms where RoomNo='" + roomNo + "'", sqlConnection);
-            //executing the query
-            SqlDataReader dr = sqlCommand.ExecuteReader();
-            //initialized a variable roomId
-            int roomId=0;
-            //checking the objec dr havong rows
-            if (dr.HasRows)
-            {
-                //reading the data
-                while (dr.Read())
-                {
-                    //storing the value to roomId
-                    roomId = Convert.ToInt32(dr["RoomId"]);
-                }
-            }
+            //query for generating bill
+            SqlCommand command = new SqlCommand("INSERT INTO Billings(BillingDate,BookingId,RoomId) VALUES (@billDate,@bookingId,@roomId)", sqlConnection);
+            
+            //Adding the parameters
+            command.Parameters.AddWithValue("@billDate", DateTime.Now.ToString("dd/MMMM/yyyy"));
+            command.Parameters.AddWithValue("@bookingId", bookingId);
+            command.Parameters.AddWithValue("@roomId", roomId);
+            
+            //executed the query
+            command.ExecuteNonQuery();
+            
             //closing the connection
             sqlConnection.Close();
-            //opening the connection
-            sqlConnection.Open();
 
-            //checking the roomid is null or not
-            if (roomId != 0)
-            {
-                //query for generating bill
-                SqlCommand command = new SqlCommand("insert into Billings(BillingDate,BookingId,RoomId) values(@billDate,@bookingId,@roomId)", sqlConnection);
-                //Adding the parameters
-                command.Parameters.AddWithValue("@billDate", DateTime.Now.ToString());
-                command.Parameters.AddWithValue("@bookingId", bookingId);
-                command.Parameters.AddWithValue("@roomId", roomId);
-                //executed the query
-                command.ExecuteNonQuery();
-                //closing the connection
-                sqlConnection.Close();
-            }
         }
     }
 }

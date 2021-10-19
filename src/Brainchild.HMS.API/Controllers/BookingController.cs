@@ -141,42 +141,29 @@ namespace Brainchild.HMS.API.Controllers
         }
 
         //Check-in
-        [HttpPost("{id}/checkin")]
-        public async Task<IActionResult> CheckIn(int id, CheckInDTO checkIn)
+        [HttpPost("{bookingId}/checkin")]
+        public async Task<IActionResult> CheckIn(int bookingId, CheckInDTO checkIn)
         {
             try
             {
                 _logger.LogInformation("BookingController.CheckIn Method Called.");
 
-                //fetching the bookingid from db
-                _logger.LogInformation($"_bookingService.GetBookingId Method Called with Parameters (Room id:{checkIn.RoomNo} Hotel Id:{checkIn.HotelId} Booking Id:{id})");
-                int bookingId = _bookingService.GetBookingId(checkIn.RoomNo, checkIn.HotelId, id);
-                _logger.LogInformation($"Fetched the BookingId from Database(bookingId-{bookingId}");
+                //Validating the Inputs and fetching the RoomId
+                _logger.LogInformation($"_bookingService.GetRoomId Method called with parameters bookingId: {bookingId}, RoomNo: {checkIn.RoomNo} and hotelId: {checkIn.HotelId}");
+                int roomId = _bookingService.GetRoomId(bookingId, checkIn);
+                _logger.LogInformation($"Fetch the roomId ({roomId})");
 
-                //validating the booking id from the URL and from the db
-                if (bookingId == id)
+                //Checking the roomId is 0 or not
+                if (roomId != 0)
                 {
-                    //check the room count on a booking 
-                    _logger.LogInformation($"_bookingService.GetRoomBookingCountByBookingId Mehod called with parameter bookingId({bookingId})");
-                    int noOfRooms = _bookingService.GetRoomBookingCountByBookingId(bookingId);
-                    _logger.LogInformation($"The room booking count is {noOfRooms}");
-                    //if the room count on a booking is less than or equal to 1, then change the booking status.
-                    if (noOfRooms <= 1)
-                    {
-                        //Change the Booking Status to stayover
-                        _logger.LogInformation($" _bookingService.ChangeBookingStatus Method called with parameter bookingId {bookingId}");
-                        _bookingService.ChangeBookingStatus(bookingId);
-                        _logger.LogInformation("Changed the booking status to stayOver");
-                    }
-
                     //Doing the checkIn by changing the status of Rooms from vacant to occupied.
-                    _logger.LogInformation($" _bookingService.DoCheckIn Method called with parameter RoomNo {checkIn.RoomNo}");
-                    _bookingService.DoCheckIn(checkIn.RoomNo);
-                    _logger.LogInformation("Done the CheckIn by changing the status of Rooms from vacant to occupied");
+                    _logger.LogInformation($" _bookingService.DoCheckIn Method called with parameters RoomNo: {checkIn.RoomNo} and HotelId: {checkIn.HotelId}");
+                    _bookingService.DoCheckIn(checkIn);
+                    _logger.LogInformation("Done the CheckIn by changing the status of Room from vacant to occupied");
 
                     //Generate bill for the booking by room number
-                    _logger.LogInformation($"_bookingService.GenerateBill Method called with parameters RoomNo:{checkIn.RoomNo} and bookingId {bookingId}");
-                    _bookingService.GenerateBill(checkIn.RoomNo, bookingId);
+                    _logger.LogInformation($"_bookingService.GenerateBill Method called with parameters roomId :{roomId} and bookingId {bookingId}");
+                    _bookingService.GenerateBill(roomId, bookingId);
                     _logger.LogInformation($"Generated bill for RoomNo:{checkIn.RoomNo}");
                 }
                 else
@@ -192,7 +179,6 @@ namespace Brainchild.HMS.API.Controllers
                 _logger.LogError($"Exception: {exception}");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
-
         }
 
         // DELETE: api/Booking/5
