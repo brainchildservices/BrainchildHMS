@@ -86,43 +86,74 @@ namespace Brainchild.HMS.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<Billing>> CheckOut(CheckOutDTO checkout)
         {
-            BookingDTO booking = new BookingDTO();
-
-            //fetching the booking details by using the bookingId.
-            booking = _billingService.GetBookingDetails(checkout.BookingId);
-
-            //calculating the days spend in the hotel by using the check-in and checkout dates.
-            double noOfDaysSpend = (booking.CheckOutDate - booking.CheckInDate).TotalDays;
-
-            //fetching the RoomRate by roomId
-            double roomRate = _billingService.GetRoomRateByRoomId(checkout.RoomId, checkout.HotelId);
-
-            //calculating the total room rate 
-            double totalRoomRate = roomRate * noOfDaysSpend;
-
-            //fetch the total charges by the roomId
-            double totalCharges = _billingService.GetTotalCharges(checkout.RoomId);
-
-            //fetch the total payments
-            double totalPayments = _billingService.GetTotalPayments(checkout.RoomId);
-
-            //checking whether the totalcharges and totalpayments are equal
-            if (totalCharges == totalPayments)
+            try
             {
-                //change the booking status
-                _billingService.ChangeBookingStatus(checkout.BookingId);
-                //do checkout for the guest. (change the room status to available)
-                _billingService.DoCheckOut(checkout.RoomId);                
-            }
-            else
-            {
-                if (totalCharges > totalPayments)
-                    return BadRequest("Please pay the outstanding amount of Rs " + (totalCharges - totalPayments) + "/- for Check out the Guest");
+                _logger.LogInformation("BillingController.CheckOut Method Called.");
+
+                //Creating an object for BookingDTO
+                BookingDTO booking = new BookingDTO();
+
+                //fetching the booking details by using the bookingId.
+                _logger.LogInformation($"_billingService.GetBookingDetails Method called with the parameter bookingId: {checkout.BookingId}");
+                booking = _billingService.GetBookingDetails(checkout.BookingId);
+                _logger.LogInformation($"_billingService.GetBookingDetails Method returned the booking details of bookingId: {checkout.BookingId}");
+
+                //calculating the days spend in the hotel by using the check-in and checkout dates.
+                _logger.LogInformation($"Calculating the number of days spend in the hotel by using {booking.CheckInDate} and {booking.CheckOutDate}");
+                double noOfDaysSpend = (booking.CheckOutDate - booking.CheckInDate).TotalDays;
+                _logger.LogInformation($"{noOfDaysSpend} days spend in the hotel.");
+
+                //fetching the RoomRate by roomId
+                _logger.LogInformation($"_billingService.GetRoomRateByRoomId Method called with parameters roomId: {checkout.RoomId} and hotelId: {checkout.HotelId}");
+                double roomRate = _billingService.GetRoomRateByRoomId(checkout.RoomId, checkout.HotelId);
+                _logger.LogInformation($"Calculated the Room Rate. roomRate: {roomRate}");
+
+                //calculating the total room rate 
+                _logger.LogInformation($"Calculating the totalRoomRate by using Room Rate({roomRate}) and Number of days Spend({noOfDaysSpend})");
+                double totalRoomRate = roomRate * noOfDaysSpend;
+                _logger.LogInformation($"Calculated the Total Room Rate. totalRoomRate: {totalRoomRate}");
+
+                //fetch the total charges by the roomId
+                _logger.LogInformation($"_billingService.GetTotalCharges Method called with parameter roomId: {checkout.RoomId}");
+                double totalCharges = _billingService.GetTotalCharges(checkout.RoomId);
+                _logger.LogInformation($"_billingService.GetTotalCharges Method returned the totalCharges({totalCharges})");
+
+                //fetch the total payments
+                _logger.LogInformation($"_billingService.GetTotalPayments Method called with parameter roomId: {checkout.RoomId}");
+                double totalPayments = _billingService.GetTotalPayments(checkout.RoomId);
+                _logger.LogInformation($"_billingService.GetTotalPayments Method returned the totalPayments({totalPayments})");
+
+                //checking whether the totalcharges and totalpayments are equal
+                if (totalCharges == totalPayments)
+                {
+                    //do checkout for the guest. (change the room status to available)
+                    _logger.LogInformation($"_billingService.DoCheckOut Method called with parameter roomId:{checkout.RoomId}");
+                    _billingService.DoCheckOut(checkout.RoomId);
+                    _logger.LogInformation("Checked out the Guest by changing the room status to available");
+                }
                 else
-                    return BadRequest("Please settle the amount of Rs " + (totalPayments - totalCharges) + "/- for Check out the Guest");
+                {
+                    _logger.LogInformation($"Checking the totalCharges {totalCharges} and totalPayments {totalPayments}");
+                    if (totalCharges > totalPayments)
+                    {
+                        _logger.LogInformation($"The totalCharges {totalCharges} is greater than totalPayments {totalPayments}");
+                        return BadRequest("Please pay the outstanding amount of Rs " + (totalCharges - totalPayments) + "/- for Check out the Guest");
+                    }                      
+                    else
+                    {
+                        _logger.LogInformation($"The totalCharges {totalCharges} is lesser than totalPayments {totalPayments}");
+                        return BadRequest("Please settle the amount of Rs " + (totalPayments - totalCharges) + "/- for Check out the Guest");
+                    }
+                        
+                }
+
+                return CreatedAtAction("GetBilling", new { id = checkout.BookingId }, checkout);
             }
-           
-            return CreatedAtAction("GetBilling", new { id = checkout.BookingId }, checkout);
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         // DELETE: api/Billing/5

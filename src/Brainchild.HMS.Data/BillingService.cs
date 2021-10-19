@@ -16,7 +16,7 @@ namespace Brainchild.HMS.Data
         double GetTotalCharges(int roomId);
         double GetTotalPayments(int roomId);
         void DoCheckOut(int roomId);
-        void ChangeBookingStatus(int bookingId);
+       
     }
     public class BillingService:IBillingService
     {
@@ -28,52 +28,75 @@ namespace Brainchild.HMS.Data
         public BookingDTO GetBookingDetails(int bookingId)
         {
             BookingDTO booking = new BookingDTO();
-            SqlConnection con = new SqlConnection(connectionString);
-            con.Open();
-            SqlCommand cmd = new SqlCommand("select * from Bookings where BookingId='" + bookingId + "'", con);
-            SqlDataReader dr = cmd.ExecuteReader();
+            //Creating an sqlconnection object
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            //Opening the connection
+            sqlConnection.Open();
+            //SQL query for fetching the booking details
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Bookings WHERE BookingId='" + bookingId + "'", sqlConnection);
+            //Executing the query and storing the data
+            SqlDataReader dr = sqlCommand.ExecuteReader();
+            //Checking the object having data
             if (dr.HasRows)
             {
+                //Reading the data row by row
                 while (dr.Read())
                 {
+                    //Storing the data to booking object
                     booking.BookingId = Convert.ToInt32(dr["BookingId"]);
                     booking.GuestId = Convert.ToInt32(dr["GuestId"]);
                     booking.CheckInDate = Convert.ToDateTime(dr["CheckInDate"]);
                     booking.CheckOutDate = Convert.ToDateTime(dr["CheckOutDate"]);
                 }
             }
+            //Returning the booking object
             return booking;
         }
        
         public double GetRoomRateByRoomId(int roomId, int hotelId)
         {
             double roomRate = 0;
-            SqlConnection con = new SqlConnection(connectionString);
-            con.Open();
-            SqlCommand cmd = new SqlCommand("select * from Rooms inner join RoomTypes on Rooms.RoomTypeId = RoomTypes.RoomTypeId where Rooms.RoomId = @roomId and RoomTypes.HotelId = @hotelId", con);
-            cmd.Parameters.AddWithValue("@roomId",roomId);
-            cmd.Parameters.AddWithValue("@hotelId", hotelId);
-            SqlDataReader dr = cmd.ExecuteReader();
+            //Creating an sqlconnection object
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            //Opening the connection
+            sqlConnection.Open();
+            //SQL query for selecting the room rate by roomId
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Rooms INNER JOIN RoomTypes ON Rooms.RoomTypeId = RoomTypes.RoomTypeId WHERE Rooms.RoomId = @roomId AND RoomTypes.HotelId = @hotelId", sqlConnection);
+            //Adding parameters
+            sqlCommand.Parameters.AddWithValue("@roomId",roomId);
+            sqlCommand.Parameters.AddWithValue("@hotelId", hotelId);
+            //Executing the query
+            SqlDataReader dr = sqlCommand.ExecuteReader();
+            //Checking the object dr having data
             if (dr.HasRows)
             {
+                //Reading the data riw by row
                 while (dr.Read())
                 {
+                    //Storing the roomRate
                     roomRate = Convert.ToDouble(dr["RoomRate"]);
                 }
             }
-
+            //Returning the roomRate
             return roomRate;
         }
         public double GetTotalCharges(int roomId)
         {
-            SqlConnection con = new SqlConnection(connectionString);
-            con.Open();
-            SqlCommand cmd = new SqlCommand("select sum(ChargeAmount) as ChargeAmount from Charges where RoomId='" + roomId + "'", con);
-            SqlDataReader dr = cmd.ExecuteReader();
+            //Creating an sqlconnection object
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            //Opening the connection
+            sqlConnection.Open();
+            //SQL query for fetching the total charges by roomId
+            SqlCommand sqlCommand = new SqlCommand("SELECT SUM(ChargeAmount) AS ChargeAmount FROM Charges WHERE RoomId='" + roomId + "'", sqlConnection);
+            //Executing the Query and storing the data
+            SqlDataReader dr = sqlCommand.ExecuteReader();
+            //Checking the object dr having values
             if (dr.HasRows)
             {
+                //Reading the data
                 while (dr.Read())
                 {
+                    //Return the totalCharge
                     return Convert.ToDouble(dr["ChargeAmount"]);
                 }
             }
@@ -82,15 +105,23 @@ namespace Brainchild.HMS.Data
         }
        public double GetTotalPayments(int roomId)
         {
-            SqlConnection con = new SqlConnection(connectionString);
-            con.Open();
-            SqlCommand cmd = new SqlCommand("select sum(Payments.PaymentAmount) as PaymentAmount from Payments inner join Billings on Payments.BillingId = Billings.BillingId inner join Rooms on Billings.RoomId = Rooms.RoomId where Rooms.RoomId = @roomId", con);
-            cmd.Parameters.AddWithValue("@roomId", roomId);
-            SqlDataReader dr = cmd.ExecuteReader();
+            //Creating an sqlconnection object
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            //Opening the connection
+            sqlConnection.Open();
+            //SQL query to calculate the total payments done by roomId
+            SqlCommand sqlCommand = new SqlCommand("SELECT SUM(Payments.PaymentAmount) AS PaymentAmount FROM Payments INNER JOIN Billings ON Payments.BillingId = Billings.BillingId INNER JOIN Rooms ON Billings.RoomId = Rooms.RoomId WHERE Rooms.RoomId = @roomId", sqlConnection);
+            //Adding parameters
+            sqlCommand.Parameters.AddWithValue("@roomId", roomId);
+            //Executing the query
+            SqlDataReader dr = sqlCommand.ExecuteReader();
+            //checking the object dr having data
             if (dr.HasRows)
             {
+                //reading the data
                 while (dr.Read())
                 {
+                    //Returning the totalPayements
                     return Convert.ToDouble(dr["PaymentAmount"]);
                 }
             }
@@ -98,35 +129,17 @@ namespace Brainchild.HMS.Data
         }
         public void DoCheckOut(int roomId)
         {
-            SqlConnection con = new SqlConnection(connectionString);
-            con.Open();          
-            SqlCommand cmd = new SqlCommand("update Rooms set RoomStatus=0 where RoomId='" + roomId + "'", con);
-            cmd.ExecuteNonQuery();           
+            //Creating an sqlconnection object
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            //Opening the connection
+            sqlConnection.Open();       
+            //SQL Query for update the room status
+            SqlCommand sqlCommand = new SqlCommand("UPDATE Rooms SET RoomStatus=0 WHERE RoomId='" + roomId + "'", sqlConnection);
+            //Executing the query
+            sqlCommand.ExecuteNonQuery();
+            //Closing the connection
+            sqlConnection.Close();
         }
-        public void ChangeBookingStatus(int bookingId)
-        {
-            int count = 0;
-            SqlConnection con = new SqlConnection(connectionString);
-            con.Open();
-            SqlCommand cmd = new SqlCommand("select * from Bookings inner join RoomBookings on Bookings.BookingId = RoomBookings.BookingId inner join Rooms on RoomBookings.RoomId = Rooms.RoomId where Rooms.RoomStatus = 1 and Bookings.BookingId = @bookingId", con);
-            cmd.Parameters.AddWithValue("@bookingID", bookingId);
-            SqlDataReader dr = cmd.ExecuteReader();
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    count++;
-                }
-            }
-            con.Close();
-            if (count <= 1)
-            {
-                con.Open();
-                SqlCommand cmd1 = new SqlCommand("update Bookings set Status=2 where BookingId='"+bookingId+"'", con);
-                cmd1.ExecuteNonQuery();
-                con.Close();
-
-            }
-        }
+        
     }
 }
