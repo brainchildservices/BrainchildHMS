@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<key id="468b44cc-61e8-4e51-85e0-160d4b2a026d" version="1">
-  <creationDate>2021-09-21T05:24:40.7414691Z</creationDate>
-  <activationDate>2021-09-21T05:24:40.739233Z</activationDate>
-  <expirationDate>2021-12-20T05:24:40.739233Z</expirationDate>
+<key id="34c352e4-8bbd-4b39-96aa-78ed9fd924e2" version="1">
+  <creationDate>2021-10-18T07:52:00.9291923Z</creationDate>
+  <activationDate>2021-10-18T07:52:00.9279663Z</activationDate>
+  <expirationDate>2022-01-16T07:52:00.9279663Z</expirationDate>
   <descriptor deserializerType="Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.AuthenticatedEncryptorDescriptorDeserializer, Microsoft.AspNetCore.DataProtection, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
     <descriptor>
       <encryption algorithm="AES_256_CBC" />
@@ -12,7 +12,7 @@
           <!-- This key is not encrypted. -->
           <masterKey p6:requiresEncryption="true" xmlns:p6="http://schemas.asp.net/2015/03/dataProtection">
             <!-- Warning: the key below is in an unencrypted form. -->
-            <value>p9xFVnfxBT6+tdztgz043bwfoLDFA9BBEhiRfr+IjtZ1OoLA+hp1zjJ0ikTeHhbw/XsPUYOYXbLrZwFF4CWeGg==</value>
+            <value>/2C5tcFk/tw8Im6Arluh+BkX0keg/2feWf4whuvJmLd8VbA9GUECgBEINqNlXMTqKVWSlP7Cn2I6gLNrfJHS2g==</value>
           </masterKey>
         </unencryptedKey>
       </encryptedSecret>

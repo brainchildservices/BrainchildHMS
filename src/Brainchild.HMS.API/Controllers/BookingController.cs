@@ -25,7 +25,7 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<BookingController> _logger;
-        public IBookingService _bookingService = new BookingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
+        public IBookingService _bookingService = new BookingService("Data Source=DESKTOP-SKVEPJ4\\MSSQLSERVER01;Initial Catalog=BrainchildHMS;Integrated Security=True;");
 
         public BookingController(BrainchildHMSDbContext context, ILogger<BookingController> logger)
         {
