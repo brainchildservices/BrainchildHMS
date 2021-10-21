@@ -148,29 +148,55 @@ namespace Brainchild.HMS.API.Controllers
             {
                 _logger.LogInformation("BookingController.CheckIn Method Called.");
 
-                //Validating the Inputs and fetching the RoomId
-                _logger.LogInformation($"_bookingService.GetRoomId Method called with parameters bookingId: {bookingId}, RoomNo: {checkIn.RoomNo} and hotelId: {checkIn.HotelId}");
-                int roomId = _bookingService.GetRoomId(bookingId, checkIn);
-                _logger.LogInformation($"Fetch the roomId ({roomId})");
+                //Created object for BookingDTO
+                BookingDTO booking = new BookingDTO();
+                //fetching the booking details
+                _logger.LogInformation($"_bookingService.GetBookingDetails Method called with parameters BookingId: {bookingId}, HotelId:{checkIn.HotelId} and RoomNo: {checkIn.RoomNo}");
+                booking = _bookingService.GetBookingDetails(bookingId, checkIn.HotelId, checkIn.RoomNo);
+                _logger.LogInformation("Fetch the Booking details");
 
-                //Checking the roomId is 0 or not
-                if (roomId != 0)
-                {
-                    //Doing the checkIn by changing the status of Rooms from vacant to occupied.
-                    _logger.LogInformation($" _bookingService.DoCheckIn Method called with parameters RoomNo: {checkIn.RoomNo} and HotelId: {checkIn.HotelId}");
-                    _bookingService.DoCheckIn(checkIn);
-                    _logger.LogInformation("Done the CheckIn by changing the status of Room from vacant to occupied");
+                //Checking the Booking is exists
+                if (booking.BookingId != 0)
+                {                    
+                    //Checking the Booking is Cancelled or Not
+                    if (booking.IsCancelled != 1)
+                    {                       
+                        //Checking the Check-in date with the current date
+                        if (booking.CheckInDate == DateTime.Now)
+                        {
+                            //Checking the roomStatus for the room is already checked in or not
+                            if (booking.RoomStatus==0)
+                            {
+                                //Doing the checkIn by changing the status of Rooms from vacant to occupied.
+                                _logger.LogInformation($" _bookingService.DoCheckIn Method called with parameters RoomNo: {checkIn.RoomNo} and HotelId: {checkIn.HotelId}");
+                                _bookingService.DoCheckIn(checkIn.RoomNo,checkIn.HotelId);
+                                _logger.LogInformation("Done the CheckIn by changing the status of Room from vacant to occupied");
 
-                    //Generate bill for the booking by room number
-                    _logger.LogInformation($"_bookingService.GenerateBill Method called with parameters roomId :{roomId} and bookingId {bookingId}");
-                    _bookingService.GenerateBill(roomId, bookingId);
-                    _logger.LogInformation($"Generated bill for RoomNo:{checkIn.RoomNo}");
+                                //Generate bill for the booking by room number
+                                _logger.LogInformation($"_bookingService.GenerateBill Method called with parameters roomId :{booking.RoomId} and bookingId {bookingId}");
+                                _bookingService.GenerateBill(booking.RoomId, bookingId);
+                                _logger.LogInformation($"Generated bill for RoomNo:{checkIn.RoomNo}");
+                            }
+                            else
+                            {
+                                return BadRequest($"The RoomNo {checkIn.RoomNo} is already Checked-In");
+                            }
+                        }
+                        else
+                        {
+                            return BadRequest("Check-In date is not Valid");
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest($"The booking for RoomNo {checkIn.RoomNo} is already Cancelled.");
+                    }
                 }
                 else
                 {
-                    _logger.LogInformation($"No bookings available for the RoomNo:{checkIn.RoomNo}");
-                    return BadRequest("No bookings available for the RoomNo: " + checkIn.RoomNo);
+                    return BadRequest($"There is no Booking Available on the RoomNo:{checkIn.RoomNo}");
                 }
+
 
                 return NoContent();
             }
