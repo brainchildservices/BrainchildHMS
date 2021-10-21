@@ -140,6 +140,18 @@ namespace Brainchild.HMS.API.Controllers
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }
 
+       
+        [HttpGet("search/{bookingDate}/{guestPhoneNo}/{guestName}")]
+        public async Task<ActionResult<Booking>> SearchForBooking(DateTime bookingDate, string guestPhoneNo, string guestName)
+        {
+            BookingDTO booking = new BookingDTO();
+
+            booking = _bookingService.SearchBooking(bookingDate, guestPhoneNo, guestName);
+            
+            return NoContent();
+        }
+
+
         // DELETE: api/Booking/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)

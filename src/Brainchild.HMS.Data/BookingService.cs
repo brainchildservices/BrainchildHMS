@@ -17,6 +17,7 @@ namespace Brainchild.HMS.Data
         GuestDTO FindGuestByPhoneNumber(string phoneNo);
         List<Room> GetAvailableRooms(BookingDTO booking);
         void AddRoomBooking(int bookingId, int roomId);
+        BookingDTO SearchBooking(DateTime bookingDate, string guestPhoneNo, string guestName);
 
     }
     public class BookingService : IBookingService
@@ -106,6 +107,24 @@ namespace Brainchild.HMS.Data
             SqlCommand cmd = new SqlCommand("insert into RoomBookings values('" + bookingId + "','" + roomId + "')", con);
             cmd.ExecuteNonQuery();
             con.Close();            
+        }
+
+        public BookingDTO SearchBooking(DateTime bookingDate, string guestPhoneNo, string guestName)
+        {
+            BookingDTO booking = new BookingDTO();
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            sqlConnection.Open();
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Bookings INNER Join Guests ON Bookings.GuestId = Guests.GuestId WHERE Bookings.BookingDate = @bookingDate OR Guests.GuestPhoneNo = @guestPhoneNo OR Guests.GuestName = @guestName", sqlConnection);
+            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+            if (sqlDataReader.HasRows)
+            {
+                while (sqlDataReader.Read())
+                {
+                    booking.BookingId = Convert.ToInt32(sqlDataReader["BookingId"]);
+                }
+            }
+            
+            return booking;
         }
 
     }
