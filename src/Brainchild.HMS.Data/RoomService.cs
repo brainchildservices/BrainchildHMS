@@ -13,8 +13,7 @@ namespace Brainchild.HMS.Data
     public interface IRoomService
     {
         List<Room> GetAvailableRooms(BookingDTO booking);
-        void AddRoomBooking(int bookingId, int roomId);
-
+       
     }
     public class RoomService : IRoomService
     {
@@ -45,15 +44,6 @@ namespace Brainchild.HMS.Data
             }
 
             return availableRooms;
-        }
-
-        public void AddRoomBooking(int bookingId, int roomId)
-        {
-            SqlConnection con = new SqlConnection(connectionString);
-            con.Open();
-            SqlCommand cmd = new SqlCommand("insert into RoomBookings values('" + bookingId + "','" + roomId + "')", con);
-            cmd.ExecuteNonQuery();
-            con.Close();            
         }
 
     }

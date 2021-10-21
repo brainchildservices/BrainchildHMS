@@ -9,7 +9,10 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using static Brainchild.HMS.Data.RoomService;
+using System.Data.SqlClient;
+using Brainchild.HMS.Data.DTOs;
+using  Brainchild.HMS.Data;
+using System.Collections;
 namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -20,8 +23,8 @@ namespace Brainchild.HMS.API.Controllers
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<HotelsController> _logger;
 
-         
-        
+        public IRoomService _roomService = new RoomService("Data Source=DESKTOP-SKVEPJ4\\MSSQLSERVER01;Initial Catalog=BrainchildHMS;Integrated Security=True;");
+
 
         public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger)
         {
@@ -54,9 +57,32 @@ namespace Brainchild.HMS.API.Controllers
             return hotel;
         }
 
-        // PUT: api/Hotels/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GetAvailableRooms>>GetAvailableRooms(RoomTypeDTO availableRooms)
+        {
+
+            RoomTypeDTO available = new RoomTypeDTO();
+
+           
+           
+            //fetchimg the checkin date
+            DateTime CheckInDate = _roomService.GetAvailableRooms(availableRooms.CheckInDate);
+
+            //fetching the checkout date
+            DateTime CheckOutDate = _roomService.GetAvailableRooms(availableRooms.CheckOutDate);
+
+            
+
+
+
+
+        }
+
+
+
+            // PUT: api/Hotels/5
+            // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+            [HttpPut("{id}")]
         public async Task<IActionResult> PutHotel(int id, Hotel hotel)
         {
             if (id != hotel.HotelID)
@@ -120,3 +146,5 @@ namespace Brainchild.HMS.API.Controllers
         }
     }
 }
+
+ 
