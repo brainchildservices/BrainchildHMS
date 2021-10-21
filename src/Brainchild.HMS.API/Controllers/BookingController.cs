@@ -99,7 +99,7 @@ namespace Brainchild.HMS.API.Controllers
             //Converting availableRooms to Hashtable.
             foreach (var item in availableRooms)
             {
-                availableRoomList.Add(item.RoomId,item.RoomNo);
+                availableRoomList.Add(item.RoomId, item.RoomNo);
             }
 
             //Checking the selected rooms are available.
@@ -108,10 +108,10 @@ namespace Brainchild.HMS.API.Controllers
             {
                 if (availableRoomList.ContainsValue(item.RoomNo))
                     count++;
-            }                     
+            }
 
             if (booking.Rooms.Count != count)
-            {                
+            {
                 return BadRequest("The Selected rooms are NOT available on " + booking.CheckInDate.ToString("dd/MM/yyyy"));
             }
             else
@@ -126,14 +126,14 @@ namespace Brainchild.HMS.API.Controllers
                     guest.GuestId = _bookingService.CreateGuest(booking.Guest);
 
                 //Creating the booking.
-                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);            
+                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);
 
                 //Creating RoomBooking for the Guest.
-                for(int i = 0; i < booking.Rooms.Count; i++)
+                for (int i = 0; i < booking.Rooms.Count; i++)
                 {
                     _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId);
                 }
-               
+
             }
 
 
@@ -156,20 +156,20 @@ namespace Brainchild.HMS.API.Controllers
                 _logger.LogInformation("Fetch the Booking details");
 
                 //Checking the Booking is exists
-                if (booking.BookingId != 0)
-                {                    
+                if (booking != null)
+                {
                     //Checking the Booking is Cancelled or Not
                     if (booking.IsCancelled != 1)
                     {                       
                         //Checking the Check-in date with the current date
-                        if (booking.CheckInDate == DateTime.Now)
+                        if (booking.CheckInDate.ToString("dd/MM/yyyy") == DateTime.Now.ToString("dd/MM/yyyy"))
                         {
                             //Checking the roomStatus for the room is already checked in or not
-                            if (booking.RoomStatus==0)
+                            if (booking.RoomStatus == RoomStatus.Vacant)
                             {
                                 //Doing the checkIn by changing the status of Rooms from vacant to occupied.
                                 _logger.LogInformation($" _bookingService.DoCheckIn Method called with parameters RoomNo: {checkIn.RoomNo} and HotelId: {checkIn.HotelId}");
-                                _bookingService.DoCheckIn(checkIn.RoomNo,checkIn.HotelId);
+                                _bookingService.DoCheckIn(checkIn.RoomNo, checkIn.HotelId);
                                 _logger.LogInformation("Done the CheckIn by changing the status of Room from vacant to occupied");
 
                                 //Generate bill for the booking by room number

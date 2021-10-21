@@ -197,7 +197,8 @@ namespace Brainchild.HMS.Data
                     booking.CheckInDate = Convert.ToDateTime(dr["CheckInDate"]);
                     booking.IsCancelled = Convert.ToInt32(dr["IsCancelled"]);
                     booking.RoomId = Convert.ToInt32(dr["RoomId"]);
-                    booking.RoomStatus = Convert.ToInt32(dr["RoomStatus"]);
+                    object roomStatus = (object)dr["RoomStatus"];                    
+                    booking.RoomStatus = (RoomStatus)roomStatus;
                 }
             }
             //returning the booking object

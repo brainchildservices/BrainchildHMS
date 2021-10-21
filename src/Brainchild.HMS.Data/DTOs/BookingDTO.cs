@@ -28,7 +28,7 @@ namespace Brainchild.HMS.Data.DTOs
 
         public int IsCancelled { get; set; }
         public int RoomId { get; set; }
-        public int RoomStatus { get; set; }
+        public RoomStatus RoomStatus { get; set; }
 
         public List<Room> Rooms { get; set; }
 
