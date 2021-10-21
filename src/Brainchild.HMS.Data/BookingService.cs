@@ -205,8 +205,6 @@ namespace Brainchild.HMS.Data
             return booking;
 
         }
-
-
         
         public void DoCheckIn(string roomNo,int hotelId)
         {

@@ -158,15 +158,19 @@ namespace Brainchild.HMS.API.Controllers
                 //Checking the Booking is exists
                 if (booking != null)
                 {
+                    _logger.LogInformation("Booking existing");
                     //Checking the Booking is Cancelled or Not
                     if (booking.IsCancelled != 1)
-                    {                       
+                    {
+                        _logger.LogInformation("Booking is not Cancelled");
                         //Checking the Check-in date with the current date
                         if (booking.CheckInDate.ToString("dd/MM/yyyy") == DateTime.Now.ToString("dd/MM/yyyy"))
                         {
+                            _logger.LogInformation("Check-In date is Valid");
                             //Checking the roomStatus for the room is already checked in or not
                             if (booking.RoomStatus == RoomStatus.Vacant)
                             {
+                                _logger.LogInformation("Room status is Vacant");
                                 //Doing the checkIn by changing the status of Rooms from vacant to occupied.
                                 _logger.LogInformation($" _bookingService.DoCheckIn Method called with parameters RoomNo: {checkIn.RoomNo} and HotelId: {checkIn.HotelId}");
                                 _bookingService.DoCheckIn(checkIn.RoomNo, checkIn.HotelId);
@@ -179,24 +183,27 @@ namespace Brainchild.HMS.API.Controllers
                             }
                             else
                             {
+                                _logger.LogInformation($"The RoomNo {checkIn.RoomNo} is already Checked-In");
                                 return BadRequest($"The RoomNo {checkIn.RoomNo} is already Checked-In");
                             }
                         }
                         else
                         {
+                            _logger.LogInformation("Check-In date is not Valid");
                             return BadRequest("Check-In date is not Valid");
                         }
                     }
                     else
                     {
+                        _logger.LogInformation($"The booking for RoomNo {checkIn.RoomNo} is already Cancelled.");
                         return BadRequest($"The booking for RoomNo {checkIn.RoomNo} is already Cancelled.");
                     }
                 }
                 else
                 {
+                    _logger.LogInformation($"There is no Booking Available on the RoomNo:{checkIn.RoomNo}");
                     return BadRequest($"There is no Booking Available on the RoomNo:{checkIn.RoomNo}");
                 }
-
 
                 return NoContent();
             }
