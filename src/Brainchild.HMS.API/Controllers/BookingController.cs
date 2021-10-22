@@ -141,14 +141,23 @@ namespace Brainchild.HMS.API.Controllers
         }
 
        
-        [HttpGet("search/{bookingDate}/{guestPhoneNo}/{guestName}")]
-        public async Task<ActionResult<Booking>> SearchForBooking(DateTime bookingDate, string guestPhoneNo, string guestName)
+        [HttpGet("search")]
+        public async Task<ActionResult<Booking>> SearchForBooking([FromQuery] BookingSearchDTO bookingSearch)
         {
-            BookingDTO booking = new BookingDTO();
+            List<BookingDTO> booking = new List<BookingDTO>();
 
-            booking = _bookingService.SearchBooking(bookingDate, guestPhoneNo, guestName);
+            //Search for booking by bookingDate or guestPhoneNo or guestName
+            booking = _bookingService.SearchBooking(bookingSearch.BookingDate, bookingSearch.GuestPhoneNo, bookingSearch.GuestName);
+            //Checking booking is existing or not
+            if (booking.Count != 0)
+            {
+                return Ok(booking);
+            }
+            else
+            {
+                return BadRequest("No Bookings Found!!!");
+            }            
             
-            return NoContent();
         }
 
 
