@@ -147,7 +147,7 @@ namespace Brainchild.HMS.API.Controllers
 
 
                     //Creating the booking.
-                    _logger.LogInformation($"_bookingService.CreateBooking Method called with Parameters {guest.GuestId}, {booking.NoOfAChildren}, {booking.NoOfAdults}, {booking.CheckInDate}, {booking.CheckOutDate}, {booking.HotelId}");
+                    _logger.LogInformation($"_bookingService.CreateBooking Method called with Parameters {guest.GuestId}, {booking.NoOfChildren}, {booking.NoOfAdults}, {booking.CheckInDate}, {booking.CheckOutDate}, {booking.HotelId}");
                     int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);
                     _logger.LogInformation($"Created Booking and returned the bookingId: {bookingId}");
 
