@@ -164,15 +164,10 @@ namespace Brainchild.HMS.API.Controllers
             }
             catch (Exception exception)
             {
-
                 _logger.LogError($"Exception: {exception}");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
-
-
-         
-
 
         [HttpPost("{bookingId}/cancelbooking")]
         public async Task<IActionResult> CancelBooking(int bookingId, CancelBookingDTO cancelBooking)
@@ -188,7 +183,7 @@ namespace Brainchild.HMS.API.Controllers
 
                 //Add Cancel Notes
                 _logger.LogInformation($"_bookingService.AddCancelNotes Method called with parameters{bookingId} and {cancelBooking.NoteDescription}");
-                _bookingService.AddCancelNotes(bookingId,cancelBooking.NoteDescription);
+                _bookingService.AddCancelNotes(bookingId, cancelBooking.NoteDescription);
                 _logger.LogInformation("Added the Notes for Cancellation");
 
                 //Deleting the RoomBookings by BookingId
