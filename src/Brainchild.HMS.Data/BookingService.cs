@@ -44,11 +44,11 @@ namespace Brainchild.HMS.Data
         {
             SqlConnection con = new SqlConnection(connectionString);
             con.Open();
-            SqlCommand cmd = new SqlCommand("insert into Bookings(GuestId,BookingDate,NoOfAdults,NoOfChildren,CheckInDate,CheckOutDate,Status,HotelId) values(@gustid,@bookingDate,@NoOdAdult,@NoOfChildren,@checkin,@checkout,1,@hotelid);  SELECT SCOPE_IDENTITY()", con);
+            SqlCommand cmd = new SqlCommand("insert into Bookings(GuestId,BookingDate,NoOfAdults,NoOfAChildren,CheckInDate,CheckOutDate,Status,HotelId) values(@gustid,@bookingDate,@NoOdAdult,@NoOfChildren,@checkin,@checkout,1,@hotelid);  SELECT SCOPE_IDENTITY()", con);
             cmd.Parameters.AddWithValue("@gustid", guestId);
             cmd.Parameters.AddWithValue("@bookingDate", DateTime.Now.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@NoOdAdult", booking.NoOfAdults);
-            cmd.Parameters.AddWithValue("@NoOfChildren", booking.NoOfChildren);
+            cmd.Parameters.AddWithValue("@NoOfChildren", booking.NoOfAChildren);
             cmd.Parameters.AddWithValue("@checkin", booking.CheckInDate.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@checkout", booking.CheckOutDate.ToString("dd/MMMM/yyyy"));
             cmd.Parameters.AddWithValue("@hotelid", booking.HotelId);            
