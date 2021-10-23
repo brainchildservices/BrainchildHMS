@@ -18,7 +18,7 @@ namespace Brainchild.HMS.Data
         List<Room> GetAvailableRooms(BookingDTO booking);
         void AddRoomBooking(int bookingId, int roomId);       
         void CancelBooking(int bookingId);
-        void AddCancelNotes(CancelBookingDTO cancelBooking);       
+        void AddCancelNotes(int bookingId, string noteDescription);
         void DeleteRoomBookings(int bookingId);
 
     }
@@ -181,11 +181,11 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Query for update the booking table for cancel a booking
-            SqlCommand sqlCommand = new SqlCommand("update Bookings set IsCancelled=@isCancelled, CancelledDate=@cancelledDate,Status=@status where BookingId=@bookingId", sqlConnection);
+            SqlCommand sqlCommand = new SqlCommand("UPDATE Bookings SET IsCancelled=@isCancelled, CancelledDate=@cancelledDate,Status=@status WHERE BookingId=@bookingId", sqlConnection);
             
             //Adding the parameters
             sqlCommand.Parameters.AddWithValue("@isCancelled", 1);
-            sqlCommand.Parameters.AddWithValue("@cancelledDate", DateTime.Now.ToString());
+            sqlCommand.Parameters.AddWithValue("@cancelledDate", DateTime.Now.ToString("dd/MMMM/yyyy"));
             sqlCommand.Parameters.AddWithValue("@status", 3);
             sqlCommand.Parameters.AddWithValue("@bookingId", bookingId);
            
@@ -195,7 +195,7 @@ namespace Brainchild.HMS.Data
             //Closing the established connection
             sqlConnection.Close();
         }
-        public void AddCancelNotes(CancelBookingDTO cancelBooking)
+        public void AddCancelNotes(int bookingId, string noteDescription)
         {
             //creating an object for SqlConnection
             SqlConnection sqlConnection = new SqlConnection(connectionString);
@@ -204,11 +204,11 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Query for inserting the notes
-            SqlCommand sqlCommand = new SqlCommand("insert into Notes values(@noteDecription,@bookingId)", sqlConnection);
+            SqlCommand sqlCommand = new SqlCommand("INSERT INTO Notes VALUES(@noteDecription,@bookingId)", sqlConnection);
 
             //Adding the parameters
-            sqlCommand.Parameters.AddWithValue("@noteDecription", cancelBooking.NoteDescription);
-            sqlCommand.Parameters.AddWithValue("@bookingId", cancelBooking.BookingId);
+            sqlCommand.Parameters.AddWithValue("@noteDecription", noteDescription);
+            sqlCommand.Parameters.AddWithValue("@bookingId", bookingId);
 
             //Executing the query
             sqlCommand.ExecuteNonQuery();
@@ -226,7 +226,7 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Query for deleting the roombookings
-            SqlCommand sqlCommand = new SqlCommand("delete from RoomBookings where BookingId='"+bookingId+"'", sqlConnection);
+            SqlCommand sqlCommand = new SqlCommand("DELETE FROM RoomBookings WHERE BookingId='"+bookingId+"'", sqlConnection);
 
             //Executing the query
             sqlCommand.ExecuteNonQuery();

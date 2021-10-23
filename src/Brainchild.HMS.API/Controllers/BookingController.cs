@@ -140,30 +140,30 @@ namespace Brainchild.HMS.API.Controllers
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }
 
-        [HttpPost("{id}/cancelbooking")]
-        public async Task<IActionResult> CancelBooking(int id, CancelBookingDTO cancelBooking)
+        [HttpPost("{bookingId}/cancelbooking")]
+        public async Task<IActionResult> CancelBooking(int bookingId, CancelBookingDTO cancelBooking)
         {
             try
             {
                 _logger.LogInformation("BookingController.CancelBooking Method Called.");
 
                 //Cancel the booking by changing the status
-                _logger.LogInformation($"_bookingService.CancelBooking Method Called with Parameter bookingId({cancelBooking.BookingId})");
-                _bookingService.CancelBooking(cancelBooking.BookingId);
-                _logger.LogInformation($"Cancelled the Booking(bookingId-{cancelBooking.BookingId}");
+                _logger.LogInformation($"_bookingService.CancelBooking Method Called with Parameter bookingId({bookingId})");
+                _bookingService.CancelBooking(bookingId);
+                _logger.LogInformation($"Cancelled the Booking(bookingId-{bookingId}");
 
                 //Add Cancel Notes
-                _logger.LogInformation($"_bookingService.AddCancelNotes Method called with parameters{cancelBooking.BookingId} and {cancelBooking.NoteDescription}");
-                _bookingService.AddCancelNotes(cancelBooking);
+                _logger.LogInformation($"_bookingService.AddCancelNotes Method called with parameters{bookingId} and {cancelBooking.NoteDescription}");
+                _bookingService.AddCancelNotes(bookingId,cancelBooking.NoteDescription);
                 _logger.LogInformation("Added the Notes for Cancellation");
 
 
                 //Deleting the RoomBookings by BookingId
-                _logger.LogInformation($"_bookingService.DeleteRoomBookings Method called with parameters{cancelBooking.BookingId}");
-                _bookingService.DeleteRoomBookings(cancelBooking.BookingId);
-                _logger.LogInformation($"Deleted all the RoomBookings on the BookingId - {cancelBooking.BookingId}");
+                _logger.LogInformation($"_bookingService.DeleteRoomBookings Method called with parameters{bookingId}");
+                _bookingService.DeleteRoomBookings(bookingId);
+                _logger.LogInformation($"Deleted all the RoomBookings on the BookingId - {bookingId}");
 
-                return CreatedAtAction("GetBooking", new { id = cancelBooking.BookingId }, cancelBooking);
+                return Ok($"Cancelled the Booking. BookingId:{bookingId}");
             }
             catch (Exception exception)
             {
