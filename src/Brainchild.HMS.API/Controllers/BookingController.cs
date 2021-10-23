@@ -164,10 +164,14 @@ namespace Brainchild.HMS.API.Controllers
             }
             catch (Exception exception)
             {
+
                 _logger.LogError($"Exception: {exception}");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
+
+
+         
 
 
         [HttpPost("{bookingId}/cancelbooking")]
@@ -187,11 +191,11 @@ namespace Brainchild.HMS.API.Controllers
                 _bookingService.AddCancelNotes(bookingId,cancelBooking.NoteDescription);
                 _logger.LogInformation("Added the Notes for Cancellation");
 
-
                 //Deleting the RoomBookings by BookingId
                 _logger.LogInformation($"_bookingService.DeleteRoomBookings Method called with parameters{bookingId}");
                 _bookingService.DeleteRoomBookings(bookingId);
                 _logger.LogInformation($"Deleted all the RoomBookings on the BookingId - {bookingId}");
+
 
                 return Ok($"Cancelled the Booking. BookingId:{bookingId}");
             }
@@ -202,6 +206,7 @@ namespace Brainchild.HMS.API.Controllers
             }
 
         }
+
 
        
         [HttpGet("search")]
@@ -229,6 +234,7 @@ namespace Brainchild.HMS.API.Controllers
                     _logger.LogInformation("Returned Empty result");
                     return NoContent();
                 }
+
             }
             catch (Exception exception)
             {
@@ -237,6 +243,7 @@ namespace Brainchild.HMS.API.Controllers
             }
 
         }
+
 
 
         // DELETE: api/Booking/5
