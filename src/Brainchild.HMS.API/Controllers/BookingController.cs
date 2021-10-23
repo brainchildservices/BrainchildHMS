@@ -89,55 +89,84 @@ namespace Brainchild.HMS.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDTO booking)
         {
-            List<Room> availableRooms = new List<Room>();
-
-            //selecting the available rooms 
-            availableRooms = _bookingService.GetAvailableRooms(booking);
-
-            Hashtable availableRoomList = new Hashtable();
-
-            //Converting availableRooms to Hashtable.
-            foreach (var item in availableRooms)
+            try
             {
-                availableRoomList.Add(item.RoomId,item.RoomNo);
-            }
+                _logger.LogInformation("BookingController.PostBooking Method Called.");
 
-            //Checking the selected rooms are available.
-            int count = 0;
-            foreach (var item in booking.Rooms)
-            {
-                if (availableRoomList.ContainsValue(item.RoomNo))
-                    count++;
-            }                     
+                List<Room> availableRooms = new List<Room>();
 
-            if (booking.Rooms.Count != count)
-            {                
-                return BadRequest("The Selected rooms are NOT available on " + booking.CheckInDate.ToString("dd/MM/yyyy"));
-            }
-            else
-            {
-                GuestDTO guest = new GuestDTO();
+                //selecting the available rooms 
+                _logger.LogInformation($"_bookingService.GetAvailableRooms Method called with Parameters {booking.BookingId},{booking.HotelId},{booking.CheckInDate},{booking.CheckOutDate}");
+                availableRooms = _bookingService.GetAvailableRooms(booking);
+                _logger.LogInformation($"Fetched the available rooms on {booking.CheckInDate} and {booking.CheckOutDate} Dates");
 
-                //Checking with the phone number,if the guest is already there fetching the details
-                guest = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString());
+                //Created hashtable
+                Hashtable availableRoomList = new Hashtable();
 
-                //if there is no existing data, Creating new Guest.
-                if (guest.GuestId == 0)
-                    guest.GuestId = _bookingService.CreateGuest(booking.Guest);
-
-                //Creating the booking.
-                int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);            
-
-                //Creating RoomBooking for the Guest.
-                for(int i = 0; i < booking.Rooms.Count; i++)
-                {
-                    _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId);
+                //Converting availableRooms to Hashtable.
+                _logger.LogInformation("Adding the values to the HashTable");
+                foreach (var item in availableRooms)
+                {                    
+                    availableRoomList.Add(item.RoomId, item.RoomNo);
+                    _logger.LogInformation($"Added the values {item.RoomId} and {item.RoomNo} to the HashTable");
                 }
-               
+
+                //Checking the selected rooms are available.
+                int count = 0;
+                _logger.LogInformation("Checking the selected rooms are available");
+                foreach (var item in booking.Rooms)
+                {
+                    if (availableRoomList.ContainsValue(item.RoomNo))
+                    {
+                        count++;
+                        _logger.LogInformation($"The selected roomNo: {item.RoomNo} is available. The count incremented to {count}");
+                    }
+                        
+                }
+
+                if (booking.Rooms.Count != count)
+                {
+                    _logger.LogInformation("The selected Rooms are NOT Available");
+                    return BadRequest("The Selected rooms are NOT available on " + booking.CheckInDate.ToString("dd/MM/yyyy"));
+                }
+                else
+                {
+                    GuestDTO guest = new GuestDTO();
+
+                    //Checking with the phone number,if the guest is already there fetching the details
+                    _logger.LogInformation($"_bookingService.FindGuestByPhoneNumber Method called with Parameter GuestPhoneNo {booking.Guest.GuestPhoneNo}");
+                    guest = _bookingService.FindGuestByPhoneNumber(booking.Guest.GuestPhoneNo.ToString());
+
+                    //if there is no existing data, Creating new Guest.
+                    if (guest.GuestId == 0)
+                    {
+                        _logger.LogInformation($"_bookingService.CreateGuest Method called with Parameters {booking.Guest.GuestName}, {booking.Guest.GuestPhoneNo}, {booking.Guest.GuestEmail}, {booking.Guest.GuestCountry}, {booking.Guest.GuestAddress}");
+                        guest.GuestId = _bookingService.CreateGuest(booking.Guest);
+                        _logger.LogInformation($"Created Guest and returned the guestId: {guest.GuestId}");
+                    }
+
+
+                    //Creating the booking.
+                    _logger.LogInformation($"_bookingService.CreateBooking Method called with Parameters {guest.GuestId}, {booking.NoOfChildren}, {booking.NoOfAdults}, {booking.CheckInDate}, {booking.CheckOutDate}, {booking.HotelId}");
+                    int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);
+                    _logger.LogInformation($"Created Booking and returned the bookingId: {bookingId}");
+
+                    //Creating RoomBooking for the Guest.
+                    for (int i = 0; i < booking.Rooms.Count; i++)
+                    {
+                        _logger.LogInformation($"_bookingService.AddRoomBooking Method called with Parameters bookingId: {bookingId} and roomId: {booking.Rooms[i].RoomId}");
+                        _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId);
+                        _logger.LogInformation("Creaetd Room Bookings");
+                    }
+                }
+
+                return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
             }
-
-
-            return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         // DELETE: api/Booking/5

@@ -18,7 +18,7 @@ namespace Brainchild.HMS.Data.DTOs
 
         public int NoOfAdults { get; set; }
 
-        public int NoOfAChildren { get; set; }
+        public int NoOfChildren { get; set; }
 
         public DateTime CheckInDate { get; set; }
 
@@ -35,7 +35,7 @@ namespace Brainchild.HMS.Data.DTOs
             Booking book = new Booking
             {
                 Guest = guest == null ? gst : guest,
-                NoOfAChildren = this.NoOfAChildren,
+                NoOfChildren = this.NoOfChildren,
                 NoOfAdults = this.NoOfAdults,
                 CheckInDate = this.CheckInDate,
                 CheckOutDate = this.CheckOutDate,
