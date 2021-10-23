@@ -20,6 +20,9 @@ namespace Brainchild.HMS.Data
         BookingDTO GetBookingDetails(int bookingId, int hotelId, string roomNo);       
         void DoCheckIn(string roomNo,int hotelId);
         void GenerateBill(int roomId, int bookingId);
+        void CancelBooking(int bookingId);
+        void AddCancelNotes(int bookingId, string noteDescription);
+        void DeleteRoomBookings(int bookingId);
 
 
     }
@@ -113,7 +116,7 @@ namespace Brainchild.HMS.Data
             {
                 //Reading the data row by row
                 while (dr.Read())
-
+                { 
                     //storing the data to the object guest
 
                     gust.GuestId = Convert.ToInt32(dr["GuestId"]);
@@ -335,6 +338,7 @@ namespace Brainchild.HMS.Data
             sqlConnection.Close();
 
         }
+
     }
 }
 
