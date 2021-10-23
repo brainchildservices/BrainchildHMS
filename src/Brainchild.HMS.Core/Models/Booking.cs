@@ -19,7 +19,7 @@ public class Booking
 
     public int NoOfAdults { get; set; }
 
-    public int NoOfAChildren { get; set; }
+    public int NoOfChildren { get; set; }
 
     [Required]
     public DateTime CheckInDate { get; set; }
@@ -32,7 +32,7 @@ public class Booking
 
     public int IsCancelled { get; set; }
 
-    public DateTime CancelleddDate { get; set; }
+    public DateTime CancelledDate { get; set; }
 
     [ForeignKey("HotelId")]   
     public Hotel Hotel { get; set ;}
