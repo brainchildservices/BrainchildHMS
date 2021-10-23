@@ -164,10 +164,14 @@ namespace Brainchild.HMS.API.Controllers
             }
             catch (Exception exception)
             {
+
                 _logger.LogError($"Exception: {exception}");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
+
+
+         
 
 
         [HttpPost("{bookingId}/cancelbooking")]
@@ -187,11 +191,11 @@ namespace Brainchild.HMS.API.Controllers
                 _bookingService.AddCancelNotes(bookingId,cancelBooking.NoteDescription);
                 _logger.LogInformation("Added the Notes for Cancellation");
 
-
                 //Deleting the RoomBookings by BookingId
                 _logger.LogInformation($"_bookingService.DeleteRoomBookings Method called with parameters{bookingId}");
                 _bookingService.DeleteRoomBookings(bookingId);
                 _logger.LogInformation($"Deleted all the RoomBookings on the BookingId - {bookingId}");
+
 
                 return Ok($"Cancelled the Booking. BookingId:{bookingId}");
             }
@@ -201,6 +205,80 @@ namespace Brainchild.HMS.API.Controllers
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
+        }
+
+        //Check-in
+        [HttpPost("{bookingId}/checkin")]
+        public async Task<IActionResult> CheckIn(int bookingId, CheckInDTO checkIn)
+        {
+            try
+            {
+                _logger.LogInformation("BookingController.CheckIn Method Called.");
+
+                //Created object for BookingDTO
+                BookingDTO booking = new BookingDTO();
+                //fetching the booking details
+                _logger.LogInformation($"_bookingService.GetBookingDetails Method called with parameters BookingId: {bookingId}, HotelId:{checkIn.HotelId} and RoomNo: {checkIn.RoomNo}");
+                booking = _bookingService.GetBookingDetails(bookingId, checkIn.HotelId, checkIn.RoomNo);
+                _logger.LogInformation("Fetch the Booking details");
+
+                //Checking the Booking is exists
+                if (booking != null)
+                {
+                    _logger.LogInformation("Booking existing");
+                    //Checking the Booking is Cancelled or Not
+                    if (booking.IsCancelled != 1)
+                    {
+                        _logger.LogInformation("Booking is not Cancelled");
+                        //Checking the Check-in date with the current date
+                        if (booking.CheckInDate.ToString("dd/MM/yyyy") == DateTime.Now.ToString("dd/MM/yyyy"))
+                        {
+                            _logger.LogInformation("Check-In date is Valid");
+                            //Checking the roomStatus for the room is already checked in or not
+                            if (booking.RoomStatus == RoomStatus.Vacant)
+                            {
+                                _logger.LogInformation("Room status is Vacant");
+                                //Doing the checkIn by changing the status of Rooms from vacant to occupied.
+                                _logger.LogInformation($" _bookingService.DoCheckIn Method called with parameters RoomNo: {checkIn.RoomNo} and HotelId: {checkIn.HotelId}");
+                                _bookingService.DoCheckIn(checkIn.RoomNo, checkIn.HotelId);
+                                _logger.LogInformation("Done the CheckIn by changing the status of Room from vacant to occupied");
+
+                                //Generate bill for the booking by room number
+                                _logger.LogInformation($"_bookingService.GenerateBill Method called with parameters roomId :{booking.RoomId} and bookingId {bookingId}");
+                                _bookingService.GenerateBill(booking.RoomId, bookingId);
+                                _logger.LogInformation($"Generated bill for RoomNo:{checkIn.RoomNo}");
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"The RoomNo {checkIn.RoomNo} is already Checked-In");
+                                return BadRequest($"The RoomNo {checkIn.RoomNo} is already Checked-In");
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Check-In date is not Valid");
+                            return BadRequest("Check-In date is not Valid");
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"The booking for RoomNo {checkIn.RoomNo} is already Cancelled.");
+                        return BadRequest($"The booking for RoomNo {checkIn.RoomNo} is already Cancelled.");
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation($"There is no Booking Available on the RoomNo:{checkIn.RoomNo}");
+                    return BadRequest($"There is no Booking Available on the RoomNo:{checkIn.RoomNo}");
+                }
+
+                return NoContent();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         // DELETE: api/Booking/5
