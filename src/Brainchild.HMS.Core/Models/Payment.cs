@@ -10,13 +10,17 @@ namespace Brainchild.HMS.Core.Models
         [Key]
         public int PaymentId { get; set; }
 
+
         [ForeignKey("PaymentTypeId")]
-        public PaymentType PaymentType { get; set; }        
+        public PaymentType PaymentType { get; set; }
 
         [Required]
+        public DateTime PaymentDate { get; set; }
+
         public float PaymentAmount { get; set; }
 
-        public float PaymentAdvance { get; set; }
+        public string PaymentDescription { get; set; }
+
 
         [ForeignKey("BillingId")]
         public Billing Billing { get; set; }

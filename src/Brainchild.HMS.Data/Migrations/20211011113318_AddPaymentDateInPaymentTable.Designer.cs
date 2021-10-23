@@ -4,14 +4,16 @@ using Brainchild.HMS.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Brainchild.HMS.Data.Migrations
 {
     [DbContext(typeof(BrainchildHMSDbContext))]
-    partial class BrainchildHMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211011113318_AddPaymentDateInPaymentTable")]
+    partial class AddPaymentDateInPaymentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,19 +34,9 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<int?>("BookingId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ChargeId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RoomId")
-                        .HasColumnType("int");
-
                     b.HasKey("BillingId");
 
                     b.HasIndex("BookingId");
-
-                    b.HasIndex("ChargeId");
-
-                    b.HasIndex("RoomId");
 
                     b.ToTable("Billings");
                 });
@@ -59,7 +51,7 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<DateTime>("BookingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CancelledDate")
+                    b.Property<DateTime>("CancelleddDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CheckInDate")
@@ -77,10 +69,10 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<int>("IsCancelled")
                         .HasColumnType("int");
 
-                    b.Property<int>("NoOfAdults")
+                    b.Property<int>("NoOfAChildren")
                         .HasColumnType("int");
 
-                    b.Property<int>("NoOfChildren")
+                    b.Property<int>("NoOfAdults")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -102,9 +94,6 @@ namespace Brainchild.HMS.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BookingId")
-                        .HasColumnType("int");
-
                     b.Property<float>("ChargeAmount")
                         .HasColumnType("real");
 
@@ -114,18 +103,11 @@ namespace Brainchild.HMS.Data.Migrations
                     b.Property<int?>("CurrencyId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RoomId")
-                        .HasColumnType("int");
-
                     b.HasKey("ChargeId");
-
-                    b.HasIndex("BookingId");
 
                     b.HasIndex("ChargeTypeId");
 
                     b.HasIndex("CurrencyId");
-
-                    b.HasIndex("RoomId");
 
                     b.ToTable("Charges");
                 });
@@ -239,27 +221,6 @@ namespace Brainchild.HMS.Data.Migrations
                     b.HasKey("HotelID");
 
                     b.ToTable("Hotels");
-                });
-
-            modelBuilder.Entity("Brainchild.HMS.Core.Models.Note", b =>
-                {
-                    b.Property<int>("NoteId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("BookingId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NoteDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("NoteId");
-
-                    b.HasIndex("BookingId");
-
-                    b.ToTable("Notes");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Payment", b =>
@@ -423,19 +384,7 @@ namespace Brainchild.HMS.Data.Migrations
                         .WithMany()
                         .HasForeignKey("BookingId");
 
-                    b.HasOne("Brainchild.HMS.Core.Models.Charge", "Charge")
-                        .WithMany()
-                        .HasForeignKey("ChargeId");
-
-                    b.HasOne("Brainchild.HMS.Core.Models.Room", "Room")
-                        .WithMany()
-                        .HasForeignKey("RoomId");
-
                     b.Navigation("Booking");
-
-                    b.Navigation("Charge");
-
-                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Booking", b =>
@@ -455,10 +404,6 @@ namespace Brainchild.HMS.Data.Migrations
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Charge", b =>
                 {
-                    b.HasOne("Brainchild.HMS.Core.Models.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId");
-
                     b.HasOne("Brainchild.HMS.Core.Models.ChargeType", "ChargeType")
                         .WithMany()
                         .HasForeignKey("ChargeTypeId");
@@ -467,17 +412,9 @@ namespace Brainchild.HMS.Data.Migrations
                         .WithMany()
                         .HasForeignKey("CurrencyId");
 
-                    b.HasOne("Brainchild.HMS.Core.Models.Room", "Room")
-                        .WithMany()
-                        .HasForeignKey("RoomId");
-
-                    b.Navigation("Booking");
-
                     b.Navigation("ChargeType");
 
                     b.Navigation("Currency");
-
-                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.ChargeType", b =>
@@ -487,15 +424,6 @@ namespace Brainchild.HMS.Data.Migrations
                         .HasForeignKey("HotelId");
 
                     b.Navigation("Hotel");
-                });
-
-            modelBuilder.Entity("Brainchild.HMS.Core.Models.Note", b =>
-                {
-                    b.HasOne("Brainchild.HMS.Core.Models.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId");
-
-                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Payment", b =>
