@@ -56,6 +56,7 @@ namespace Brainchild.HMS.Data
         }
         public int CreateBooking(int guestId, BookingDTO booking)
         {
+
             //creating an sqlconnection object.
             SqlConnection sqlConnection = new SqlConnection(connectionString);
 
