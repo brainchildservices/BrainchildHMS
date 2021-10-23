@@ -281,6 +281,40 @@ namespace Brainchild.HMS.API.Controllers
             }
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<Booking>> SearchForBooking([FromQuery] BookingSearchDTO bookingSearch)
+        {
+            try
+            {
+                _logger.LogInformation("BookingController.SearchForBooking Method Called");
+
+                List<BookingDTO> booking = new List<BookingDTO>();
+
+                //Search for booking by bookingDate or guestPhoneNo or guestName
+                _logger.LogInformation($"_bookingService.SearchBooking Method called with parameters bookingDate: {bookingSearch.BookingDate}, guestPhoneNo: {bookingSearch.GuestPhoneNo} and guestName: {bookingSearch.GuestName}");
+                booking = _bookingService.SearchBooking(bookingSearch.BookingDate, bookingSearch.GuestPhoneNo, bookingSearch.GuestName);
+                //Checking booking is existing or not
+                if (booking.Count != 0)
+                {
+                    //Returning the Booking Details
+                    _logger.LogInformation($"Booking details returned");
+                    return Ok(booking);
+                }
+                else
+                {
+                    //Returned Empty result
+                    _logger.LogInformation("Returned Empty result");
+                    return NoContent();
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+        }
+
         // DELETE: api/Booking/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)

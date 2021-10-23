@@ -23,8 +23,7 @@ namespace Brainchild.HMS.Data
         void CancelBooking(int bookingId);
         void AddCancelNotes(int bookingId, string noteDescription);
         void DeleteRoomBookings(int bookingId);
-
-
+        List<BookingDTO> SearchBooking(DateTime bookingDate, string guestPhoneNo, string guestName);
     }
     public class BookingService : IBookingService
     {
@@ -338,6 +337,36 @@ namespace Brainchild.HMS.Data
             sqlConnection.Close();
 
         }
+        public List<BookingDTO> SearchBooking(DateTime bookingDate, string guestPhoneNo, string guestName)
+        {
+            List<BookingDTO> bookingList = new List<BookingDTO>();
+            //Created connection object
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            //Opening Connection
+            sqlConnection.Open();
+            //SQL query for selecting the booking details by bookingDate or guestPhoneNo or guestName
+            SqlCommand sqlCommand = new SqlCommand("SELECT BookingId,CheckInDate,CheckOutDate,Guests.GuestId,GuestName FROM Bookings INNER JOIN Guests ON Bookings.GuestId = Guests.GuestId WHERE Bookings.BookingDate = '" + bookingDate + "' OR Guests.GuestPhoneNo = '" + guestPhoneNo + "' OR Guests.GuestName = '" + guestName + "'", sqlConnection);
+            //Executing the query and storing the data to sqlDataReader object
+            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+            //Checking the object sqlDataReader having values
+            if (sqlDataReader.HasRows)
+            {
+                //Reading the data row by row
+                while (sqlDataReader.Read())
+                {
+                    //Created booking object for BookingDTO
+                    BookingDTO booking = new BookingDTO();
+                    //storing the values to the booking object
+                    booking.BookingId = Convert.ToInt32(sqlDataReader["BookingId"]);
+                    booking.CheckInDate = Convert.ToDateTime(sqlDataReader["CheckInDate"]);
+                    booking.CheckOutDate = Convert.ToDateTime(sqlDataReader["CheckOutDate"]);
+                    bookingList.Add(booking);
+                }
+            }
+            //returning the list of booking
+            return bookingList;
+        }
+
 
     }
 }
