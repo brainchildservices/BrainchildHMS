@@ -4,14 +4,16 @@ using Brainchild.HMS.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Brainchild.HMS.Data.Migrations
 {
     [DbContext(typeof(BrainchildHMSDbContext))]
-    partial class BrainchildHMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211012054136_CorrectedSpellingMistakeInBookingTable")]
+    partial class CorrectedSpellingMistakeInBookingTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,27 +223,6 @@ namespace Brainchild.HMS.Data.Migrations
                     b.ToTable("Hotels");
                 });
 
-            modelBuilder.Entity("Brainchild.HMS.Core.Models.Note", b =>
-                {
-                    b.Property<int>("NoteId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("BookingId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NoteDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("NoteId");
-
-                    b.HasIndex("BookingId");
-
-                    b.ToTable("Notes");
-                });
-
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Payment", b =>
                 {
                     b.Property<int>("PaymentId")
@@ -440,15 +421,6 @@ namespace Brainchild.HMS.Data.Migrations
                         .HasForeignKey("HotelId");
 
                     b.Navigation("Hotel");
-                });
-
-            modelBuilder.Entity("Brainchild.HMS.Core.Models.Note", b =>
-                {
-                    b.HasOne("Brainchild.HMS.Core.Models.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId");
-
-                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("Brainchild.HMS.Core.Models.Payment", b =>

@@ -106,7 +106,7 @@ namespace Brainchild.HMS.API.Controllers
                 //Converting availableRooms to Hashtable.
                 _logger.LogInformation("Adding the values to the HashTable");
                 foreach (var item in availableRooms)
-                {                    
+                {
                     availableRoomList.Add(item.RoomId, item.RoomNo);
                     _logger.LogInformation($"Added the values {item.RoomId} and {item.RoomNo} to the HashTable");
                 }
@@ -121,7 +121,7 @@ namespace Brainchild.HMS.API.Controllers
                         count++;
                         _logger.LogInformation($"The selected roomNo: {item.RoomNo} is available. The count incremented to {count}");
                     }
-                        
+
                 }
 
                 if (booking.Rooms.Count != count)
@@ -167,6 +167,40 @@ namespace Brainchild.HMS.API.Controllers
                 _logger.LogError($"Exception: {exception}");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
+        }
+
+
+        [HttpPost("{bookingId}/cancelbooking")]
+        public async Task<IActionResult> CancelBooking(int bookingId, CancelBookingDTO cancelBooking)
+        {
+            try
+            {
+                _logger.LogInformation("BookingController.CancelBooking Method Called.");
+
+                //Cancel the booking by changing the status
+                _logger.LogInformation($"_bookingService.CancelBooking Method Called with Parameter bookingId({bookingId})");
+                _bookingService.CancelBooking(bookingId);
+                _logger.LogInformation($"Cancelled the Booking(bookingId-{bookingId}");
+
+                //Add Cancel Notes
+                _logger.LogInformation($"_bookingService.AddCancelNotes Method called with parameters{bookingId} and {cancelBooking.NoteDescription}");
+                _bookingService.AddCancelNotes(bookingId,cancelBooking.NoteDescription);
+                _logger.LogInformation("Added the Notes for Cancellation");
+
+
+                //Deleting the RoomBookings by BookingId
+                _logger.LogInformation($"_bookingService.DeleteRoomBookings Method called with parameters{bookingId}");
+                _bookingService.DeleteRoomBookings(bookingId);
+                _logger.LogInformation($"Deleted all the RoomBookings on the BookingId - {bookingId}");
+
+                return Ok($"Cancelled the Booking. BookingId:{bookingId}");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
         }
 
         // DELETE: api/Booking/5
