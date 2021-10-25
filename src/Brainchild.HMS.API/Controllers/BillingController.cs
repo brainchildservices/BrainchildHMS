@@ -115,7 +115,7 @@ namespace Brainchild.HMS.Web.Controllers
 
                 //fetch the total charges by the roomId
                 _logger.LogInformation($"_billingService.GetTotalCharges Method called with parameter roomId: {checkout.RoomId}");
-                double totalCharges = _billingService.GetTotalCharges(checkout.RoomId);
+                double totalCharges = totalRoomRate + _billingService.GetTotalCharges(checkout.RoomId);
                 _logger.LogInformation($"_billingService.GetTotalCharges Method returned the totalCharges({totalCharges})");
 
                 //fetch the total payments
@@ -147,7 +147,7 @@ namespace Brainchild.HMS.Web.Controllers
                         
                 }
 
-                return CreatedAtAction("GetBilling", new { id = checkout.BookingId }, checkout);
+                return Ok("Checked out the Guest");
             }
             catch (Exception exception)
             {
