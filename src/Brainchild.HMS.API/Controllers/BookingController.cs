@@ -267,7 +267,7 @@ namespace Brainchild.HMS.API.Controllers
                     return BadRequest($"There is no Booking Available on the RoomNo:{checkIn.RoomNo}");
                 }
 
-                return NoContent();
+                return Ok($"{checkIn.RoomNo} is Checked In");
             }
             catch (Exception exception)
             {
