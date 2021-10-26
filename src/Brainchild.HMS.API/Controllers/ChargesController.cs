@@ -15,8 +15,9 @@ using System.Data.SqlClient;
 using Brainchild.HMS.Data;
 using static Brainchild.HMS.Data.BookingService;
 using System.Collections;
+using Microsoft.Extensions.Configuration;
 
-namespace Brainchild.HMS.Web.Controllers
+namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
     [ApiController]
@@ -25,13 +26,14 @@ namespace Brainchild.HMS.Web.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<ChargesController> _logger;
-        public IChargeService _chargeService = new ChargeService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
-        public ChargesController(BrainchildHMSDbContext context, ILogger<ChargesController> logger)
+        private static IConfiguration _configuration;        
+        public ChargesController(BrainchildHMSDbContext context, ILogger<ChargesController> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _configuration = configuration;
         }
-
+        public IChargeService _chargeService = new ChargeService(_configuration.GetConnectionString("DefaultConnection"));
         // GET: api/Charges
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Charge>>> GetCharges()
