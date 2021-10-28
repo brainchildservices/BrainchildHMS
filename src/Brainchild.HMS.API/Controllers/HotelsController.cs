@@ -9,6 +9,9 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using System.Collections;
+using Brainchild.HMS.Data;
+using Brainchild.HMS.Data.DTOs;
 namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -18,14 +21,34 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<HotelsController> _logger;
-
+        public IHotelService _hotelService = new HotelService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
         public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        
+        [HttpGet("rooms")]
+        public async Task<ActionResult<Hotel>> GetAvailableRooms([FromQuery] AvailableRoomDTO availableRoom)
+        {
+            try
+            {
+                _logger.LogInformation("HotelsController.GetAvailableRooms Method called");
+                //creatng availableRoomList object for Room
+                List<Room> availableRoomList = new List<Room>();
+                //Selecting the available rooms
+                _logger.LogInformation($"_hotelService.GetAvailableRoomList Method called with parameters {availableRoom.HotelId},{availableRoom.CheckInDate},{availableRoom.CheckOutDate},{availableRoom.RoomType} and {availableRoom.Status}");
+                availableRoomList = _hotelService.GetAvailableRoomList(availableRoom.HotelId, availableRoom.CheckInDate, availableRoom.CheckOutDate, availableRoom.RoomType, availableRoom.Status);
+                _logger.LogInformation("_hotelService.GetAvailableRoomList Method returned the available Rooms List");
+                //Returning the available roomlist
+                return Ok(availableRoomList);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
 
         // GET: api/Hotels
         [HttpGet]
