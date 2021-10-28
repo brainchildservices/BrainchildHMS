@@ -97,7 +97,7 @@ namespace Brainchild.HMS.API.Controllers
             {
                 _logger.LogInformation("BookingController.PostBooking Method Called.");
 
-                List<Room> availableRooms = new List<Room>();
+                List<RoomDTO> availableRooms = new List<RoomDTO>();
 
                 //selecting the available rooms 
                 _logger.LogInformation($"_bookingService.GetAvailableRooms Method called with Parameters {booking.BookingId},{booking.HotelId},{booking.CheckInDate},{booking.CheckOutDate}");
@@ -159,8 +159,16 @@ namespace Brainchild.HMS.API.Controllers
                     //Creating RoomBooking for the Guest.
                     for (int i = 0; i < booking.Rooms.Count; i++)
                     {
+                        //Checking RoomRate passed or Not
+                        if (booking.Rooms[i].RoomRate == 0)
+                        {
+                            //Fetching the roomrate 
+                            _logger.LogInformation($"_bookingService.GetRoomRate Method called with parameters RoomId:{booking.Rooms[i].RoomId} and HotelId: {booking.HotelId}");
+                            booking.Rooms[i].RoomRate = _bookingService.GetRoomRate(booking.Rooms[i].RoomId, booking.HotelId);
+                            _logger.LogInformation($"Fetched the RoomRate:{booking.Rooms[i].RoomRate}");
+                        }                        
                         _logger.LogInformation($"_bookingService.AddRoomBooking Method called with Parameters bookingId: {bookingId} and roomId: {booking.Rooms[i].RoomId}");
-                        _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId);
+                        _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId, booking.Rooms[i].RoomRate);
                         _logger.LogInformation("Creaetd Room Bookings");
                     }
                 }
