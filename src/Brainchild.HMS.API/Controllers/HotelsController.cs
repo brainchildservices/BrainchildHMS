@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using System.Collections;
 using Brainchild.HMS.Data;
 using Brainchild.HMS.Data.DTOs;
+using Microsoft.Extensions.Configuration;
+
 namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -21,11 +23,14 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<HotelsController> _logger;
-        public IHotelService _hotelService = new HotelService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
-        public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger)
+        private static IConfiguration _configuration;
+        public IHotelService _hotelService; 
+        public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _configuration = configuration;
+            _hotelService = new HotelService(_configuration.GetConnectionString("DefaultConnection"));
         }
 
         [HttpGet("rooms")]
