@@ -12,7 +12,7 @@ namespace Brainchild.HMS.Data
     public interface IBillingService
     {
         BookingDTO GetBookingDetails(int bookingId);
-        double GetRoomRateByRoomId(int roomId, int hotelId);
+        double GetRoomRateByRoomId(int roomId, int bookingId);
         double GetTotalCharges(int roomId);
         double GetTotalPayments(int roomId);
         void DoCheckOut(int roomId);
@@ -53,7 +53,7 @@ namespace Brainchild.HMS.Data
             return booking;
         }
        
-        public double GetRoomRateByRoomId(int roomId, int hotelId)
+        public double GetRoomRateByRoomId(int roomId, int bookingId)
         {
             double roomRate = 0;
             //Creating an sqlconnection object
@@ -61,10 +61,10 @@ namespace Brainchild.HMS.Data
             //Opening the connection
             sqlConnection.Open();
             //SQL query for selecting the room rate by roomId
-            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Rooms INNER JOIN RoomTypes ON Rooms.RoomTypeId = RoomTypes.RoomTypeId WHERE Rooms.RoomId = @roomId AND RoomTypes.HotelId = @hotelId", sqlConnection);
+            SqlCommand sqlCommand = new SqlCommand("SELECT RoomRate from RoomBookings where RoomId=@roomId AND BookingId=@bookingId", sqlConnection);
             //Adding parameters
             sqlCommand.Parameters.AddWithValue("@roomId",roomId);
-            sqlCommand.Parameters.AddWithValue("@hotelId", hotelId);
+            sqlCommand.Parameters.AddWithValue("@bookingId", bookingId);
             //Executing the query
             SqlDataReader dr = sqlCommand.ExecuteReader();
             //Checking the object dr having data
@@ -134,7 +134,7 @@ namespace Brainchild.HMS.Data
             //Opening the connection
             sqlConnection.Open();       
             //SQL Query for update the room status
-            SqlCommand sqlCommand = new SqlCommand("UPDATE Rooms SET RoomStatus=0 WHERE RoomId='" + roomId + "'", sqlConnection);
+            SqlCommand sqlCommand = new SqlCommand("UPDATE Rooms SET RoomStatus=3 WHERE RoomId='" + roomId + "'", sqlConnection);
             //Executing the query
             sqlCommand.ExecuteNonQuery();
             //Closing the connection
