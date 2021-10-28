@@ -15,6 +15,7 @@ using System.Data.SqlClient;
 using Brainchild.HMS.Data;
 using static Brainchild.HMS.Data.BookingService;
 using System.Collections;
+using Microsoft.Extensions.Configuration;
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -25,12 +26,15 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<BookingController> _logger;
-        public IBookingService _bookingService = new BookingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
+        private static IConfiguration _configuration;
+        public IBookingService _bookingService;
 
-        public BookingController(BrainchildHMSDbContext context, ILogger<BookingController> logger)
+        public BookingController(BrainchildHMSDbContext context, ILogger<BookingController> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _configuration = configuration;
+            _bookingService = new BookingService(_configuration.GetConnectionString("DefaultConnection"));
         }
 
         // GET: api/Booking
@@ -131,6 +135,7 @@ namespace Brainchild.HMS.API.Controllers
                 }
                 else
                 {
+                    
                     GuestDTO guest = new GuestDTO();
 
                     //Checking with the phone number,if the guest is already there fetching the details
