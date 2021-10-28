@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections;
 using Brainchild.HMS.Data;
 using Brainchild.HMS.Data.DTOs;
+using Microsoft.Extensions.Configuration;
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -22,11 +23,14 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<PaymentsController> _logger;
-        public IPaymentService _paymentService = new PaymentService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
-        public PaymentsController(BrainchildHMSDbContext context, ILogger<PaymentsController> logger)
+        private static IConfiguration _configuration;
+        public IPaymentService _paymentService;
+        public PaymentsController(BrainchildHMSDbContext context, ILogger<PaymentsController> logger, IConfiguration configuration)
         {
             _context = context;
              _logger = logger;
+            _configuration = configuration;
+            _paymentService = new PaymentService(_configuration.GetConnectionString("DefaultConnection"));
         }
 
         // GET: api/Payments
