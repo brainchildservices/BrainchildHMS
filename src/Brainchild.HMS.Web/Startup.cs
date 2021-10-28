@@ -17,14 +17,20 @@ namespace Brainchild.HMS.Web
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+        public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCms();    
+            services.AddOrchardCms();
+            services.AddSingleton<IConfiguration>(Configuration);
             services.AddDbContext<BrainchildHMSDbContext>(options =>
-           options.UseSqlServer("Data Source=SNEHA;Initial Catalog=BrainChildHMS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));  
-                      
+           options.UseSqlServer("Data Source = SNEHA; Initial Catalog = BrainchildHMS; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False"));
+
         }
-        
+
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             if (env.IsDevelopment())
