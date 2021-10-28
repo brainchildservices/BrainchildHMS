@@ -26,14 +26,16 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<ChargesController> _logger;
-        private static IConfiguration _configuration;        
+        private static IConfiguration _configuration;
+        public IChargeService _chargeService;
         public ChargesController(BrainchildHMSDbContext context, ILogger<ChargesController> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
             _configuration = configuration;
+            _chargeService = new ChargeService(_configuration.GetConnectionString("DefaultConnection"));
         }
-        public IChargeService _chargeService = new ChargeService(_configuration.GetConnectionString("DefaultConnection"));
+       
         // GET: api/Charges
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Charge>>> GetCharges()
