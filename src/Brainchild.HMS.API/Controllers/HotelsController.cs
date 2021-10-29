@@ -34,27 +34,26 @@ namespace Brainchild.HMS.API.Controllers
         }
 
 
-        [HttpPost("{hotelId}/roomplan")]
+        [HttpGet("{hotelId}/roomplan")]
 
         public async Task<ActionResult<Hotel>> GetRoomPlan(int hotelId, RoomPlanDTO roomPlan)
         {
             try
             {
                 _logger.LogInformation("HotelsController.GetRoomPlan Method Called");
-                List<Room> roomPlanList = new List<Room>();
+                List<RoomPlanDTO> roomPlanList = new List<RoomPlanDTO>();
 
                 //Fetching the room plan details
                 _logger.LogInformation($" _hotelService.GetRoomPlan Method called with the parameter fromDate:{roomPlan.FromDate} and hotelId: {hotelId}");
                 roomPlanList = _hotelService.GetRoomPlan(roomPlan.FromDate,hotelId);
                 _logger.LogInformation("Fetched Room Plan Details");
-                return Ok();
+                return Ok(roomPlanList);
             }
             catch (Exception exception)
             {
                 _logger.LogError($"Exception: {exception}");
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
-
 
         }
             // GET: api/Hotels
