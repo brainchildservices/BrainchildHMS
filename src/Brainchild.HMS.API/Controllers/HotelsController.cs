@@ -44,8 +44,8 @@ namespace Brainchild.HMS.API.Controllers
                 List<RoomPlanDTO> roomPlanList = new List<RoomPlanDTO>();
 
                 //Fetching the room plan details
-                _logger.LogInformation($" _hotelService.GetRoomPlan Method called with the parameter fromDate:{roomPlan.FromDate} and hotelId: {hotelId}");
-                roomPlanList = _hotelService.GetRoomPlan(roomPlan.FromDate,hotelId);
+                _logger.LogInformation($" _hotelService.GetRoomPlan Method called with the parameter fromDate:{roomPlan.FromDate},{roomPlan.ToDate} and hotelId: {hotelId}");
+                roomPlanList = _hotelService.GetRoomPlan(roomPlan.FromDate,roomPlan.ToDate,hotelId);
                 _logger.LogInformation("Fetched Room Plan Details");
                 return Ok(roomPlanList);
             }
