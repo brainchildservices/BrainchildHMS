@@ -16,5 +16,6 @@ namespace Brainchild.HMS.Data.DTOs
         public string RoomType { get; set; }
         public string GuestName { get; set; }
         public string RoomStatus { get; set; }
+        public DateTime SearchDate { get; set; }
     }
 }
