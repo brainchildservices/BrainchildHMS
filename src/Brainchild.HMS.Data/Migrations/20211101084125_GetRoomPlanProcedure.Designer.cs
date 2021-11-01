@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Brainchild.HMS.Data.Migrations
 {
     [DbContext(typeof(BrainchildHMSDbContext))]
-    [Migration("20211101065414_GetRoomPlanByDatesProcedure")]
-    partial class GetRoomPlanByDatesProcedure
+    [Migration("20211101084125_GetRoomPlanProcedure")]
+    partial class GetRoomPlanProcedure
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

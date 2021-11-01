@@ -2,11 +2,11 @@
 
 namespace Brainchild.HMS.Data.Migrations
 {
-    public partial class GetRoomPlanByDatesProcedure : Migration
+    public partial class GetRoomPlanProcedure : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var createProcSql = @"CREATE  PROC GetRoomPlanByDatesProcedure(@fromDate Date, @toDate Date, @hotelId int) AS 
+            var createProcSql = @"CREATE  PROC GetRoomPlanProcedure(@fromDate Date, @toDate Date, @hotelId int) AS 
                             CREATE TABLE #TempTable(HotelId int, SearchDate date)
 
                             DECLARE @startDate AS DATE
@@ -18,12 +18,12 @@ namespace Brainchild.HMS.Data.Migrations
                             
                             WHILE (@startDate <= @endDate)
                             BEGIN                                
-	                            INSERT INTO #TempTable VALUES(@hotelsId,@startDate);               
-	                            SET @startDate = DATEADD(DAY, 1, @endDate);
+                                INSERT INTO #TempTable VALUES(@hotelsId,@startDate);               
+                                SET @startDate = DATEADD(DAY, 1, @startDate);
                             END
 
    
-                            SELECT SearchDate ,Rooms.RoomNo,   Rooms.RoomId,   Bookings.BookingId,   Guests.GuestName, RoomTypes.RoomTypeDesctiption,   CASE	
+                            SELECT SearchDate ,Rooms.RoomNo,   Rooms.RoomId,   Bookings.BookingId,   Guests.GuestName, RoomTypes.RoomTypeDesctiption,   CASE    
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate NOT between CheckInDate and CheckOutDate THEN 'VACANT'
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckINDate  THEN 'CHEKCEDIN'
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckOutDate  THEN 'CHEKCEDOUT'
@@ -37,7 +37,7 @@ namespace Brainchild.HMS.Data.Migrations
                             INNER JOIN Guests ON Guests.GuestId=Bookings.GuestId
                             INNER JOIN RoomTypes ON RoomTypes.RoomTypeId=Rooms.RoomTypeId
                             WHERE  Hotels.HotelID = @hotelsId
-                            GROUP BY SearchDate, Rooms.RoomNo,   Rooms.RoomId,   Bookings.BookingId,   Guests.GuestName, RoomTypes.RoomTypeDesctiption,   CASE	
+                            GROUP BY SearchDate, Rooms.RoomNo,   Rooms.RoomId,   Bookings.BookingId,   Guests.GuestName, RoomTypes.RoomTypeDesctiption,   CASE  
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate NOT between CheckInDate and CheckOutDate THEN 'VACANT'
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckINDate  THEN 'CHEKCEDIN'
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckOutDate  THEN 'CHEKCEDOUT'
@@ -50,7 +50,7 @@ namespace Brainchild.HMS.Data.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            var dropProcSql = "DROP PROC GetRoomPlanByDatesProcedure";
+            var dropProcSql = "DROP PROC GetRoomPlanProcedure";
             migrationBuilder.Sql(dropProcSql);
         }
     }
