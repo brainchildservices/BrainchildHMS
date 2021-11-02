@@ -37,11 +37,13 @@ namespace Brainchild.HMS.Data
             SqlDataReader dr = sqlCommand.ExecuteReader();
             //checking the object having data
             if (dr.HasRows)
-            {
+            {                
                 //Reading the data row by row
                 while (dr.Read())
                 {
                     RoomPlanDTO room = new RoomPlanDTO();
+                    room.FromDate = fromDate;
+                    room.ToDate = toDate;
                     room.RoomId = Convert.ToInt32(dr["RoomId"]);
                     room.RoomNo = dr["RoomNo"].ToString();
                     room.BookingId = Convert.ToInt32(dr["BookingId"]);
@@ -51,9 +53,7 @@ namespace Brainchild.HMS.Data
                     room.SearchDate = Convert.ToDateTime(dr["SearchDate"]);
                     roomPlanList.Add(room);
                 }
-            }
-
-            
+            }            
             return roomPlanList;
         }
     }
