@@ -10,6 +10,8 @@ namespace Brainchild.HMS.Core.Models
     {
 
         Vacant,
+        Clean,
+        Dirty,
         Occupied,
         OutOfOrder
     }

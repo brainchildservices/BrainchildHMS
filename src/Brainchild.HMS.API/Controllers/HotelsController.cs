@@ -33,7 +33,27 @@ namespace Brainchild.HMS.API.Controllers
             _hotelService = new HotelService(_configuration.GetConnectionString("DefaultConnection"));
         }
 
-        
+        [HttpGet("{hotelId}/housekeeping")]
+        public async Task<ActionResult<Hotel>> GetHouseKeeping(int hotelId)
+        {
+            try
+            {
+                _logger.LogInformation("HotelsController.GetHouseKeeping Method called");
+                List<HouseKeepingDTO> houseKeepingDetails = new List<HouseKeepingDTO>();
+                //Fetch the Rooms Details
+                _logger.LogInformation($"_hotelService.GetHouseKeepingDetailsByHotelId Method called with parameter hotelID: {hotelId}");
+                houseKeepingDetails= _hotelService.GetHouseKeepingDetailsByHotelId(hotelId);
+                _logger.LogInformation("Fetched the Rooms Details");
+                
+                return Ok(houseKeepingDetails);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
         [HttpPost("{hotelId}/housekeeping")]
 
         public async Task<ActionResult<Hotel>> HouseKeeping(int hotelId, HouseKeepingDTO houseKeeping)
