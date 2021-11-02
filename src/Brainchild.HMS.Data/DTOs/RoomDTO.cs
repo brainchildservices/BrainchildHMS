@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Brainchild.HMS.Data.DTOs
 {
-    public class AvailableRoomDTO
+    public class RoomDTO
     {
-        public DateTime CheckInDate { get; set; }
-        public DateTime CheckOutDate { get; set; }
+        public int RoomId { get; set; }
         public string RoomType { get; set; }
+        public string RoomNo { get; set; }
         public string RoomStatus { get; set; }
-        
+        public double  RoomRate { get; set; }
     }
 }

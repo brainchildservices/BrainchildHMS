@@ -33,17 +33,17 @@ namespace Brainchild.HMS.API.Controllers
             _hotelService = new HotelService(_configuration.GetConnectionString("DefaultConnection"));
         }
 
-        [HttpGet("rooms")]
-        public async Task<ActionResult<Hotel>> GetAvailableRooms([FromQuery] AvailableRoomDTO availableRoom)
+        [HttpGet("{hotelId}/rooms")]
+        public async Task<ActionResult<Hotel>> GetAvailableRooms(int hotelId,[FromQuery] AvailableRoomDTO availableRoom)
         {
             try
             {
                 _logger.LogInformation("HotelsController.GetAvailableRooms Method called");
                 //creatng availableRoomList object for Room
-                List<Room> availableRoomList = new List<Room>();
+                List<RoomDTO> availableRoomList = new List<RoomDTO>();
                 //Selecting the available rooms
-                _logger.LogInformation($"_hotelService.GetAvailableRoomList Method called with parameters {availableRoom.HotelId},{availableRoom.CheckInDate},{availableRoom.CheckOutDate},{availableRoom.RoomType} and {availableRoom.Status}");
-                availableRoomList = _hotelService.GetAvailableRoomList(availableRoom.HotelId, availableRoom.CheckInDate, availableRoom.CheckOutDate, availableRoom.RoomType, availableRoom.Status);
+                _logger.LogInformation($"_hotelService.GetAvailableRoomList Method called with parameters {hotelId},{availableRoom.CheckInDate},{availableRoom.CheckOutDate},{availableRoom.RoomType} and {availableRoom.RoomStatus}");
+                availableRoomList = _hotelService.GetAvailableRoomList(hotelId, availableRoom.CheckInDate, availableRoom.CheckOutDate, availableRoom.RoomType, availableRoom.RoomStatus);
                 _logger.LogInformation("_hotelService.GetAvailableRoomList Method returned the available Rooms List");
                 //Returning the available roomlist
                 return Ok(availableRoomList);
