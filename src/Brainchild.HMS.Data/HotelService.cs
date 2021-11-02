@@ -12,7 +12,7 @@ namespace Brainchild.HMS.Data
 {
     public interface IHotelService
     {
-        List<RoomPlanDTO> GetRoomPlan(DateTime fromDate,DateTime toDate, int hotelId);
+        List<RoomPlanDTO> GetRoomPlan(DateTime fromDate, DateTime toDate, int hotelId);
     }
     public class HotelService : IHotelService
     {
@@ -32,12 +32,12 @@ namespace Brainchild.HMS.Data
             //Adding parameters
             sqlCommand.Parameters.AddWithValue("@fromDate", fromDate);
             sqlCommand.Parameters.AddWithValue("@toDate", toDate);
-            sqlCommand.Parameters.AddWithValue("@hotelId",hotelId);
+            sqlCommand.Parameters.AddWithValue("@hotelId", hotelId);
             //Executing the query and storing the data
             SqlDataReader dr = sqlCommand.ExecuteReader();
             //checking the object having data
             if (dr.HasRows)
-            {                
+            {
                 //Reading the data row by row
                 while (dr.Read())
                 {
@@ -46,14 +46,22 @@ namespace Brainchild.HMS.Data
                     room.ToDate = toDate;
                     room.RoomId = Convert.ToInt32(dr["RoomId"]);
                     room.RoomNo = dr["RoomNo"].ToString();
-                    room.BookingId = Convert.ToInt32(dr["BookingId"]);
                     room.RoomType = dr["RoomTypeDesctiption"].ToString();
-                    room.GuestName = dr["GuestName"].ToString();
-                    room.RoomStatus = dr["RoomStatus"].ToString();
                     room.SearchDate = Convert.ToDateTime(dr["SearchDate"]);
+                    room.RoomStatus = dr["RoomStatus"].ToString();
+                    if (room.RoomStatus == "VACANT")
+                    {
+                        room.BookingId = 0;
+                        room.GuestName = null;
+                    }
+                    else
+                    {
+                        room.BookingId = Convert.ToInt32(dr["BookingId"]);
+                        room.GuestName = dr["GuestName"].ToString();
+                    }
                     roomPlanList.Add(room);
                 }
-            }            
+            }
             return roomPlanList;
         }
     }
