@@ -9,6 +9,9 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Brainchild.HMS.Data;
+
 namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
@@ -18,14 +21,34 @@ namespace Brainchild.HMS.API.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<HotelsController> _logger;
-
-        public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger)
+        private static IConfiguration _configuration;
+        public IHotelService _hotelService;
+        public HotelsController(BrainchildHMSDbContext context, ILogger<HotelsController> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _configuration = configuration;
+            _hotelService = new HotelService(_configuration.GetConnectionString("DefaultConnection"));
         }
 
-        
+        [HttpGet("{hotelId}/checkout")]
+        public async Task<ActionResult<Hotel>> GetCheckoutDetails(int hotelId)
+        {
+            try
+            {
+                _logger.LogInformation("HotelsController.GetCheckkoutDetails Method called");
+
+                return Ok();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+
+        }
+
 
         // GET: api/Hotels
         [HttpGet]
