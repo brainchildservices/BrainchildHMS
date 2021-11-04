@@ -12,8 +12,10 @@ namespace Brainchild.HMS.Data
 {
     public interface IHotelService
     {
+
         List<ChargeDTO> GetCharges(int bookingId, int roomId);
         CheckoutDetailsDTO GetCheckoutDetails(int bookingId, int roomId, int hotelId);
+
     }
     public class HotelService : IHotelService
     {
@@ -22,6 +24,7 @@ namespace Brainchild.HMS.Data
         {
             connectionString = connection;
         }
+
         List<ChargeDTO> charges = new List<ChargeDTO>();
         public List<ChargeDTO> GetCharges(int bookingId, int roomId)
         {
@@ -76,6 +79,7 @@ namespace Brainchild.HMS.Data
                 }
             }
             return checkoutDetails;
+
         }
     }
 }
