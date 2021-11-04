@@ -9,9 +9,11 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+
 using Microsoft.Extensions.Configuration;
 using Brainchild.HMS.Data;
 using Brainchild.HMS.Data.DTOs;
+
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -26,12 +28,14 @@ namespace Brainchild.HMS.API.Controllers
         public IHotelService _hotelService;
 
         public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger,IConfiguration configuration)
+
         {
             _context = context;
             _logger = logger;
             _configuration = configuration;
             _hotelService = new HotelService(_configuration.GetConnectionString("DefaultConnection"));
         }
+
 
         [HttpGet("{hotelId}/housekeeping")]
         public async Task<ActionResult<Hotel>> GetHouseKeeping(int hotelId)
@@ -68,6 +72,7 @@ namespace Brainchild.HMS.API.Controllers
                 _logger.LogInformation($"Changed the status of the Room(RoomNo: {houseKeeping.RoomNo})");
 
                 return Ok($"Updated the RoomNo: {houseKeeping.RoomNo} Status to {houseKeeping.RoomStatus}");
+
             }
             catch (Exception exception)
             {
@@ -76,8 +81,10 @@ namespace Brainchild.HMS.API.Controllers
             }
 
         }
+
         // GET: api/Hotels
         [HttpGet]
+
         public async Task<ActionResult<IEnumerable<Hotel>>> GetHotels()
         {
             _logger.LogInformation("Hello From HotelsController");

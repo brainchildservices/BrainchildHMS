@@ -12,8 +12,10 @@ namespace Brainchild.HMS.Data
 {
     public interface IHotelService
     {
+
         void ChangeRoomStatus(int hotelId, string roomNo, string roomStatus);
         List<HouseKeepingDTO> GetHouseKeepingDetailsByHotelId(int hotelId);
+
     }
     public class HotelService : IHotelService
     {
@@ -22,6 +24,7 @@ namespace Brainchild.HMS.Data
         {
             connectionString = connection;
         }
+
         List<HouseKeepingDTO> houseKeepingDetails = new List<HouseKeepingDTO>();
         public List<HouseKeepingDTO> GetHouseKeepingDetailsByHotelId(int hotelId)
         {
