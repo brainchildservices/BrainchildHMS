@@ -173,7 +173,7 @@ namespace Brainchild.HMS.API.Controllers
                     }
                 }
 
-                return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
+                return Ok($"Booked Room for {booking.Guest.GuestName}.");
             }
             catch (Exception exception)
             {
