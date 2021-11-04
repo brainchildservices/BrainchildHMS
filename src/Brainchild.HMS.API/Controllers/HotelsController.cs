@@ -9,9 +9,10 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using System.Collections;
-using Brainchild.HMS.Data;
+
 using Brainchild.HMS.Data.DTOs;
+using Brainchild.HMS.Data;
+
 using Microsoft.Extensions.Configuration;
 
 namespace Brainchild.HMS.API.Controllers
@@ -24,14 +25,18 @@ namespace Brainchild.HMS.API.Controllers
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<HotelsController> _logger;
         private static IConfiguration _configuration;
-        public IHotelService _hotelService; 
-        public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger, IConfiguration configuration)
+
+        public IHotelService _hotelService;
+
+        public HotelsController(BrainchildHMSDbContext context, ILogger<HotelsController> logger, IConfiguration configuration)
+
         {
             _context = context;
             _logger = logger;
             _configuration = configuration;
             _hotelService = new HotelService(_configuration.GetConnectionString("DefaultConnection"));
         }
+
 
         [HttpGet("{hotelId}/rooms")]
         public async Task<ActionResult<Hotel>> GetAvailableRooms(int hotelId,[FromQuery] AvailableRoomDTO availableRoom)
@@ -55,8 +60,31 @@ namespace Brainchild.HMS.API.Controllers
             }
         }
 
-        // GET: api/Hotels
-        [HttpGet]
+
+        [HttpGet("{hotelId}/roomplan")]
+
+        public async Task<ActionResult<Hotel>> GetRoomPlan(int hotelId, RoomPlanDTO roomPlan)
+        {
+            try
+            {
+                _logger.LogInformation("HotelsController.GetRoomPlan Method Called");
+                List<RoomPlanDTO> roomPlanList = new List<RoomPlanDTO>();
+
+                //Fetching the room plan details
+                _logger.LogInformation($" _hotelService.GetRoomPlan Method called with the parameter fromDate:{roomPlan.FromDate},{roomPlan.ToDate} and hotelId: {hotelId}");
+                roomPlanList = _hotelService.GetRoomPlan(roomPlan.FromDate,roomPlan.ToDate,hotelId);
+                _logger.LogInformation("Fetched Room Plan Details");
+                return Ok(roomPlanList);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+        }
+            // GET: api/Hotels
+            [HttpGet]
         public async Task<ActionResult<IEnumerable<Hotel>>> GetHotels()
         {
             _logger.LogInformation("Hello From HotelsController");

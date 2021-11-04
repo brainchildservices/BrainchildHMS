@@ -12,15 +12,18 @@ namespace Brainchild.HMS.Data
 {
     public interface IHotelService
     {
+
         List<RoomDTO> GetAvailableRoomList(int hotelId, DateTime checkinDate, DateTime checkoutDate, string roomType, string roomStatus);
     }
     public class HotelService:IHotelService
+
     {
         private readonly string connectionString;
         public HotelService(string connection)
         {
             connectionString = connection;
         }
+
         List<RoomDTO> availableRoomList = new List<RoomDTO>();
         public List<RoomDTO> GetAvailableRoomList(int hotelId, DateTime checkinDate, DateTime checkoutDate, string roomType, string roomStatus)
         {            
@@ -37,11 +40,14 @@ namespace Brainchild.HMS.Data
             //Executing the query and storing the data
             SqlDataReader dr = sqlCommand.ExecuteReader();
             //Checking the object having data
+
+       
             if (dr.HasRows)
             {
                 //Reading the data row by row
                 while (dr.Read())
                 {
+
                     RoomDTO rooms = new RoomDTO();
                     //Storing the data to room object
                     rooms.RoomId = Convert.ToInt32(dr["RoomId"]);
@@ -57,3 +63,4 @@ namespace Brainchild.HMS.Data
         }
     }
 }
+
