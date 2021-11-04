@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Brainchild.HMS.Data;
+using Brainchild.HMS.Data.DTOs;
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -32,13 +33,21 @@ namespace Brainchild.HMS.API.Controllers
         }
 
         [HttpGet("{hotelId}/checkout")]
-        public async Task<ActionResult<Hotel>> GetCheckoutDetails(int hotelId)
+        public async Task<ActionResult<Hotel>> GetCheckoutDetails(int hotelId,[FromQuery] CheckOutDTO checkOut)
         {
             try
             {
                 _logger.LogInformation("HotelsController.GetCheckkoutDetails Method called");
-
-                return Ok();
+                List<ChargeDTO> charges = new List<ChargeDTO>();
+                //Fetching Charge details
+                _logger.LogInformation($"_hotelService.GetCharges Method called with parameters BookingId: {checkOut.BookingId} and RoomId: {checkOut.RoomId}");
+                charges = _hotelService.GetCharges(checkOut.BookingId,checkOut.RoomId);
+                CheckoutDetailsDTO checkoutDetails = new CheckoutDetailsDTO();
+                //Fetching chekcout details
+                _logger.LogInformation($"_hotelService.GetCheckoutDetails Method called with BookingId: {checkOut.BookingId} and RoomId: {checkOut.RoomId} and HotelId: {hotelId}");
+                checkoutDetails = _hotelService.GetCheckoutDetails(checkOut.BookingId, checkOut.RoomId, hotelId);
+                checkoutDetails.charges = charges;
+                return Ok(checkoutDetails);
             }
             catch (Exception exception)
             {
