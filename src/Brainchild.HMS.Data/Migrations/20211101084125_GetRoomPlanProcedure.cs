@@ -25,8 +25,8 @@ namespace Brainchild.HMS.Data.Migrations
    
                             SELECT SearchDate ,Rooms.RoomNo,   Rooms.RoomId,   Bookings.BookingId,   Guests.GuestName, RoomTypes.RoomTypeDesctiption,   CASE    
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate NOT between CheckInDate and CheckOutDate THEN 'VACANT'
-                                WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckINDate  THEN 'CHEKCEDIN'
-                                WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckOutDate  THEN 'CHEKCEDOUT'
+                                WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckINDate  THEN 'CHECKEDIN'
+                                WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckOutDate  THEN 'CHECKEDOUT'
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate between CheckInDate and CheckOutDate THEN 'STAY OVER'    
                             END AS RoomStatus, count(*) as total
                             FROM 
@@ -39,8 +39,8 @@ namespace Brainchild.HMS.Data.Migrations
                             WHERE  Hotels.HotelID = @hotelsId
                             GROUP BY SearchDate, Rooms.RoomNo,   Rooms.RoomId,   Bookings.BookingId,   Guests.GuestName, RoomTypes.RoomTypeDesctiption,   CASE  
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate NOT between CheckInDate and CheckOutDate THEN 'VACANT'
-                                WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckINDate  THEN 'CHEKCEDIN'
-                                WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckOutDate  THEN 'CHEKCEDOUT'
+                                WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckINDate  THEN 'CHECKEDIN'
+                                WHEN RoomBookingId IS NOT NULL AND SearchDate = CheckOutDate  THEN 'CHECKEDOUT'
                                 WHEN RoomBookingId IS NOT NULL AND SearchDate between CheckInDate and CheckOutDate THEN 'STAY OVER'    
                             END 
 
