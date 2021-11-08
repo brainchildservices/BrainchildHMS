@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections;
 using Brainchild.HMS.Data;
 using Brainchild.HMS.Data.DTOs;
+using Microsoft.Extensions.Configuration;
 
 namespace Brainchild.HMS.Web.Controllers
 {
@@ -22,11 +23,14 @@ namespace Brainchild.HMS.Web.Controllers
     {
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<BillingController> _logger;
-        public IBillingService _billingService = new BillingService("Data Source=SNEHA;Initial Catalog=BrainchildHMS;Integrated Security=True;");
-        public BillingController(BrainchildHMSDbContext context,ILogger<BillingController> logger)
+        private static IConfiguration _configuration;
+        public IBillingService _billingService;
+        public BillingController(BrainchildHMSDbContext context,ILogger<BillingController> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _configuration = configuration;
+            _billingService = new BillingService(_configuration.GetConnectionString("DefaultConnection"));
         }
 
         // GET: api/Billing
