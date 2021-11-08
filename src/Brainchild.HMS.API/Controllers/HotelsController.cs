@@ -13,6 +13,7 @@ using System.Collections;
 using Brainchild.HMS.Data;
 using Brainchild.HMS.Data.DTOs;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -40,11 +41,15 @@ namespace Brainchild.HMS.API.Controllers
             {
                 _logger.LogInformation("HotelsController.GetAvailableRooms Method called");
                 //creatng availableRoomList object for Room
-                List<RoomDTO> availableRoomList = new List<RoomDTO>();
+                List<Room> availableRoomList = new List<Room>();
                 //Selecting the available rooms
                 _logger.LogInformation($"_hotelService.GetAvailableRoomList Method called with parameters {hotelId},{availableRoom.CheckInDate},{availableRoom.CheckOutDate},{availableRoom.RoomType} and {availableRoom.RoomStatus}");
                 availableRoomList = _hotelService.GetAvailableRoomList(hotelId, availableRoom.CheckInDate, availableRoom.CheckOutDate, availableRoom.RoomType, availableRoom.RoomStatus);
-                _logger.LogInformation("_hotelService.GetAvailableRoomList Method returned the available Rooms List");
+                _logger.LogInformation("_hotelService.GetAvailableRoomList Method returned the available Rooms List");               
+
+                string jsonValue = JsonConvert.SerializeObject(availableRoomList);
+                _logger.LogInformation($"Returned available Rooms Lists: {jsonValue}");
+
                 //Returning the available roomlist
                 return Ok(availableRoomList);
             }
