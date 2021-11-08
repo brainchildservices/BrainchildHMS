@@ -74,7 +74,7 @@ namespace Brainchild.HMS.API.Controllers
 
                 //Fetching the room plan details
                 _logger.LogInformation($" _hotelService.GetRoomPlan Method called with the parameter fromDate:{roomPlan.FromDate},{roomPlan.ToDate} and hotelId: {hotelId}");
-                roomPlanList = _hotelService.GetRoomPlan(roomPlan.FromDate,roomPlan.ToDate,hotelId);
+                roomPlanList = _hotelService.GetRoomPlan(roomPlan.FromDate, roomPlan.ToDate, hotelId);
                 _logger.LogInformation("Fetched Room Plan Details");
                 return Ok(roomPlanList);
             }
@@ -85,8 +85,34 @@ namespace Brainchild.HMS.API.Controllers
             }
 
         }
-            // GET: api/Hotels
-            [HttpGet]
+
+        [HttpGet("{hotelId}/roomstats")]
+
+        public async Task<ActionResult<Hotel>> GetRoomStats(int hotelId, RoomPlanDTO roomPlan)
+        {
+            try
+            {
+                _logger.LogInformation("HotelsController.GetRoomStats Method Called");
+                //Creating an object for RoomPlanSTO
+                List<RoomPlanDTO> roomPlanList = new List<RoomPlanDTO>();
+                //Fetching the rooms details
+                _logger.LogInformation($" _hotelService.GetRoomPlan Method called with the parameter fromDate:{roomPlan.FromDate},{roomPlan.ToDate} and hotelId: {hotelId}");
+                roomPlanList = _hotelService.GetRoomPlan(roomPlan.FromDate, roomPlan.ToDate, hotelId);
+                _logger.LogInformation("Fetched Room Plan Details");
+
+
+                return Ok(roomPlanList);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+        }
+
+        // GET: api/Hotels
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Hotel>>> GetHotels()
         {
             _logger.LogInformation("Hello From HotelsController");
@@ -140,9 +166,9 @@ namespace Brainchild.HMS.API.Controllers
 
         // POST: api/Hotels
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        
+
         [HttpPost]
-      
+
         public async Task<ActionResult<Hotel>> PostHotel(Hotel hotel)
         {
             _context.Hotels.Add(hotel);

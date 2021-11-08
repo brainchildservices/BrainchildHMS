@@ -11,5 +11,6 @@ namespace Brainchild.HMS.Data.DTOs
         public int ChargeId { get; set; }
         public string ChargeDescription { get; set; }
         public double ChargeAmount { get; set; }
+
     }
 }
