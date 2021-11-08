@@ -29,8 +29,8 @@ namespace Brainchild.HMS.Web.Controllers
         {
             _context = context;
             _logger = logger;
-             _configuration = configuration;
-            _billingService = new BillingService(_configuration.GetConnectionString("DefaultConnection"));        
+            _configuration = configuration;
+            _billingService = new BillingService(_configuration.GetConnectionString("DefaultConnection"));
         }
 
         // GET: api/Billing
