@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace Brainchild.HMS.Core.Models
 {
     [Index(nameof(RoomNo))]
@@ -19,7 +22,8 @@ public class Room
     public string RoomNo { get; set; }
 
     [Column(TypeName = "int")]
-    public RoomStatus RoomStatus { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public RoomStatus RoomStatus { get; set; }
     
     [ForeignKey("HotelId")]   
     public Hotel Hotel { get; set ;}

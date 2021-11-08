@@ -14,7 +14,7 @@ namespace Brainchild.HMS.Data
     {
 
         void ChangeRoomStatus(int hotelId, string roomNo, string roomStatus);
-        List<HouseKeepingDTO> GetHouseKeepingDetailsByHotelId(int hotelId);
+        List<Room> GetHouseKeepingDetailsByHotelId(int hotelId);
 
     }
     public class HotelService : IHotelService
@@ -25,8 +25,8 @@ namespace Brainchild.HMS.Data
             connectionString = connection;
         }
 
-        List<HouseKeepingDTO> houseKeepingDetails = new List<HouseKeepingDTO>();
-        public List<HouseKeepingDTO> GetHouseKeepingDetailsByHotelId(int hotelId)
+        List<Room> houseKeepingDetails = new List<Room>();
+        public List<Room> GetHouseKeepingDetailsByHotelId(int hotelId)
         {
             //creating an object for SqlConnection
             SqlConnection sqlConnection = new SqlConnection(connectionString);
@@ -36,7 +36,7 @@ namespace Brainchild.HMS.Data
             
 
             //Query for fetching the rooms details by hotelId 
-            SqlCommand sqlCommand = new SqlCommand("SELECT RoomNo,RoomStatus from Rooms WHERE HotelId='" + hotelId + "'", sqlConnection);
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Rooms INNER JOIN RoomTypes ON RoomTypes.RoomtypeId = Rooms.RoomTypeId WHERE Rooms.HotelId = '" + hotelId + "'", sqlConnection);
 
             //Excuting the query
             SqlDataReader dr = sqlCommand.ExecuteReader();
@@ -46,11 +46,23 @@ namespace Brainchild.HMS.Data
                 while (dr.Read())
                 {
                     //Creating an object and storing the values
-                    HouseKeepingDTO houseKeeping = new HouseKeepingDTO();
-                    houseKeeping.RoomNo = dr["RoomNo"].ToString();
-                    var roomStatus= (RoomStatus)Enum.Parse(typeof(RoomStatus), dr["RoomStatus"].ToString());
-                    houseKeeping.RoomStatus = roomStatus.ToString();
-                    houseKeepingDetails.Add(houseKeeping);
+                    Room rooms = new Room();
+                    RoomType roomTypes = new RoomType();
+                   
+                    //storing the data to roomtype object
+                    roomTypes.RoomTypeId = Convert.ToInt32(dr["RoomTypeId"]);
+                    roomTypes.RoomTypeDesctiption = dr["RoomTypeDesctiption"].ToString();
+                    roomTypes.RoomRate = (float)(dr["RoomRate"]);
+                   
+
+                    //storing the data to rooms object
+                    rooms.RoomId = Convert.ToInt32(dr["RoomId"]);
+                    rooms.RoomNo = dr["RoomNo"].ToString();
+                    object roomsStatus = (object)dr["RoomStatus"];
+                    rooms.RoomStatus = (RoomStatus)roomsStatus;
+                    rooms.RoomType = roomTypes;
+                    
+                    houseKeepingDetails.Add(rooms);
                 }
             }
 

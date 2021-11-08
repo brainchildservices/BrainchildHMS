@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Brainchild.HMS.Data;
 using Brainchild.HMS.Data.DTOs;
-
+using Newtonsoft.Json;
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -43,12 +43,15 @@ namespace Brainchild.HMS.API.Controllers
             try
             {
                 _logger.LogInformation("HotelsController.GetHouseKeeping Method called");
-                List<HouseKeepingDTO> houseKeepingDetails = new List<HouseKeepingDTO>();
+                List<Room> houseKeepingDetails = new List<Room>();
                 //Fetch the Rooms Details
                 _logger.LogInformation($"_hotelService.GetHouseKeepingDetailsByHotelId Method called with parameter hotelID: {hotelId}");
                 houseKeepingDetails= _hotelService.GetHouseKeepingDetailsByHotelId(hotelId);
                 _logger.LogInformation("Fetched the Rooms Details");
-                
+
+                string jsonValue = JsonConvert.SerializeObject(houseKeepingDetails);
+                _logger.LogInformation($"Returned available Rooms Lists: {jsonValue}");
+
                 return Ok(houseKeepingDetails);
             }
             catch (Exception exception)
@@ -71,7 +74,15 @@ namespace Brainchild.HMS.API.Controllers
                 _hotelService.ChangeRoomStatus(hotelId, houseKeeping.RoomNo, houseKeeping.RoomStatus);
                 _logger.LogInformation($"Changed the status of the Room(RoomNo: {houseKeeping.RoomNo})");
 
-                return Ok($"Updated the RoomNo: {houseKeeping.RoomNo} Status to {houseKeeping.RoomStatus}");
+                List<Room> houseKeepingDetails = new List<Room>();
+                //Fetch the Rooms Details
+                _logger.LogInformation($"_hotelService.GetHouseKeepingDetailsByHotelId Method called with parameter hotelID: {hotelId}");
+                houseKeepingDetails = _hotelService.GetHouseKeepingDetailsByHotelId(hotelId);
+                _logger.LogInformation("Fetched the Rooms Details");
+
+                string jsonValue = JsonConvert.SerializeObject(houseKeepingDetails);
+                _logger.LogInformation($"Updated the RoomNo: {houseKeeping.RoomNo} Status to {houseKeeping.RoomStatus}\n {jsonValue}");
+                return Ok($"Updated the RoomNo: {houseKeeping.RoomNo} Status to {houseKeeping.RoomStatus}\n {jsonValue}");
 
             }
             catch (Exception exception)
