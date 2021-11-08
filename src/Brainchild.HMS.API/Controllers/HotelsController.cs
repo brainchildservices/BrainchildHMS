@@ -93,8 +93,10 @@ namespace Brainchild.HMS.API.Controllers
 
         }
 
+
         // GET: api/Hotels
         [HttpGet]
+
 
         public async Task<ActionResult<IEnumerable<Hotel>>> GetHotels()
         {
@@ -149,9 +151,9 @@ namespace Brainchild.HMS.API.Controllers
 
         // POST: api/Hotels
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        
+
         [HttpPost]
-      
+
         public async Task<ActionResult<Hotel>> PostHotel(Hotel hotel)
         {
             _context.Hotels.Add(hotel);
