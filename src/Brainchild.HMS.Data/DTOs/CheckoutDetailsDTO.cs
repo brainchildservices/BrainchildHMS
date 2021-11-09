@@ -15,6 +15,6 @@ namespace Brainchild.HMS.Data.DTOs
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
         public double RoomRate { get; set; }       
-        public List<ChargeDTO> charges { get; set; }
+        public List<Charge> charges { get; set; }
     }
 }
