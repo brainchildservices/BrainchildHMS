@@ -9,9 +9,12 @@ using Brainchild.HMS.Core.Models;
 using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+
 using Brainchild.HMS.Data.DTOs;
 using Brainchild.HMS.Data;
+
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -23,14 +26,43 @@ namespace Brainchild.HMS.API.Controllers
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<HotelsController> _logger;
         private static IConfiguration _configuration;
+
         public IHotelService _hotelService;
 
         public HotelsController(BrainchildHMSDbContext context, ILogger<HotelsController> logger, IConfiguration configuration)
+
         {
             _context = context;
             _logger = logger;
             _configuration = configuration;
             _hotelService = new HotelService(_configuration.GetConnectionString("DefaultConnection"));
+        }
+
+
+        [HttpGet("{hotelId}/rooms")]
+        public async Task<ActionResult<Hotel>> GetAvailableRooms(int hotelId,[FromQuery] AvailableRoomDTO availableRoom)
+        {
+            try
+            {
+                _logger.LogInformation("HotelsController.GetAvailableRooms Method called");
+                //creatng availableRoomList object for Room
+                List<Room> availableRoomList = new List<Room>();
+                //Selecting the available rooms
+                _logger.LogInformation($"_hotelService.GetAvailableRoomList Method called with parameters {hotelId},{availableRoom.CheckInDate},{availableRoom.CheckOutDate},{availableRoom.RoomType} and {availableRoom.RoomStatus}");
+                availableRoomList = _hotelService.GetAvailableRoomList(hotelId, availableRoom.CheckInDate, availableRoom.CheckOutDate, availableRoom.RoomType, availableRoom.RoomStatus);
+                _logger.LogInformation("_hotelService.GetAvailableRoomList Method returned the available Rooms List");               
+
+                string jsonValue = JsonConvert.SerializeObject(availableRoomList);
+                _logger.LogInformation($"Returned available Rooms Lists: {jsonValue}");
+
+                //Returning the available roomlist
+                return Ok(availableRoomList);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
 
