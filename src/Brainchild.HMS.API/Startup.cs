@@ -20,6 +20,7 @@ namespace Brainchild.HMS.API
             services.AddSingleton<IConfiguration>(Configuration);
         }
 
+
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
