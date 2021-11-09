@@ -7,23 +7,28 @@ using System.Data;
 using System.Data.SqlClient;
 using Brainchild.HMS.Data.DTOs;
 using Brainchild.HMS.Core.Models;
+using System.Text.Json.Serialization;
 
 namespace Brainchild.HMS.Data
 {
     public interface IHotelService
     {
 
+
         List<ChargeDTO> GetCharges(int bookingId, int roomId);
         CheckoutDetailsDTO GetCheckoutDetails(int bookingId, int roomId, int hotelId);
 
+
     }
-    public class HotelService : IHotelService
+    public class HotelService:IHotelService
+
     {
         private readonly string connectionString;
         public HotelService(string connection)
         {
             connectionString = connection;
         }
+
 
         List<ChargeDTO> charges = new List<ChargeDTO>();
         public List<ChargeDTO> GetCharges(int bookingId, int roomId)
@@ -38,11 +43,13 @@ namespace Brainchild.HMS.Data
             //Executing the Query and storing the data
             SqlDataReader dr = sqlCommand.ExecuteReader();
             //Checking the object dr having values
+
             if (dr.HasRows)
             {
                 //Reading the data
                 while (dr.Read())
                 {
+
                     ChargeDTO charge = new ChargeDTO();
                     charge.ChargeId = Convert.ToInt32(dr["ChargeId"]);
                     charge.ChargeDescription = dr["ChargeTypeDescription"].ToString();
@@ -58,6 +65,7 @@ namespace Brainchild.HMS.Data
             CheckoutDetailsDTO checkoutDetails = new CheckoutDetailsDTO();
             //Creating an sqlconnection object
             SqlConnection sqlConnection = new SqlConnection(connectionString);
+
             //Opening the connection
             sqlConnection.Open();
             //SQL query for fetching the checout details
@@ -65,11 +73,13 @@ namespace Brainchild.HMS.Data
             //Executing the Query and storing the data
             SqlDataReader dr = sqlCommand.ExecuteReader();
             //Checking the object dr having values
+
             if (dr.HasRows)
             {
                 //Reading the data
                 while (dr.Read())
                 {
+
                     checkoutDetails.BookingId = Convert.ToInt32(dr["BookingId"]);
                     checkoutDetails.GuestName = dr["GuestName"].ToString();
                     checkoutDetails.CheckInDate = Convert.ToDateTime(dr["CheckInDate"]);
@@ -83,3 +93,4 @@ namespace Brainchild.HMS.Data
         }
     }
 }
+

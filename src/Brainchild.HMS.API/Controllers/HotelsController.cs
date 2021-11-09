@@ -10,6 +10,7 @@ using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
+
 using Microsoft.Extensions.Configuration;
 using Brainchild.HMS.Data;
 using Brainchild.HMS.Data.DTOs;
@@ -25,9 +26,13 @@ namespace Brainchild.HMS.API.Controllers
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<HotelsController> _logger;
         private static IConfiguration _configuration;
+
         public IHotelService _hotelService;
 
-        public HotelsController(BrainchildHMSDbContext context, ILogger<HotelsController> logger, IConfiguration configuration)
+
+        public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger,IConfiguration configuration)
+
+
         {
             _context = context;
             _logger = logger;
@@ -63,20 +68,54 @@ namespace Brainchild.HMS.API.Controllers
         }
 
 
-        [HttpGet("{hotelId}/roomplan")]
 
-        public async Task<ActionResult<Hotel>> GetRoomPlan(int hotelId, RoomPlanDTO roomPlan)
+        [HttpGet("{hotelId}/housekeeping")]
+        public async Task<ActionResult<Hotel>> GetHouseKeeping(int hotelId)
         {
             try
             {
-                _logger.LogInformation("HotelsController.GetRoomPlan Method Called");
-                List<RoomPlanDTO> roomPlanList = new List<RoomPlanDTO>();
+                _logger.LogInformation("HotelsController.GetHouseKeeping Method called");
+                List<Room> houseKeepingDetails = new List<Room>();
+                //Fetch the Rooms Details
+                _logger.LogInformation($"_hotelService.GetHouseKeepingDetailsByHotelId Method called with parameter hotelID: {hotelId}");
+                houseKeepingDetails= _hotelService.GetHouseKeepingDetailsByHotelId(hotelId);
+                _logger.LogInformation("Fetched the Rooms Details");
 
-                //Fetching the room plan details
-                _logger.LogInformation($" _hotelService.GetRoomPlan Method called with the parameter fromDate:{roomPlan.FromDate},{roomPlan.ToDate} and hotelId: {hotelId}");
-                roomPlanList = _hotelService.GetRoomPlan(roomPlan.FromDate, roomPlan.ToDate, hotelId);
-                _logger.LogInformation("Fetched Room Plan Details");
-                return Ok(roomPlanList);
+                string jsonValue = JsonConvert.SerializeObject(houseKeepingDetails);
+                _logger.LogInformation($"Returned available Rooms Lists: {jsonValue}");
+
+                return Ok(houseKeepingDetails);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost("{hotelId}/housekeeping")]
+
+        public async Task<ActionResult<Hotel>> HouseKeeping(int hotelId, HouseKeepingDTO houseKeeping)
+        {
+            try
+            {
+                _logger.LogInformation("HotelsController.HouseKeeping Method Called");
+
+                //Changing the roomstatus
+                _logger.LogInformation($"_hotelService.ChangeRoomStatus Method called with parameters {hotelId}, {houseKeeping.RoomNo}, {houseKeeping.RoomStatus}");
+                _hotelService.ChangeRoomStatus(hotelId, houseKeeping.RoomNo, houseKeeping.RoomStatus);
+                _logger.LogInformation($"Changed the status of the Room(RoomNo: {houseKeeping.RoomNo})");
+
+                List<Room> houseKeepingDetails = new List<Room>();
+                //Fetch the Rooms Details
+                _logger.LogInformation($"_hotelService.GetHouseKeepingDetailsByHotelId Method called with parameter hotelID: {hotelId}");
+                houseKeepingDetails = _hotelService.GetHouseKeepingDetailsByHotelId(hotelId);
+                _logger.LogInformation("Fetched the Rooms Details");
+
+                string jsonValue = JsonConvert.SerializeObject(houseKeepingDetails);
+                _logger.LogInformation($"Updated the RoomNo: {houseKeeping.RoomNo} Status to {houseKeeping.RoomStatus}\n {jsonValue}");
+                return Ok($"Updated the RoomNo: {houseKeeping.RoomNo} Status to {houseKeeping.RoomStatus}\n {jsonValue}");
+
             }
             catch (Exception exception)
             {
@@ -86,33 +125,11 @@ namespace Brainchild.HMS.API.Controllers
 
         }
 
-        [HttpGet("{hotelId}/roomstats")]
-
-        public async Task<ActionResult<Hotel>> GetRoomStats(int hotelId, RoomPlanDTO roomPlan)
-        {
-            try
-            {
-                _logger.LogInformation("HotelsController.GetRoomStats Method Called");
-                //Creating an object for RoomPlanSTO
-                List<RoomPlanDTO> roomPlanList = new List<RoomPlanDTO>();
-                //Fetching the rooms details
-                _logger.LogInformation($" _hotelService.GetRoomPlan Method called with the parameter fromDate:{roomPlan.FromDate},{roomPlan.ToDate} and hotelId: {hotelId}");
-                roomPlanList = _hotelService.GetRoomPlan(roomPlan.FromDate, roomPlan.ToDate, hotelId);
-                _logger.LogInformation("Fetched Room Plan Details");
-
-
-                return Ok(roomPlanList);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError($"Exception: {exception}");
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            }
-
-        }
 
         // GET: api/Hotels
         [HttpGet]
+
+
         public async Task<ActionResult<IEnumerable<Hotel>>> GetHotels()
         {
             _logger.LogInformation("Hello From HotelsController");

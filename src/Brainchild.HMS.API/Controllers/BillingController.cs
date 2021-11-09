@@ -109,7 +109,7 @@ namespace Brainchild.HMS.Web.Controllers
 
                 //fetching the RoomRate by roomId
                 _logger.LogInformation($"_billingService.GetRoomRateByRoomId Method called with parameters roomId: {checkout.RoomId} and hotelId: {checkout.HotelId}");
-                double roomRate = _billingService.GetRoomRateByRoomId(checkout.RoomId, checkout.HotelId);
+                double roomRate = _billingService.GetRoomRateByRoomId(checkout.RoomId, checkout.BookingId);
                 _logger.LogInformation($"Calculated the Room Rate. roomRate: {roomRate}");
 
                 //calculating the total room rate 
@@ -141,17 +141,17 @@ namespace Brainchild.HMS.Web.Controllers
                     if (totalCharges > totalPayments)
                     {
                         _logger.LogInformation($"The totalCharges {totalCharges} is greater than totalPayments {totalPayments}");
-                        return BadRequest("Please pay the outstanding amount of Rs " + (totalCharges - totalPayments) + "/- for Check out the Guest");
+                        return BadRequest($"{false}: Please pay the outstanding amount of Rs {totalCharges - totalPayments}/- for Check out the Guest");
                     }                      
                     else
                     {
                         _logger.LogInformation($"The totalCharges {totalCharges} is lesser than totalPayments {totalPayments}");
-                        return BadRequest("Please settle the amount of Rs " + (totalPayments - totalCharges) + "/- for Check out the Guest");
+                        return BadRequest($"{false}: Please settle the amount of Rs {totalPayments - totalCharges}/- for Check out the Guest");
                     }
                         
                 }
-
-                return Ok("Checked out the Guest");
+                
+                return Ok($"{true} : Checked out the Guest");
             }
             catch (Exception exception)
             {

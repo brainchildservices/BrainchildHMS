@@ -30,8 +30,8 @@ namespace Brainchild.HMS.Data.DTOs
         public int RoomId { get; set; }
         public RoomStatus RoomStatus { get; set; }
 
-        public List<Room> Rooms { get; set; }
-
+        public List<RoomDTO> Rooms { get; set; }
+        
         public Booking Build(Guest guest, Guest gst)
         {
             Booking book = new Booking

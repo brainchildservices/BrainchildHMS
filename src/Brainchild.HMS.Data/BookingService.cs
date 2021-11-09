@@ -15,8 +15,9 @@ namespace Brainchild.HMS.Data
         int CreateGuest(GuestDTO guest);
         int CreateBooking(int guestId, BookingDTO booking);
         GuestDTO FindGuestByPhoneNumber(string phoneNo);
-        List<Room> GetAvailableRooms(BookingDTO booking);
-        void AddRoomBooking(int bookingId, int roomId);
+        List<RoomDTO> GetAvailableRooms(BookingDTO booking);
+        double GetRoomRate(int roomId,int hotelId);
+        void AddRoomBooking(int bookingId, int roomId, double roomRate);
         BookingDTO GetBookingDetails(int bookingId, int hotelId, string roomNo);
         void DoCheckIn(string roomNo, int hotelId);
         void GenerateBill(int roomId, int bookingId);
@@ -24,6 +25,8 @@ namespace Brainchild.HMS.Data
         void AddCancelNotes(int bookingId, string noteDescription);
         void DeleteRoomBookings(int bookingId);
         List<BookingDTO> SearchBooking(DateTime bookingDate, string guestPhoneNo, string guestName);
+        Booking GetBooking(int bookingId);
+        List<RoomBooking> GetRoomBooking(int bookingId);
     }
     public class BookingService : IBookingService
     {
@@ -119,8 +122,8 @@ namespace Brainchild.HMS.Data
             //returning the object guest
             return guest;
         }
-        List<Room> availableRooms = new List<Room>();
-        public List<Room> GetAvailableRooms(BookingDTO booking)
+        List<RoomDTO> availableRooms = new List<RoomDTO>();
+        public List<RoomDTO> GetAvailableRooms(BookingDTO booking)
         {
             //creating an object for SqlConnection
             SqlConnection sqlConnection = new SqlConnection(connectionString);
@@ -141,7 +144,7 @@ namespace Brainchild.HMS.Data
                 while (dr.Read())
                 {
                     //Creating an object for Room
-                    Room room = new Room();
+                    RoomDTO room = new RoomDTO();
 
                     //Storing the values to the object room
                     room.RoomId = Convert.ToInt32(dr["RoomId"]);
@@ -155,8 +158,34 @@ namespace Brainchild.HMS.Data
             //Returning the available rooms list
             return availableRooms;
         }
+        public double GetRoomRate(int roomId,int hotelId)
+        {
+            //Creating connection object
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
 
-        public void AddRoomBooking(int bookingId, int roomId)
+            //Opening the connection
+            sqlConnection.Open();
+
+            //Sql query for selecting the booking details
+            SqlCommand sqlCommand = new SqlCommand("SELECT RoomTypes.RoomRate as RoomRate from RoomTypes INNER JOIN Rooms On Rooms.RoomTypeId = RoomTypes.RoomTypeId WHERE Rooms.RoomId = '"+roomId+"' AND Rooms.HotelId = '"+hotelId+"'", sqlConnection);
+
+            
+            //executing the query and storing the data
+            SqlDataReader dr = sqlCommand.ExecuteReader();
+
+            //checking the object having data
+            if (dr.HasRows)
+            {
+                //Reading the data row by row
+                while (dr.Read())
+                {
+                    return Convert.ToDouble(dr["RoomRate"]);
+                }
+            }
+
+            return 0;
+        }
+        public void AddRoomBooking(int bookingId, int roomId,double roomRate)
         {
 
             //creating an object for SqlConnection
@@ -166,7 +195,7 @@ namespace Brainchild.HMS.Data
             sqlConnection.Open();
 
             //Query for inserting the the values to RoomBooking table.
-            SqlCommand sqlCommand = new SqlCommand("INSERT INTO RoomBookings VALUES('" + bookingId + "','" + roomId + "')", sqlConnection);
+            SqlCommand sqlCommand = new SqlCommand("INSERT INTO RoomBookings VALUES('" + bookingId + "','" + roomId + "','"+roomRate+"')", sqlConnection);
 
             //Excuting the query
             sqlCommand.ExecuteNonQuery();
@@ -351,7 +380,83 @@ namespace Brainchild.HMS.Data
             return bookingList;
         }
 
+        public Booking GetBooking(int bookingId)
+        {
+            Booking bookings = new Booking();
+            //Created connection object
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            //Opening Connection
+            sqlConnection.Open();
+            //SQL query for selecting the booking details by bookingId
+            SqlCommand sqlCommand = new SqlCommand("SELECT * from Bookings INNER JOIN Guests ON Guests.GuestId=Bookings.GuestId WHERE Bookings.BookingId = '" + bookingId+"'", sqlConnection);
+            //Executing the query and storing the data to sqlDataReader object
+            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+            //Checking the object sqlDataReader having values
+            if (sqlDataReader.HasRows)
+            {
+                //Reading the data row by row
+                while (sqlDataReader.Read())
+                {
+                    Guest guest = new Guest();
+                    guest.GuestId = Convert.ToInt32(sqlDataReader["GuestId"]);
+                    guest.GuestName = sqlDataReader["GuestName"].ToString();
+                    guest.GuestAddress = sqlDataReader["GuestAddress"].ToString();
+                    guest.GuestEmail = sqlDataReader["GuestEmail"].ToString();
+                    guest.GuestPhoneNo = sqlDataReader["GuestPhoneNo"].ToString();
+                    guest.GuestCountry = sqlDataReader["GuestCountry"].ToString();
 
+                    bookings.BookingId = Convert.ToInt32(sqlDataReader["BookingId"]);
+                    bookings.BookingDate = Convert.ToDateTime(sqlDataReader["BookingDate"]);
+                    bookings.Guest = guest;
+                    bookings.NoOfAdults = Convert.ToInt32(sqlDataReader["NoOfAdults"]);
+                    bookings.NoOfChildren = Convert.ToInt32(sqlDataReader["NoOfChildren"]);
+                    bookings.CheckInDate = Convert.ToDateTime(sqlDataReader["CheckInDate"]);
+                    bookings.CheckOutDate = Convert.ToDateTime(sqlDataReader["CheckOutDate"]);                   
+                    bookings.RoomBookings=GetRoomBooking(bookingId);
+
+                }
+            }
+            return bookings;
+        }
+        public List<RoomBooking> GetRoomBooking(int bookingId)
+        {
+            List<RoomBooking> roomBookings = new List<RoomBooking>();
+            //Created connection object
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            //Opening Connection
+            sqlConnection.Open();
+            //SQL query for selecting the booking details by bookingDate or guestPhoneNo or guestName
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM RoomBookings INNER JOIN Bookings ON Bookings.BookingId = RoomBookings.BookingId INNER JOIN Rooms ON Rooms.RoomId = RoomBookings.RoomId INNER JOIN RoomTypes ON RoomTypes.RoomTypeId=Rooms.RoomTypeId WHERE Bookings.BookingId ='" + bookingId+"' ", sqlConnection);
+            //Executing the query and storing the data to sqlDataReader object
+            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+            //Checking the object sqlDataReader having values
+            if (sqlDataReader.HasRows)
+            {
+                //Reading the data row by row
+                while (sqlDataReader.Read())
+                {
+                    RoomBooking roomsBookings = new RoomBooking();
+                    Room rooms = new Room();
+                    RoomType roomTypes = new RoomType();
+
+                    roomTypes.RoomTypeId = Convert.ToInt32(sqlDataReader["RoomTypeId"]);
+                    roomTypes.RoomTypeDesctiption = sqlDataReader["RoomTypeDesctiption"].ToString();
+                   
+                    rooms.RoomId = Convert.ToInt32(sqlDataReader["RoomId"]);
+                    rooms.RoomNo = sqlDataReader["RoomNo"].ToString();
+                    rooms.RoomType = roomTypes;
+                    object roomsStatus = (object)sqlDataReader["RoomStatus"];
+                    rooms.RoomStatus = (RoomStatus)roomsStatus;
+                    roomsBookings.Room = rooms;
+                                        
+
+                    roomsBookings.RoomBookingId = Convert.ToInt32(sqlDataReader["RoomBookingId"]);
+                    roomsBookings.RoomRate = Convert.ToDouble(sqlDataReader["RoomRate"]);
+                    roomBookings.Add(roomsBookings);
+                }
+            }
+            return roomBookings;
+        }
     }
 }
 
