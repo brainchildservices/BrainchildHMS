@@ -12,6 +12,8 @@ namespace Brainchild.HMS.Core.Models
     public enum RoomStatus
     {
         Vacant,
+        Clean,
+        Dirty,
         Occupied,
         OutOfOrder,
         Dirty

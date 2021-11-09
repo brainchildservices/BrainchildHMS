@@ -13,8 +13,12 @@ namespace Brainchild.HMS.Data
 {
     public interface IHotelService
     {
-        List<RoomPlanDTO> GetRoomPlan(DateTime fromDate, DateTime toDate, int hotelId);
-        List<Room> GetAvailableRoomList(int hotelId, DateTime checkinDate, DateTime checkoutDate, string roomType, string roomStatus);
+
+
+        void ChangeRoomStatus(int hotelId, string roomNo, string roomStatus);
+        List<Room> GetHouseKeepingDetailsByHotelId(int hotelId);
+
+
     }
     public class HotelService:IHotelService
 
@@ -24,48 +28,69 @@ namespace Brainchild.HMS.Data
         {
             connectionString = connection;
         }
-        List<RoomPlanDTO> roomPlanList = new List<RoomPlanDTO>();
-        public List<RoomPlanDTO> GetRoomPlan(DateTime fromDate, DateTime toDate, int hotelId)
+
+        List<Room> houseKeepingDetails = new List<Room>();
+        public List<Room> GetHouseKeepingDetailsByHotelId(int hotelId)
         {
             //creating an object for SqlConnection
             SqlConnection sqlConnection = new SqlConnection(connectionString);
+
             //Establishing the connection
             sqlConnection.Open();
-            SqlCommand sqlCommand = new SqlCommand("EXEC GetRoomPlanProcedure @fromDate,@toDate,@hotelId", sqlConnection);
-            //Adding parameters
-            sqlCommand.Parameters.AddWithValue("@fromDate", fromDate);
-            sqlCommand.Parameters.AddWithValue("@toDate", toDate);
-            sqlCommand.Parameters.AddWithValue("@hotelId", hotelId);
-            //Executing the query and storing the data
+            
+
+            //Query for fetching the rooms details by hotelId 
+            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Rooms INNER JOIN RoomTypes ON RoomTypes.RoomtypeId = Rooms.RoomTypeId WHERE Rooms.HotelId = '" + hotelId + "'", sqlConnection);
+
+            //Excuting the query
             SqlDataReader dr = sqlCommand.ExecuteReader();
-            //checking the object having data
             if (dr.HasRows)
             {
-                //Reading the data row by row
+                //Reading the data
                 while (dr.Read())
                 {
-                    RoomPlanDTO room = new RoomPlanDTO();
-                    room.FromDate = fromDate;
-                    room.ToDate = toDate;
-                    room.RoomId = Convert.ToInt32(dr["RoomId"]);
-                    room.RoomNo = dr["RoomNo"].ToString();
-                    room.RoomType = dr["RoomTypeDesctiption"].ToString();
-                    room.SearchDate = Convert.ToDateTime(dr["SearchDate"]);
-                    room.RoomStatus = dr["RoomStatus"].ToString();
-                    if (room.RoomStatus == "VACANT")
-                    {
-                        room.BookingId = 0;
-                        room.GuestName = null;
-                    }
-                    else
-                    {
-                        room.BookingId = Convert.ToInt32(dr["BookingId"]);
-                        room.GuestName = dr["GuestName"].ToString();
-                    }
-                    roomPlanList.Add(room);
+                    //Creating an object and storing the values
+                    Room rooms = new Room();
+                    RoomType roomTypes = new RoomType();
+                   
+                    //storing the data to roomtype object
+                    roomTypes.RoomTypeId = Convert.ToInt32(dr["RoomTypeId"]);
+                    roomTypes.RoomTypeDesctiption = dr["RoomTypeDesctiption"].ToString();
+                    roomTypes.RoomRate = (float)(dr["RoomRate"]);
+                   
+
+                    //storing the data to rooms object
+                    rooms.RoomId = Convert.ToInt32(dr["RoomId"]);
+                    rooms.RoomNo = dr["RoomNo"].ToString();
+                    object roomsStatus = (object)dr["RoomStatus"];
+                    rooms.RoomStatus = (RoomStatus)roomsStatus;
+                    rooms.RoomType = roomTypes;
+                    
+                    houseKeepingDetails.Add(rooms);
                 }
             }
-            return roomPlanList;
+
+            return houseKeepingDetails;
+        }
+        public void ChangeRoomStatus(int hotelId, string roomNo,string roomStatus)
+        {
+            //creating an object for SqlConnection
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+
+            //Establishing the connection
+            sqlConnection.Open();
+            
+            //Get the value of the enum
+            object roomStatusValue=Enum.Parse(typeof(RoomStatus), roomStatus);            
+
+            //Query for Changing the status 
+            SqlCommand sqlCommand = new SqlCommand("UPDATE Rooms SET RoomStatus='"+  (int)roomStatusValue + "' WHERE RoomNo='"+roomNo+"' AND HotelId='"+hotelId+"'", sqlConnection);
+
+            //Excuting the query
+            sqlCommand.ExecuteNonQuery();
+
+            //Closing the established connection
+            sqlConnection.Close();
         }
         List<Room> availableRoomList = new List<Room>();
         public List<Room> GetAvailableRoomList(int hotelId, DateTime checkinDate, DateTime checkoutDate, string roomType, string roomStatus)
