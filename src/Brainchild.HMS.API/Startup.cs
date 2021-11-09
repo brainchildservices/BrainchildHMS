@@ -21,6 +21,7 @@ namespace Brainchild.HMS.API
         }
 
 
+
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(

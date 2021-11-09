@@ -15,7 +15,6 @@ using Microsoft.Extensions.Configuration;
 using Brainchild.HMS.Data;
 using Brainchild.HMS.Data.DTOs;
 
-using Newtonsoft.Json;
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -39,6 +38,33 @@ namespace Brainchild.HMS.API.Controllers
             _logger = logger;
             _configuration = configuration;
             _hotelService = new HotelService(_configuration.GetConnectionString("DefaultConnection"));
+
+        }
+
+        [HttpGet("{hotelId}/checkout")]
+        public async Task<ActionResult<Hotel>> GetCheckoutDetails(int hotelId,[FromQuery] CheckOutDTO checkOut)
+        {
+            try
+            {
+                _logger.LogInformation("HotelsController.GetCheckkoutDetails Method called");
+                List<ChargeDTO> charges = new List<ChargeDTO>();
+                //Fetching Charge details
+                _logger.LogInformation($"_hotelService.GetCharges Method called with parameters BookingId: {checkOut.BookingId} and RoomId: {checkOut.RoomId}");
+                charges = _hotelService.GetCharges(checkOut.BookingId,checkOut.RoomId);
+                CheckoutDetailsDTO checkoutDetails = new CheckoutDetailsDTO();
+                //Fetching chekcout details
+                _logger.LogInformation($"_hotelService.GetCheckoutDetails Method called with BookingId: {checkOut.BookingId} and RoomId: {checkOut.RoomId} and HotelId: {hotelId}");
+                checkoutDetails = _hotelService.GetCheckoutDetails(checkOut.BookingId, checkOut.RoomId, hotelId);
+                checkoutDetails.charges = charges;
+                return Ok(checkoutDetails);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Exception: {exception}");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+
         }
 
 

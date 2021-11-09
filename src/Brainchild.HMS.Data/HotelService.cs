@@ -15,8 +15,8 @@ namespace Brainchild.HMS.Data
     {
 
 
-        void ChangeRoomStatus(int hotelId, string roomNo, string roomStatus);
-        List<Room> GetHouseKeepingDetailsByHotelId(int hotelId);
+        List<ChargeDTO> GetCharges(int bookingId, int roomId);
+        CheckoutDetailsDTO GetCheckoutDetails(int bookingId, int roomId, int hotelId);
 
 
     }
@@ -29,124 +29,67 @@ namespace Brainchild.HMS.Data
             connectionString = connection;
         }
 
-        List<Room> houseKeepingDetails = new List<Room>();
-        public List<Room> GetHouseKeepingDetailsByHotelId(int hotelId)
+
+        List<ChargeDTO> charges = new List<ChargeDTO>();
+        public List<ChargeDTO> GetCharges(int bookingId, int roomId)
         {
-            //creating an object for SqlConnection
+            CheckoutDetailsDTO checkoutDetails = new CheckoutDetailsDTO();
+            //Creating an sqlconnection object
             SqlConnection sqlConnection = new SqlConnection(connectionString);
-
-            //Establishing the connection
+            //Opening the connection
             sqlConnection.Open();
-            
-
-            //Query for fetching the rooms details by hotelId 
-            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Rooms INNER JOIN RoomTypes ON RoomTypes.RoomtypeId = Rooms.RoomTypeId WHERE Rooms.HotelId = '" + hotelId + "'", sqlConnection);
-
-            //Excuting the query
+            //SQL query for fetching the charges
+            SqlCommand sqlCommand = new SqlCommand("SELECT ChargeId,ChargeTypeDescription,ChargeAmount FROM Charges INNER JOIN ChargeTypes ON ChargeTypes.ChargeTypeId = Charges.ChargeTypeId WHERE BookingId='"+bookingId+"' AND RoomId='"+roomId+"'", sqlConnection);
+            //Executing the Query and storing the data
             SqlDataReader dr = sqlCommand.ExecuteReader();
+            //Checking the object dr having values
+
             if (dr.HasRows)
             {
                 //Reading the data
                 while (dr.Read())
                 {
-                    //Creating an object and storing the values
-                    Room rooms = new Room();
-                    RoomType roomTypes = new RoomType();
-                   
-                    //storing the data to roomtype object
-                    roomTypes.RoomTypeId = Convert.ToInt32(dr["RoomTypeId"]);
-                    roomTypes.RoomTypeDesctiption = dr["RoomTypeDesctiption"].ToString();
-                    roomTypes.RoomRate = (float)(dr["RoomRate"]);
-                   
 
-                    //storing the data to rooms object
-                    rooms.RoomId = Convert.ToInt32(dr["RoomId"]);
-                    rooms.RoomNo = dr["RoomNo"].ToString();
-                    object roomsStatus = (object)dr["RoomStatus"];
-                    rooms.RoomStatus = (RoomStatus)roomsStatus;
-                    rooms.RoomType = roomTypes;
-                    
-                    houseKeepingDetails.Add(rooms);
+                    ChargeDTO charge = new ChargeDTO();
+                    charge.ChargeId = Convert.ToInt32(dr["ChargeId"]);
+                    charge.ChargeDescription = dr["ChargeTypeDescription"].ToString();
+                    charge.ChargeAmount = float.Parse(dr["ChargeAmount"].ToString());                    
+                    charges.Add(charge);                   
+
                 }
             }
-
-            return houseKeepingDetails;
+            return charges;
         }
-        public void ChangeRoomStatus(int hotelId, string roomNo,string roomStatus)
+        public CheckoutDetailsDTO GetCheckoutDetails(int bookingId, int roomId, int hotelId)
         {
-            //creating an object for SqlConnection
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-
-            //Establishing the connection
-            sqlConnection.Open();
-            
-            //Get the value of the enum
-            object roomStatusValue=Enum.Parse(typeof(RoomStatus), roomStatus);            
-
-            //Query for Changing the status 
-            SqlCommand sqlCommand = new SqlCommand("UPDATE Rooms SET RoomStatus='"+  (int)roomStatusValue + "' WHERE RoomNo='"+roomNo+"' AND HotelId='"+hotelId+"'", sqlConnection);
-
-            //Excuting the query
-            sqlCommand.ExecuteNonQuery();
-
-            //Closing the established connection
-            sqlConnection.Close();
-        }
-        List<Room> availableRoomList = new List<Room>();
-        public List<Room> GetAvailableRoomList(int hotelId, DateTime checkinDate, DateTime checkoutDate, string roomType, string roomStatus)
-
-        {            
+            CheckoutDetailsDTO checkoutDetails = new CheckoutDetailsDTO();
             //Creating an sqlconnection object
             SqlConnection sqlConnection = new SqlConnection(connectionString);
+
             //Opening the connection
             sqlConnection.Open();
-
-            int status= (int)(RoomStatus)Enum.Parse(typeof(RoomStatus), roomStatus);
-
-            //SQL query for fetching the booking details
-            SqlCommand sqlCommand = new SqlCommand("SELECT * FROM (SELECT  RoomId, RoomNo, RoomRate,RoomStatus,RoomTypeDesctiption, Rooms.RoomTypeId, Rooms.HotelId, TenantID,OwnerName,RegistrationNo,HotelEmail,HotelPhone,Place,GSTNo FROM Rooms INNER JOIN RoomTypes ON RoomTypes.RoomTypeId = Rooms.RoomTypeId INNER JOIN Hotels On RoomTypes.HotelId=Hotels.HotelID WHERE RoomTypes.RoomTypeDesctiption = '" + roomType+"' AND Rooms.RoomStatus='"+ status + "' AND Rooms.HotelId = '"+hotelId+ "') as T1 EXCEPT SELECT Rooms.RoomId, Rooms.RoomNo, RoomTypes.RoomRate,Rooms.RoomStatus,RoomTypes.RoomTypeDesctiption, Rooms.RoomTypeId, Rooms.HotelId, TenantID,OwnerName,RegistrationNo,HotelEmail,HotelPhone,Place,GSTNo FROM Bookings  INNER JOIN RoomBookings ON RoomBookings.bookingid = Bookings.BookingId INNER JOIN Rooms ON Rooms.RoomId = RoomBookings.RoomId INNER JOIN RoomTypes ON RoomTypes.RoomTypeId = Rooms.RoomTypeId INNER JOIN Hotels On RoomTypes.HotelId=Hotels.HotelID WHERE CheckInDate = '" + checkinDate.ToString("dd/MMMM/yyyy")+"' AND CheckOutDate = '"+checkoutDate.ToString("dd/MMMM/yyyy")+"' AND Bookings.HotelId = '"+hotelId+"'", sqlConnection);
-           
-            //Executing the query and storing the data
+            //SQL query for fetching the checout details
+            SqlCommand sqlCommand = new SqlCommand("SELECT Bookings.BookingId, Guests.GuestName, Bookings.CheckInDate, Bookings.CheckOutDate, RoomBookings.RoomRate, Rooms.RoomNo FROM Bookings INNER JOIN RoomBookings ON Bookings.BookingId = RoomBookings.BookingId INNER JOIN Rooms ON Rooms.RoomId = RoomBookings.RoomId INNER JOIN Guests ON Guests.GuestId = Bookings.GuestId WHERE Bookings.BookingId = '"+bookingId+"' AND Bookings.HotelId = '"+hotelId+"' AND Rooms.RoomId = '"+roomId+"'", sqlConnection);
+            //Executing the Query and storing the data
             SqlDataReader dr = sqlCommand.ExecuteReader();
-            //Checking the object having data
+            //Checking the object dr having values
 
-       
             if (dr.HasRows)
             {
-                //Reading the data row by row
+                //Reading the data
                 while (dr.Read())
                 {
-                    Room rooms = new Room();
-                    RoomType roomTypes = new RoomType();
-                    Hotel hotels = new Hotel();
-                    //Storing the data to hotel object
-                    
-                    hotels.HotelID = Convert.ToInt32(dr["HotelId"]);
-                    hotels.TenantID = Convert.ToInt32(dr["TenantID"]);
-                    hotels.OwnerName = dr["OwnerName"].ToString();
-                    hotels.RegistrationNo = dr["RegistrationNo"].ToString();
-                    hotels.HotelEmail = dr["HotelEmail"].ToString();
-                    hotels.HotelPhone = dr["HotelPhone"].ToString();
-                    hotels.Place = dr["Place"].ToString();
-                    hotels.GSTNo = dr["GSTNo"].ToString();
 
-                    //storing the data to roomtype object
-                    roomTypes.RoomTypeId = Convert.ToInt32(dr["RoomTypeId"]);
-                    roomTypes.RoomTypeDesctiption = dr["RoomTypeDesctiption"].ToString();
-                    roomTypes.RoomRate =(float)(dr["RoomRate"]);
-                    roomTypes.Hotel = hotels;
-
-                    //storing the data to rooms object
-                    rooms.RoomId = Convert.ToInt32(dr["RoomId"]);
-                    rooms.RoomNo = dr["RoomNo"].ToString();     
-                    object roomsStatus = (object)dr["RoomStatus"];                   
-                    rooms.RoomStatus = (RoomStatus)roomsStatus;    
-                    rooms.RoomType = roomTypes;
-                    rooms.Hotel = hotels;
-                    availableRoomList.Add(rooms);
+                    checkoutDetails.BookingId = Convert.ToInt32(dr["BookingId"]);
+                    checkoutDetails.GuestName = dr["GuestName"].ToString();
+                    checkoutDetails.CheckInDate = Convert.ToDateTime(dr["CheckInDate"]);
+                    checkoutDetails.CheckOutDate = Convert.ToDateTime(dr["CheckOutDate"]);
+                    checkoutDetails.RoomNo = dr["RoomNo"].ToString();
+                    checkoutDetails.RoomRate = Convert.ToDouble(dr["RoomRate"]);                             
                 }
             }
-            return availableRoomList;
+            return checkoutDetails;
+
         }
     }
 }
