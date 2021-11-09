@@ -9,8 +9,10 @@ namespace Brainchild.HMS.Data.DTOs
     public class ChargeDTO
     {
         public int ChargeId { get; set; }
-        public string ChargeDescription { get; set; }
-        public double ChargeAmount { get; set; }
-
+        public int ChargeTypeId { get; set; }      
+        public int CurrencyId { get; set; }        
+        public float ChargeAmount { get; set; }     
+        public int BookingId { get; set; }        
+        public int RoomId { get; set; }
     }
 }

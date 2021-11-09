@@ -20,7 +20,7 @@ namespace Brainchild.HMS.Data
         public ChargeService(string connection)
         {
             connectionString = connection;
-        }
+        }        
         public void AddCharges(ChargeDTO charge)
         {
             //creating an sqlconnection object.
@@ -35,7 +35,7 @@ namespace Brainchild.HMS.Data
             sqlCommand.Parameters.AddWithValue("@chargeAmount", charge.ChargeAmount);
             sqlCommand.Parameters.AddWithValue("@bookingId", charge.BookingId);
             sqlCommand.Parameters.AddWithValue("@roomId", charge.RoomId);
-            //Executing the query and storing the paymentId 
+            //Executing the query and storing the chargeId             
             charge.ChargeId = Convert.ToInt32(sqlCommand.ExecuteScalar());
             //Closing the connection
             sqlConnection.Close();

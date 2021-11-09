@@ -15,7 +15,6 @@ namespace Brainchild.HMS.Core.Models
         Clean,
         Dirty,
         Occupied,
-        OutOfOrder,
-        Dirty
+        OutOfOrder
     }
 }
