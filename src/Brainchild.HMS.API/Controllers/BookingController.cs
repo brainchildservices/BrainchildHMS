@@ -215,7 +215,7 @@ namespace Brainchild.HMS.API.Controllers
                 _logger.LogInformation($"Deleted all the RoomBookings on the BookingId - {bookingId}");
 
 
-                return Ok($"Cancelled the Booking. BookingId:{bookingId}");
+                return Ok($"{true}: Cancelled the Booking. BookingId:{bookingId}");
             }
             catch (Exception exception)
             {
@@ -235,6 +235,7 @@ namespace Brainchild.HMS.API.Controllers
 
                 //Created object for BookingDTO
                 BookingDTO booking = new BookingDTO();
+                int billingId = 0;
                 //fetching the booking details
                 _logger.LogInformation($"_bookingService.GetBookingDetails Method called with parameters BookingId: {bookingId}, HotelId:{checkIn.HotelId} and RoomNo: {checkIn.RoomNo}");
                 booking = _bookingService.GetBookingDetails(bookingId, checkIn.HotelId, checkIn.RoomNo);
@@ -263,8 +264,8 @@ namespace Brainchild.HMS.API.Controllers
 
                                 //Generate bill for the booking by room number
                                 _logger.LogInformation($"_bookingService.GenerateBill Method called with parameters roomId :{booking.RoomId} and bookingId {bookingId}");
-                                _bookingService.GenerateBill(booking.RoomId, bookingId);
-                                _logger.LogInformation($"Generated bill for RoomNo:{checkIn.RoomNo}");
+                                billingId =_bookingService.GenerateBill(booking.RoomId, bookingId);
+                                _logger.LogInformation($"Generated bill for RoomNo:{checkIn.RoomNo}, billingId:{billingId}");
                             }
                             else
                             {
@@ -290,7 +291,7 @@ namespace Brainchild.HMS.API.Controllers
                     return BadRequest($"There is no Booking Available on the RoomNo:{checkIn.RoomNo}");
                 }
 
-                return Ok($"{checkIn.RoomNo} is Checked In");
+                return Ok($"{true}: Checked In the Guest. RoomNo: {checkIn.RoomNo}, BookingId: {bookingId}, BillingId: {billingId}");
             }
             catch (Exception exception)
             {
@@ -306,7 +307,7 @@ namespace Brainchild.HMS.API.Controllers
             {
                 _logger.LogInformation("BookingController.SearchForBooking Method Called");
 
-                List<BookingDTO> booking = new List<BookingDTO>();
+                List<Booking> booking = new List<Booking>();
 
                 //Search for booking by bookingDate or guestPhoneNo or guestName
                 _logger.LogInformation($"_bookingService.SearchBooking Method called with parameters bookingDate: {bookingSearch.BookingDate}, guestPhoneNo: {bookingSearch.GuestPhoneNo} and guestName: {bookingSearch.GuestName}");

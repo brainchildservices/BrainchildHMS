@@ -119,6 +119,7 @@ namespace Brainchild.HMS.Data
         {
             //creating an object for SqlConnection
             SqlConnection sqlConnection = new SqlConnection(connectionString);
+            sqlConnection.Open();
             //Query for fetching the rooms details by hotelId 
             SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Rooms INNER JOIN RoomTypes ON RoomTypes.RoomtypeId = Rooms.RoomTypeId WHERE Rooms.HotelId = '" + hotelId + "'", sqlConnection);
             //Excuting the query

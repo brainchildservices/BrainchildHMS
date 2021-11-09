@@ -50,10 +50,18 @@ namespace Brainchild.HMS.API.Controllers
                 //Fetching chekcout details
                 _logger.LogInformation($"_hotelService.GetCheckoutDetails Method called with BookingId: {checkOut.BookingId} and RoomId: {checkOut.RoomId} and HotelId: {hotelId}");
                 checkoutDetails = _hotelService.GetCheckoutDetails(checkOut.BookingId, checkOut.RoomId, hotelId);
-                checkoutDetails.charges = charges;
-                string jsonValue = JsonConvert.SerializeObject(checkoutDetails);
-                _logger.LogInformation($"Returned available Rooms Lists: {jsonValue}");
-                return Ok(checkoutDetails);
+                if (checkoutDetails.BookingId != 0)
+                {
+                    checkoutDetails.charges = charges;
+                    string jsonValue = JsonConvert.SerializeObject(checkoutDetails);
+                    _logger.LogInformation($"Returned available Rooms Lists: {jsonValue}");
+                    return Ok(checkoutDetails);
+                }
+                else
+                {
+                    return BadRequest($"{false}: No data found!");
+                }
+                
             }
             catch (Exception exception)
             {
