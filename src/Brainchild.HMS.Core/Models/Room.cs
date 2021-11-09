@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+
 namespace Brainchild.HMS.Core.Models
 {
     [Index(nameof(RoomNo))]
