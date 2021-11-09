@@ -16,6 +16,8 @@ using Brainchild.HMS.Data;
 using static Brainchild.HMS.Data.BookingService;
 using System.Collections;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+
 
 namespace Brainchild.HMS.API.Controllers
 {
@@ -97,7 +99,9 @@ namespace Brainchild.HMS.API.Controllers
             {
                 _logger.LogInformation("BookingController.PostBooking Method Called.");
 
-                List<Room> availableRooms = new List<Room>();
+                List<RoomDTO> availableRooms = new List<RoomDTO>();
+                Booking bookings = new Booking();
+                int bookingId = 0;
 
                 //selecting the available rooms 
                 _logger.LogInformation($"_bookingService.GetAvailableRooms Method called with Parameters {booking.BookingId},{booking.HotelId},{booking.CheckInDate},{booking.CheckOutDate}");
@@ -135,6 +139,7 @@ namespace Brainchild.HMS.API.Controllers
                 }
                 else
                 {
+                    
                     GuestDTO guest = new GuestDTO();
 
                     //Checking with the phone number,if the guest is already there fetching the details
@@ -152,19 +157,33 @@ namespace Brainchild.HMS.API.Controllers
 
                     //Creating the booking.
                     _logger.LogInformation($"_bookingService.CreateBooking Method called with Parameters {guest.GuestId}, {booking.NoOfChildren}, {booking.NoOfAdults}, {booking.CheckInDate}, {booking.CheckOutDate}, {booking.HotelId}");
-                    int bookingId = _bookingService.CreateBooking(guest.GuestId, booking);
+                    bookingId = _bookingService.CreateBooking(guest.GuestId, booking);
                     _logger.LogInformation($"Created Booking and returned the bookingId: {bookingId}");
 
                     //Creating RoomBooking for the Guest.
                     for (int i = 0; i < booking.Rooms.Count; i++)
                     {
+                        //Checking RoomRate passed or Not
+                        if (booking.Rooms[i].RoomRate == 0)
+                        {
+                            //Fetching the roomrate 
+                            _logger.LogInformation($"_bookingService.GetRoomRate Method called with parameters RoomId:{booking.Rooms[i].RoomId} and HotelId: {booking.HotelId}");
+                            booking.Rooms[i].RoomRate = _bookingService.GetRoomRate(booking.Rooms[i].RoomId, booking.HotelId);
+                            _logger.LogInformation($"Fetched the RoomRate:{booking.Rooms[i].RoomRate}");
+                        }                        
                         _logger.LogInformation($"_bookingService.AddRoomBooking Method called with Parameters bookingId: {bookingId} and roomId: {booking.Rooms[i].RoomId}");
-                        _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId);
-                        _logger.LogInformation("Creaetd Room Bookings");
-                    }
-                }
+                        _bookingService.AddRoomBooking(bookingId, booking.Rooms[i].RoomId, booking.Rooms[i].RoomRate);
+                        _logger.LogInformation("Created Room Bookings");
 
-                return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
+                    }
+
+                    bookings = _bookingService.GetBooking(bookingId);
+                    
+                }
+                string jsonValue = JsonConvert.SerializeObject(bookings);
+                _logger.LogInformation($"Returned available Rooms Lists: {jsonValue}");
+
+                return Ok(bookings);
             }
             catch (Exception exception)
             {

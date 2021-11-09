@@ -11,11 +11,11 @@ namespace Brainchild.HMS.Core.Models
     [JsonConverter(typeof(StringEnumConverter))]
     public enum RoomStatus
     {
-
         Vacant,
         Clean,
         Dirty,
         Occupied,
-        OutOfOrder
+        OutOfOrder,
+        Dirty
     }
 }

@@ -10,9 +10,11 @@ using Brainchild.HMS.Data.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
+
 using Microsoft.Extensions.Configuration;
 using Brainchild.HMS.Data;
 using Brainchild.HMS.Data.DTOs;
+
 using Newtonsoft.Json;
 
 namespace Brainchild.HMS.API.Controllers
@@ -25,9 +27,12 @@ namespace Brainchild.HMS.API.Controllers
         private readonly BrainchildHMSDbContext _context;
         private readonly ILogger<HotelsController> _logger;
         private static IConfiguration _configuration;
+
         public IHotelService _hotelService;
 
+
         public HotelsController(BrainchildHMSDbContext context,ILogger<HotelsController> logger,IConfiguration configuration)
+
 
         {
             _context = context;
@@ -35,6 +40,7 @@ namespace Brainchild.HMS.API.Controllers
             _configuration = configuration;
             _hotelService = new HotelService(_configuration.GetConnectionString("DefaultConnection"));
         }
+
 
 
         [HttpGet("{hotelId}/housekeeping")]
