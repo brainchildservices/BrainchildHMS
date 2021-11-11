@@ -17,7 +17,7 @@ namespace Brainchild.HMS.Data
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
-            => services.AddDbContext<BrainchildHMSDbContext>(options => options.UseSqlServer("Data Source=SNEHA"));
+            => services.AddDbContext<BrainchildHMSDbContext>(options => options.UseSqlServer("Data Source=DESKTOP-I8M2KD9\\SNEHA"));
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

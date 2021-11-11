@@ -27,7 +27,7 @@ namespace Brainchild.HMS.Web
             services.AddOrchardCms();
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddDbContext<BrainchildHMSDbContext>(options =>
-           options.UseSqlServer("Data Source = SNEHA; Initial Catalog = BrainchildHMS; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False"));
+           options.UseSqlServer("Data Source = DESKTOP-I8M2KD9\\SNEHA; Initial Catalog = BrainchildHMS; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False"));
 
         }
 
