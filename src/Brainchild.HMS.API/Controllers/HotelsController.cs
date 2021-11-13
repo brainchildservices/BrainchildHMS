@@ -20,7 +20,7 @@ namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken]
     public class HotelsController : ControllerBase
     {
         private readonly BrainchildHMSDbContext _context;

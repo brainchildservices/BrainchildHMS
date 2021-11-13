@@ -18,7 +18,7 @@ namespace Brainchild.HMS.API.Controllers
 {
     [Route("hms/api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken]
     public class PaymentsController : ControllerBase
     {
         private readonly BrainchildHMSDbContext _context;
