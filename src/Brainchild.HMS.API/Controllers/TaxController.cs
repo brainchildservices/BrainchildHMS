@@ -13,7 +13,7 @@ namespace Brainchild.HMS.Web.Controllers
 {
     [Route("hms/api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken]
     public class TaxController : ControllerBase
     {
         private readonly BrainchildHMSDbContext _context;
